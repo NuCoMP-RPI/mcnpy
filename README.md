@@ -12,7 +12,7 @@ Import `mcnpy` as a Python package. The Java gateway will be run automatically.
 # Recompiling `EntryPoint.jar`
 This should be done after:
 - Adding new `.jar` files to `/mcnpy/lib`
-- Editing /mcnpy/EntryPoint.java`
+- Editing `/mcnpy/EntryPoint.java`
 
 To recompile:
 - Run `/mcnpy/compile.sh`
