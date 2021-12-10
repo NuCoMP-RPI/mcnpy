@@ -17,6 +17,9 @@ class MaterialNuclide(MaterialNuclideBase):
         self.fraction = fraction
         self.unit = unit
 
+    def element_name(self):
+        return zaid_to_element(self.name)
+
     def __str__(self):
         #string = 'ZAID = ' + self.name + ', Fraction = ' + str(self.unit) + str(self.fraction)
         string = 'MaterialNuclide ' + zaid_to_element(self.name)

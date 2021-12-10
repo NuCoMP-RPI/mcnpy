@@ -10,3 +10,6 @@ gateway = JavaGateway(auto_field=True, auto_convert=True, eager_load=True)
 
 def is_instance_of(java_object, java_class, gateway=gateway):
     return py4j.java_gateway.is_instance_of(gateway, java_object, java_class)
+
+def copy(object):
+    return gateway.copier.copy(object._e_object)

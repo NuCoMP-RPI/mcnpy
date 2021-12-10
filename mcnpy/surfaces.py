@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from abc import ABC
+import numpy as np
 
 from mcnpy.wrap import wrappers, overrides
 from mcnpy.region import *
@@ -43,6 +44,42 @@ class Halfspace(HalfspaceBase):
 
     def __repr__(self):
         return str(self)
+
+    def get_surfaces(self, surfaces=None):
+        """
+        Returns the surface that this is a halfspace of.
+
+        Parameters
+        ----------
+        surfaces: collections.OrderedDict, optional
+            Dictionary mapping surface IDs to :class:`mcnpy.Surface` instances
+
+        Returns
+        -------
+        surfaces: collections.OrderedDict
+            Dictionary mapping surface IDs to :class:`mcnpy.Surface` instances
+
+        """
+        if surfaces is None:
+            surfaces = OrderedDict()
+
+        surfaces[self.surface.name] = self.surface
+        return surfaces
+
+    def remove_redundant_surfaces(self, redundant_surfaces):
+        """Recursively remove all redundant surfaces referenced by this region
+
+        Parameters
+        ----------
+        redundant_surfaces : dict
+            Dictionary mapping redundant surface IDs to surface IDs for the
+            :class:`mcnpy.Surface` instances that should replace them.
+
+        """
+
+        surf = redundant_surfaces.get(self.surface.name)
+        if surf is not None:
+            self.surface = surf
 
 
 class Surface(SurfaceBase):
@@ -267,7 +304,7 @@ class TruncatedCone(TruncatedConeBase, Surface, Macrobody):
     """Truncated Right Angle Cone defined by a `base` point, `axis` height vector, radius of the lower cone `r0`, and radius of the upper cone `r1`.
     """
 
-    def _init(self, name, base:Point, axis:Point, r0:float, r1=float, r=None, boundary_type='VACUUM', comment=None):
+    def _init(self, name, base:Point, axis:Point, r0:float, r1:float, boundary_type='VACUUM', comment=None):
         self.name = name
         self.base = base
         self.axis = axis
@@ -389,6 +426,7 @@ class Polyhedron(PolyhedronBase, Surface, Macrobody):
 
 
 # Simple Surfaces.
+#TODO: Add transformation functions for tori and X, Y, Z surfaces.
 
 class Plane(PlaneBase, Surface):
     """A plane defined by Ax + By + Cz - D = 0.
@@ -412,8 +450,30 @@ class Plane(PlaneBase, Surface):
 
         return coef
 
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        coef = OrderedDict()
+        coef['a'] = 0
+        coef['b'] = 0
+        coef['c'] = 0
+        coef['d'] = 0
+        coef['e'] = 0
+        coef['f'] = 0
+        coef['g'] = self.a
+        coef['h'] = self.b
+        coef['j'] = self.c
+        coef['k'] = -self.d
+
+        return coef
+
     def __str__(self):
         return self.print_surface()
+
+    # Experimental Rotation and Translation functions.
+    def apply_transformation(self, tr):
+        """Apply a TR card to the surface and return the transformed surface.
+        """
 
 class XPlane(XPlaneBase, Surface):
     """A plane defined by x - x0 = 0.
@@ -428,6 +488,23 @@ class XPlane(XPlaneBase, Surface):
     def get_coefficients(self):
         coef = OrderedDict()
         coef['x0'] = self.x0
+
+        return coef
+
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        coef = OrderedDict()
+        coef['a'] = 0
+        coef['b'] = 0
+        coef['c'] = 0
+        coef['d'] = 0
+        coef['e'] = 0
+        coef['f'] = 0
+        coef['g'] = 1
+        coef['h'] = 0
+        coef['j'] = 0
+        coef['k'] = -self.x0
 
         return coef
 
@@ -446,7 +523,24 @@ class YPlane(YPlaneBase, Surface):
 
     def get_coefficients(self):
         coef = OrderedDict()
-        coef['x0'] = self.x0
+        coef['y0'] = self.y0
+
+        return coef
+
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        coef = OrderedDict()
+        coef['a'] = 0
+        coef['b'] = 0
+        coef['c'] = 0
+        coef['d'] = 0
+        coef['e'] = 0
+        coef['f'] = 0
+        coef['g'] = 0
+        coef['h'] = 1
+        coef['j'] = 0
+        coef['k'] = -self.y0
 
         return coef
 
@@ -466,6 +560,23 @@ class ZPlane(ZPlaneBase, Surface):
     def get_coefficients(self):
         coef = OrderedDict()
         coef['z0'] = self.z0
+
+        return coef
+
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        coef = OrderedDict()
+        coef['a'] = 0
+        coef['b'] = 0
+        coef['c'] = 0
+        coef['d'] = 0
+        coef['e'] = 0
+        coef['f'] = 0
+        coef['g'] = 0
+        coef['h'] = 0
+        coef['j'] = 1
+        coef['k'] = -self.z0
 
         return coef
 
@@ -492,6 +603,23 @@ class XCylinder(XCylinderBase, Surface):
 
         return coef
 
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        coef = OrderedDict()
+        coef['a'] = 0
+        coef['b'] = 1
+        coef['c'] = 1
+        coef['d'] = 0
+        coef['e'] = 0
+        coef['f'] = 0
+        coef['g'] = 0
+        coef['h'] = -2*self.y0
+        coef['j'] = -2*self.z0
+        coef['k'] = -self.r**2 - self.y0**2 - self.z0**2
+
+        return coef
+
     def __str__(self):
         return self.print_surface()
 
@@ -512,6 +640,23 @@ class YCylinder(YCylinderBase, Surface):
         coef['x0'] = self.x0
         coef['z0'] = self.z0
         coef['r'] = self.r
+
+        return coef
+
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        coef = OrderedDict()
+        coef['a'] = 1
+        coef['b'] = 0
+        coef['c'] = 1
+        coef['d'] = 0
+        coef['e'] = 0
+        coef['f'] = 0
+        coef['g'] = -2*self.x0
+        coef['h'] = 0
+        coef['j'] = -2*self.z0
+        coef['k'] = -self.r**2 - self.x0**2 - self.z0**2
 
         return coef
 
@@ -537,6 +682,23 @@ class ZCylinder(ZCylinderBase, Surface):
         coef['r'] = self.r
 
         return coef
+
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        coef = OrderedDict()
+        coef['a'] = 1
+        coef['b'] = 1
+        coef['c'] = 0
+        coef['d'] = 0
+        coef['e'] = 0
+        coef['f'] = 0
+        coef['g'] = -2*self.x0
+        coef['h'] = -2*self.y0
+        coef['j'] = 0
+        coef['k'] = -self.r**2 - self.x0**2 - self.y0**2
+
+        return coef    
 
     def __str__(self):
         return self.print_surface()
@@ -574,6 +736,23 @@ class XCone(XConeBase, Surface):
         coef['z0'] = self.z0
         coef['r2'] = self.r2
         coef['sheet'] = self.sheet
+
+        return coef
+
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        coef = OrderedDict()
+        coef['a'] = self.r2
+        coef['b'] = -1
+        coef['c'] = -1
+        coef['d'] = 0
+        coef['e'] = 0
+        coef['f'] = 0
+        coef['g'] = -2*self.r2*self.x0
+        coef['h'] = 2*self.y0
+        coef['j'] = 2*self.z0
+        coef['k'] = self.r2*self.x0**2 - self.y0**2 - self.z0**2
 
         return coef
 
@@ -616,6 +795,23 @@ class YCone(YConeBase, Surface):
 
         return coef
 
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        coef = OrderedDict()
+        coef['a'] = -1
+        coef['b'] = self.r2
+        coef['c'] = -1
+        coef['d'] = 0
+        coef['e'] = 0
+        coef['f'] = 0
+        coef['g'] = 2*self.x0
+        coef['h'] = -2*self.r2*self.y0
+        coef['j'] = 2*self.z0
+        coef['k'] = self.r2*self.y0**2 - self.x0**2 - self.z0**2
+
+        return coef
+
     def __str__(self):
         return self.print_surface()
 
@@ -652,6 +848,23 @@ class ZCone(ZConeBase, Surface):
         coef['z0'] = self.z0
         coef['r2'] = self.r2
         coef['sheet'] = self.sheet
+
+        return coef
+
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        coef = OrderedDict()
+        coef['a'] = -1
+        coef['b'] = -1
+        coef['c'] = self.r2
+        coef['d'] = 0
+        coef['e'] = 0
+        coef['f'] = 0
+        coef['g'] = 2*self.x0
+        coef['h'] = 2*self.y0
+        coef['j'] = -2*self.r2*self.z0
+        coef['k'] = self.r2*self.z0**2 - self.x0**2 - self.y0**2
 
         return coef
 
@@ -692,6 +905,12 @@ class Quadric(QuadricBase, Surface):
 
         return coef
 
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+
+        return self.get_coefficients
+
     def __str__(self):
         return self.print_surface()
 
@@ -726,6 +945,24 @@ class XYZQuadric(XYZQuadricBase, Surface):
         coef['x'] = self.x
         coef['y'] = self.y
         coef['z'] = self.z
+
+        return coef
+
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        coef = OrderedDict()
+        coef['a'] = self.a
+        coef['b'] = self.b
+        coef['c'] = self.c
+        coef['d'] = self.d
+        coef['e'] = self.e
+        coef['f'] = self.f
+        coef['g'] = 2*(self.d - self.a*self.x)
+        coef['h'] = 2*(self.e - self.b*self.y)
+        coef['j'] = 2*(self.f - self.c*self.z)
+        coef['k'] = (self.a*self.x**2 + self.b*self.y**2 + self.c*self.z**2 
+                    - 2*(self.d*self.x + self.e*self.y + self.f*self.z + self.g))
 
         return coef
 
@@ -828,6 +1065,32 @@ class PPoints(PPointsBase, Surface):
     def get_coefficients(self):
         coef = OrderedDict()
         coef['points'] = self.points
+
+        return coef
+
+    def get_base_coefficients(self):
+        """Returns coefficients for general quadric (GQ). Used for transformations.
+        """
+        points = self.points
+        p1 = np.array([points[0].x, points[0].y, points[0].z])
+        p2 = np.array([points[1].x, points[1].y, points[1].z])
+        p3 = np.array([points[2].x, points[2].y, points[2].z])
+        v1 = p3 - p1
+        v2 = p2 - p1
+        cp = np.cross(v1, v2)
+        a, b, c = cp
+        d = np.dot(cp, p3)
+        coef = OrderedDict()
+        coef['a'] = 0
+        coef['b'] = 0
+        coef['c'] = 0
+        coef['d'] = 0
+        coef['e'] = 0
+        coef['f'] = 0
+        coef['g'] = a
+        coef['h'] = b
+        coef['j'] = c
+        coef['k'] = -d
 
         return coef
 

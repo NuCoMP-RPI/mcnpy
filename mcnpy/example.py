@@ -399,6 +399,7 @@ class RCF():
             Nuclide(name='cr52', fraction=0.12806),
             Nuclide(name='ni58', fraction=0.06403),
             Nuclide(name='mn55', fraction=0.01348)]
+        # ~.84 SS
         m_bottom_sup_plate = [Nuclide(name='fe56', fraction=0.5838), 
             Nuclide(name='cr52', fraction=0.1596),
             Nuclide(name='ni58', fraction=0.0798),
@@ -436,7 +437,9 @@ class RCF():
             Nuclide(name='Ar', fraction=0.012827, unit='-')]
         m_abs = [Nuclide(name='B10', fraction=0.11944),
             Nuclide(name='fe56', fraction=0.88056)]
-        # Need to update this for when the brake isn't fully submerged.
+        #TODO: Need to update this for when the brake isn't fully submerged
+        # or there is something besides water present.
+        # Homog. 300cm3 steel 134cm3 water 
         m_brake = [Nuclide(name='fe56', fraction=0.45856),
             Nuclide(name='cr52', fraction=0.12536),
             Nuclide(name='ni58', fraction=0.06268),
@@ -570,10 +573,12 @@ class RCF():
             c_rod_water = mp.Cell(name=205, material=m1, density=density_mod,  comment='Control Rod - Channel Water',
             region=-channel & -fill_height & ~c_brake & ~c_rod_clad 
             & ~c_abs1 & ~c_abs2 & ~c_follower)
+            c_rod_water.transformation = tr1
             control_rod.append(c_rod_water)
         c_rod_air = mp.Cell(name=206, material=m13, density=0.001205, comment='Control Rod - Channel Air',
             region=-channel & +fill_height & ~c_brake & ~c_abs1 & ~c_abs2 
             & ~c_rod_clad & ~c_follower)
+        c_rod_air.transformation = tr1
         control_rod.append(c_rod_air)
         # Define Universe for a Control Rod.
         u_control_rod = mp.UniverseList(name=66, cells=control_rod)

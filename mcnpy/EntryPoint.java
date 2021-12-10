@@ -17,6 +17,7 @@ import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.testing.validation.ValidationTestHelper;
 import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.eclipse.emf.ecore.util.EcoreUtil.EqualityHelper;
+//import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 
 import gov.lanl.mcnp.McnpStandaloneSetup;
 import gov.lanl.mcnp.mcnp.*;
@@ -71,8 +72,11 @@ public class EntryPoint {
             Injector injector = new McnpStandaloneSetup().createInjectorAndDoEMFRegistration();
             injector.injectMembers(this);
             ResourceSet resourceSet = injector.<ResourceSet>getInstance(ResourceSet.class);
+            //resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("inp", new ResourceFactoryImpl());
             URI uri = URI.createURI(file);
+            //System.out.println("Before Resource Creation\n");
             Resource xtextResource = resourceSet.getResource(uri, true);
+            //System.out.println("After Resource Creation\n");
             EcoreUtil.resolveAll(xtextResource);
 
             Deck DECK = (Deck) (xtextResource.getContents().get(0));

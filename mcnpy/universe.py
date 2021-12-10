@@ -1,9 +1,11 @@
-from mcnpy import UniverseBase
+from mcnpy.wrap import wrappers, overrides
+#from mcnpy import UniverseBase
+globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
 class UniverseList():
     """`Universe` containing a list of `Cell` objects. Handles assigning `Universe` IDs to each MCNP `Cell`.
     """
-    def __init__(self, name, cells, sign=None):
+    def __init__(self, name, cells=None, sign=None):
         
         # self._e_object exists because the universe keyword on each cell
         # creates a separate referenceable object. Using self._e_object gives
@@ -24,8 +26,8 @@ class UniverseList():
                 self.add(cells)
 
     def apply_to_cell(self, cell):
-        _universe = UniverseBase()
-        _universe.name = self.name
+        _universe = Universe(name=self.name)
+        #_universe.name = self.name
         if self.sign is not None:
             _universe.sign = self.sign
         cell.universe = _universe
@@ -60,4 +62,18 @@ class UniverseList():
 
     def add_only(self, cell):
         self.cells[cell.name] = cell
+
+class Universe(UniverseBase):
+    def _init(self, name):
+        self.name = name
         
+    def __str__(self):
+        return 'U' + self.name
+
+    def __repr__(self):
+        return 'U' + self.name
+
+for name, wrapper in overrides.items():
+    override = globals().get(name, None)
+    if override is not None:
+        overrides[name] = override

@@ -1,5 +1,7 @@
 from mcnpy.wrap import wrappers, overrides
 from mcnpy.region import Complement
+from mcnpy.lattice import Lattice
+import numpy as np
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -14,6 +16,21 @@ class Cell(CellBase):
         self.density = density
         #self.density_unit = density_unit
         self.comment = comment
+
+    def get_lattice(self):
+        """Returns a `Lattice` object.
+        """
+        fill = self.fill
+        lattice = Lattice(i=fill.i, j=fill.j, k=fill.k, type=self.lattice)
+        lat = np.array(fill.lattice)
+        dims = []
+        dims.append(fill.i[1]-fill.i[0]+1)
+        dims.append(fill.j[1]-fill.j[0]+1)
+        dims.append(fill.k[1]-fill.k[0]+1)
+        lat = lat.reshape(dims[2], dims[1], dims[0])
+        lattice.lattice = lat
+
+        return lattice
         
 
     def __invert__(self):
@@ -24,7 +41,7 @@ class Cell(CellBase):
             string += '{: <16}=\t{}\n'.format('\tName', self.name)
             string += '{: <16}=\t{}\n'.format('\tComment', self.comment)
             string += '{: <16}=\t{}\n'.format('\tRegion', self.region)
-            if (self.material != 0):
+            if (self.material != 0 and self.material is not None):
                 string += '{: <16}=\t{}\n'.format('\tMaterial', self.material.name)
             else:
                 string += '{: <16}=\t{}\n'.format('\tMaterial', self.material)

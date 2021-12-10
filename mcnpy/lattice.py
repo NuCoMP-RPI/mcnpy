@@ -18,9 +18,9 @@ class Lattice():
         self.lattice = lattice
         self.universes = universes
         
-        if (type == 'REC' or type == 'RECTANGULAR' or str(type) == '1'):
+        if (type.upper() == 'REC' or type.upper() == 'RECTANGULAR' or str(type) == '1'):
             self.type = 'REC'
-        elif (type == 'HEX' or type == 'HEXAGONAL' or str(type) == '2'):
+        elif (type.upper() == 'HEX' or type.upper() == 'HEXAGONAL' or str(type) == '2'):
             self.type = 'HEX'
         else:
             self.type = type + ' (INVALID!)'
@@ -42,6 +42,6 @@ class Lattice():
     def __repr__(self):
             string = 'Lattice\n'
             string += '{: <16}=\t{}\n'.format('\tType', self.type)
-            string += '{: <16}=\t{}\n'.format('\tUniverses', '\n' + np.array2string(self.lat, separator=' '))
+            string += '{: <16}=\t{}\n'.format('\tUniverses', '\n' + np.array2string(self.lattice, separator=' '))
 
             return string

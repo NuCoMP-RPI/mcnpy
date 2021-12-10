@@ -92,7 +92,7 @@ def formatter(deck, title=None):
     Some ad-hoc corrections are made. Will address this later.
     """
     line_limit = 120
-    # +/- int, a colon, and anothe +/- int
+    # +/- int, a colon, and another +/- int
     p_lat = re.compile('-?\d+:-?\d+')
     # A 4-6 digit ZAID, WS, a +/- number with optional exponents
     p_mat = re.compile('(\d\d\d\d\d?\d?)(\.\d\d\D?)?(\W+)((\+|-)?\d*\.?\d+(e(\+|-)?\d+\.?\d*)?)', re.IGNORECASE)
@@ -116,6 +116,10 @@ def formatter(deck, title=None):
     p_sb = re.compile('^sb\s+\d+', re.IGNORECASE)
     p_ds = re.compile('^ds\s+\d+', re.IGNORECASE)
     p_dist = re.compile('\sd\s\d+', re.IGNORECASE)
+    # TODO: Work out why the weird formatting on IMP keywords occurs.
+    # Probably need to list out the possible particles.
+    #p_imp1 = re.compile('imp\s+\:\s+*{1}', re.IGNORECASE)
+    #p_imp2 = re.compile('imp\:*{1}', re.IGNORECASE)
 
     # List of characters that should be un-spaced or otherwise changed at every occurance.
     old_char = []
