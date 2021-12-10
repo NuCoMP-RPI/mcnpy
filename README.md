@@ -7,12 +7,12 @@ Newer version of `mcnpy` with dynamic wrapping
 
 # How to Use
 Import `mcnpy` as a Python package. The Java gateway will be run automatically.
-- See 
+- See `mcnpy/example.py` for an example class using the RCF.
 
 # Recompiling `EntryPoint.jar`
 This should be done after:
 - Adding new `.jar` files to `/mcnpy/lib`
-- Editing /mcnpy/EntryPoint.java`
+- Editing `/mcnpy/EntryPoint.java`
 
 To recompile:
 - Run `/mcnpy/compile.sh`
