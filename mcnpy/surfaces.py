@@ -470,11 +470,6 @@ class Plane(PlaneBase, Surface):
     def __str__(self):
         return self.print_surface()
 
-    # Experimental Rotation and Translation functions.
-    def apply_transformation(self, tr):
-        """Apply a TR card to the surface and return the transformed surface.
-        """
-
 class XPlane(XPlaneBase, Surface):
     """A plane defined by x - x0 = 0.
     """
@@ -616,7 +611,7 @@ class XCylinder(XCylinderBase, Surface):
         coef['g'] = 0
         coef['h'] = -2*self.y0
         coef['j'] = -2*self.z0
-        coef['k'] = -self.r**2 - self.y0**2 - self.z0**2
+        coef['k'] = -self.r**2 + self.y0**2 + self.z0**2
 
         return coef
 
@@ -656,7 +651,7 @@ class YCylinder(YCylinderBase, Surface):
         coef['g'] = -2*self.x0
         coef['h'] = 0
         coef['j'] = -2*self.z0
-        coef['k'] = -self.r**2 - self.x0**2 - self.z0**2
+        coef['k'] = -self.r**2 + self.x0**2 + self.z0**2
 
         return coef
 
@@ -696,7 +691,7 @@ class ZCylinder(ZCylinderBase, Surface):
         coef['g'] = -2*self.x0
         coef['h'] = -2*self.y0
         coef['j'] = 0
-        coef['k'] = -self.r**2 - self.x0**2 - self.y0**2
+        coef['k'] = -self.r**2 + self.x0**2 + self.y0**2
 
         return coef    
 
@@ -962,7 +957,7 @@ class XYZQuadric(XYZQuadricBase, Surface):
         coef['h'] = 2*(self.e - self.b*self.y)
         coef['j'] = 2*(self.f - self.c*self.z)
         coef['k'] = (self.a*self.x**2 + self.b*self.y**2 + self.c*self.z**2 
-                    - 2*(self.d*self.x + self.e*self.y + self.f*self.z + self.g))
+                    - 2*(self.d*self.x + self.e*self.y + self.f*self.z) + self.g)
 
         return coef
 
