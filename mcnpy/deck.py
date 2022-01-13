@@ -29,7 +29,7 @@ class Surfaces(SurfacesBase):
         self.surfaces = surfaces
 
 class Data(DataBase):
-    """My custom cells class."""
+    """My custom data class."""
 
     def _init(self, materials, settings):
         self.materials = materials

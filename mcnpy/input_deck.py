@@ -6,7 +6,7 @@ from mcnpy.universe import UniverseList
 from mcnpy import TransformationBase
 from mcnpy.deck import Deck
 from mcnpy.gateway import gateway, is_instance_of
-from mcnpy.deck_formatter import formatter
+from mcnpy.deck_formatter import formatter, preprocessor
 
 class InputDeck():
     """An object containing dicts for cells, surfaces, and materials. All other data cards are stored as a list."""
@@ -17,6 +17,8 @@ class InputDeck():
         self.transformations = transformations
         self.materials = materials
         self.universes = universes
+        self.deck = None
+        self.serialized = False
 
         if self.cells is None:
             self.cells = {}
@@ -31,11 +33,14 @@ class InputDeck():
         if self.universes is None:
             self.universes = {}
     
-    def import_from_file(self, filename='inp.mcnp', renumber=False):
+    def import_from_file(self, filename='inp.mcnp', renumber=False, preprocess=False):
         """For reading a deck from a file.
         """
         try:
+            if preprocess is True:
+                filename = preprocessor(filename)
             inp = gateway.loadFile(filename)
+            self.deck = inp
         except:
             raise Exception('Error importing MCNP Deck from file "' + filename + '"')
         cells = inp.cells.cells
@@ -80,6 +85,18 @@ class InputDeck():
             #self.materials.append(materials[i])
             self.materials[materials[i].name] = materials[i]
 
+    def direct_export(self, title=None):
+        """For serializing the original deck. Will preserve comments and most user formatting.
+        Line comments may conflict with additions to an existing card. Only call this when your
+        modifications are complete.
+        """
+        if self.serialized is False:
+            self.serialized = True
+            deck_string = gateway.printDeck(self.deck)
+            return deck_string 
+        else:
+            message = 'The original deck has already been serialized. Use `.export()` instead or restart your script.'
+            return message
 
     def export(self, filename='inp.mcnp', title=None, renumber=False):
         """For exporting to a textual MCNP input file.
@@ -182,6 +199,8 @@ class InputDeck():
     def add(self, card):
         if isinstance(card, Cell):
             self.cells[card.name] = card
+            if self.serialized is False:
+                self.deck.cells.cells.addUnique(self.cells[card.name]._e_object)
             """if card.universe is not None:
                 u_id = card.universe.name
                 if u_id in self.universes is False:
@@ -193,26 +212,44 @@ class InputDeck():
             self.get_universe(card)
         elif isinstance(card, Surface):
             self.surfaces[card.name] = card
+            if self.serialized is False:
+                self.deck.surfaces.surfaces.addUnique(self.surfaces[card.name]._e_object)
         elif isinstance(card, Material):
             self.materials[card.name] = card
+            if self.serialized is False:
+                self.deck.data.materials.addUnique(self.materials[card.name]._e_object)
         elif isinstance(card, TransformationBase):
             self.transformations[card.name] = card
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.settings[card.name]._e_object)
         else:
             self.settings.append(card)
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.settings[-1]._e_object)
 
     def remove(self, card):
         if isinstance(card, Cell):
             if card.universe is not None:
                 self.universes[card.universe.name].remove(card)
             del self.cells[card.name]
+            if self.serialized is False:
+                self.deck.cells.cells.remove(card)
         elif isinstance(card, Surface):
             del self.surfaces[card.name]
+            if self.serialized is False:
+                self.deck.surfaces.surfaces.remove(card)
         elif isinstance(card, Material):
             del self.materials[card.name]
+            if self.serialized is False:
+                self.deck.data.materials.remove(card)
         elif isinstance(card, TransformationBase):
             del self.transformations[card.name]
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
         else:
             self.settings.remove(card)
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
 
     def add_all(self, cards):
         for i in range(len(cards)):

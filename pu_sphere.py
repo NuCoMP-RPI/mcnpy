@@ -44,10 +44,10 @@ def make_deck(r:float):
 
     # Kcode
     kcode = mp.CriticalitySourceBase()
-    kcode.histories = 1e5
+    kcode.histories = 1e3
     kcode.keff_guess = 1.0
     kcode.skip_cycles = 10
-    kcode.cycles = 1210
+    kcode.cycles = 210
     ksrc = mp.CriticalitySourcePointsBase()
     src_points = [mp.Point(0,0,0)]
     ksrc.points = src_points
@@ -122,13 +122,17 @@ def _search_keff(guess, target, make_deck, print_iterations,
     """
 
     # Build the model
+    print('Building')
     filename = 'optimization/pu_sphere.mcnp'
     deck = open(filename, 'w')
     deck.write(make_deck(float(guess)))
     deck.close()
 
     # Run the model and obtain keff
+    print('Running')
+    start = time.time()
     run_mcnp(filename)
+    run_time = (time.time()-start) / 60
     keff = get_keff(filename + 'm')
 
     # Record the history
@@ -137,8 +141,8 @@ def _search_keff(guess, target, make_deck, print_iterations,
 
     if print_iterations:
         text = 'Iteration: {}; Guess of {:.5e} produced a keff of ' + \
-            '{:1.5f} +/- {:1.5f}'
-        print(text.format(len(guesses), guess, keff[0], keff[1]))
+            '{:1.5f} +/- {:1.5f} in {:1.2f} minutes'
+        print(text.format(len(guesses), guess, keff[0], keff[1], run_time))
 
     return keff[0] - target
 
@@ -196,7 +200,7 @@ def search_for_keff(make_deck, initial_guess=None, target=1.0,
 
 
 if __name__ == '__main__':
-    import sys
+    import sys, time
     import scipy.optimize as sopt
     import mcnpy as mp
     from mcnpy import MaterialNuclide as Nuclide
@@ -206,4 +210,12 @@ if __name__ == '__main__':
 
     #crit_radius, guesses, keffs = search_for_keff(make_deck, initial_guess=float(sys.argv[1]), tol=float(sys.argv[2]), print_iterations=True)
     crit_radius, guesses, keffs = search_for_keff(make_deck, bracket=[float(sys.argv[1]), float(sys.argv[2])], tol=float(sys.argv[3]), print_iterations=True, bracketed_method='brentq')
+
+    output = open('optimization/crit_search.txt', 'w')
+    text = 'CRITICAL RADIUS: ' + str(crit_radius) + '\n'
+    for i in range(len(keffs)):
+        text = text + ('Iteration: ' + str(i+1) + '; Guess of ' + str(guesses[i]) 
+        + ' produced a keff of ' + str(keffs[i][0]) + '+/-' + str(keffs[i][1]) + '\n')
+    output.write(text)
+    output.close()
 
