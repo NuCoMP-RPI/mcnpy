@@ -18,7 +18,7 @@ class InputDeck():
         self.materials = materials
         self.universes = universes
         self.deck = None
-        self.serialized = False
+        self.serialized = True
 
         if self.cells is None:
             self.cells = {}
@@ -36,6 +36,7 @@ class InputDeck():
     def import_from_file(self, filename='inp.mcnp', renumber=False, preprocess=False):
         """For reading a deck from a file.
         """
+        self.serialized = False
         try:
             if preprocess is True:
                 filename = preprocessor(filename)

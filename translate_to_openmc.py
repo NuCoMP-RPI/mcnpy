@@ -245,7 +245,7 @@ def make_material(material, id:str):
         if str(nuclide.unit) == '-':
             unit = 'wo'
         # No C13 is present in the nuclear data library I downloaded.
-        # This causes an error when using natural carbon. Use C0 insterad.
+        # This causes an error when using natural carbon. Use C0 instead.
         if isotope == 'C0':
             openmc_material.add_nuclide(isotope, fraction, unit)
         elif isotope[-1] == '0' and isotope[-2].isdigit() is False:

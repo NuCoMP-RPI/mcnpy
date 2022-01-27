@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.xtext.resource.SaveOptions;
 import org.eclipse.xtext.serializer.ISerializer;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.testing.validation.ValidationTestHelper;
@@ -52,7 +53,8 @@ public class EntryPoint {
 
     public String printDeck(Deck DECK)
     {
-        String serializedDeck = this.serializer.serialize(DECK);
+        //String serializedDeck = this.serializer.serialize(DECK);
+        String serializedDeck = this.serializer.serialize(DECK, SaveOptions.newBuilder().format().getOptions());
 
         return(serializedDeck);
     }
