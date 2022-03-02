@@ -8,14 +8,27 @@ globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 class Cell(CellBase):
     """My custom cell class."""
 
-    def _init(self, name, region, density=0.0, material=None, universe=None, comment=None):
+    def _init(self, name, region, density=0.0, material=None, universe=None, comment=None, **kwargs):
         self.name = name
         self.universe = universe
         self.material = material
         self.region = region
-        self.density = density
+        self.density = abs(density)
+        if density < 0:
+            self.density_unit = '-'
         #self.density_unit = density_unit
         self.comment = comment
+        for k in kwargs:
+            if k.lower() == 'importances':
+                self.set_importances(kwargs[k])
+            elif k.lower() == 'fill':
+                _fill = CellFill()
+                if isinstance(kwargs[k], Lattice):
+                    _fill.lattice_fill(kwargs[k], self)
+                else:
+                    _fill.universe_fill(kwargs[k], self)
+            else:
+                setattr(self, k.lower(), kwargs[k])
 
     def get_lattice(self):
         """Returns a `Lattice` object.
@@ -31,6 +44,23 @@ class Cell(CellBase):
         lattice.lattice = lat
 
         return lattice
+
+    def get_importances(self):
+        imp = self.importances
+        importances = {}
+        for i in imp:
+            importances[i.importance] = i.particles
+        
+        return importances
+
+    def set_importances(self, importances:dict):
+        """`importances` is a `dict` where the `cell importances` are keys and `lists of particles` are values.
+        Example: `{1.0 : ['n', 'p']}`
+        """
+        imp = []
+        for i in importances:
+            imp.append(CellImportance(i, importances[i]))
+        self.importances = imp
         
 
     def __invert__(self):
@@ -53,6 +83,22 @@ class Cell(CellBase):
 
     def __repr__(self):
         return '(Cell ' + self.name + ')'
+
+#TODO: Would be nice if particles were automatically added to mode from here.
+class CellImportance(CellImportanceBase):
+    """
+    """
+    def _init(self, importance, particles):
+        self.importance = importance
+        self.particles = particles
+
+    def __str__(self):
+        string = 'IMP=' + str(self.importance) + ' for ' + str(self.particles)
+        return string
+
+    def __repr__(self) -> str:
+        return str(self)
+
 
 class CellFill(CellFillBase):
     """Custom CellFill class.

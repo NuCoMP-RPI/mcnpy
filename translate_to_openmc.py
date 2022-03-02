@@ -8,7 +8,14 @@ import numpy as np
 import re
 from mcnpy import InputDeck
 from mcnpy.universe import UniverseBase
-from mcnpy.surfaces import Plane, XPlane, YPlane, ZPlane, XCylinder, YCylinder, ZCylinder, XCone, YCone, ZCone, Quadric, XYZQuadric, PPoints, Sphere # , XTorus, YTorus, ZTorus, XPoints, YPoints, ZPoints, 
+from mcnpy.surfaces import Sphere
+from mcnpy.surfaces import Plane, XPlane, YPlane, ZPlane
+from mcnpy.surfaces import XCylinder, YCylinder, ZCylinder 
+from mcnpy.surfaces import XCone, YCone, ZCone
+from mcnpy.surfaces import Quadric, XYZQuadric 
+from mcnpy.surfaces import PPoints, Sphere , XTorus, YTorus, ZTorus
+from mcnpy.surfaces import PPoints#, XPoints, YPoints, ZPoints
+from mcnpy.surfaces import XTorus, YTorus, ZTorus
 
 DEG_RAD = 180. / math.pi
 RAD_DEG = 1 / DEG_RAD
@@ -48,7 +55,17 @@ def decompose_transformation(transform, angle='COSINES'):
 
     return (vector, rot_matrix)
 
-        
+def plane_distance(p1, p2):
+    """Distance between parallel planes.
+    """
+    # get_base_coefficients makes it agnostic to
+    # XPlane, YPlane, Plane, or PointsPlane
+    a = p1.get_base_coefficients()
+    b = p2.get_base_coefficients()
+    dist = abs(a['k'] - b['k']) / (a['g']**2 + a['h']**2 + a['j']**2)**0.5
+
+    return dist
+
 
 def decompose(deck):
     """Decompose cell complements and macrobodies.
@@ -89,6 +106,8 @@ def boundary(surf):
     bound = str(surf.boundary_type)
     if bound == '*' or bound.upper() == 'REFLECTIVE':
         return 'reflective'
+    elif bound == '+' or bound.upper() == 'WHITE':
+        return 'white'
     else:
         return 'transmission'
     
@@ -216,6 +235,24 @@ def make_zcone(surf:ZCone):
         print('This ZCone is up sheet creek!', str(surf.sheet.side))
     return openmc_surf 
 
+def make_xtorus(surf:XTorus):
+    """
+    """
+    openmc_surf = openmc.XTorus(x0=surf.x0, y0=surf.y0, z0=surf.z0, a=surf.a, b=surf.b, c=surf.c, boundary_type=boundary(surf), name=surf.name)
+    return openmc_surf
+
+def make_ytorus(surf:YTorus):
+    """
+    """
+    openmc_surf = openmc.YTorus(x0=surf.x0, y0=surf.y0, z0=surf.z0, a=surf.a, b=surf.b, c=surf.c, boundary_type=boundary(surf), name=surf.name)
+    return openmc_surf
+
+def make_ztorus(surf:ZTorus):
+    """
+    """
+    openmc_surf = openmc.ZTorus(x0=surf.x0, y0=surf.y0, z0=surf.z0, a=surf.a, b=surf.b, c=surf.c, boundary_type=boundary(surf), name=surf.name)
+    return openmc_surf
+
 """def make_cell(cell, openmc_surfaces):
     openmc_cell = openmc.Cell(int(cell.name))
     openmc_cell.region = openmc.Region.from_expression(str(cell.region), openmc_surfaces)
@@ -313,8 +350,14 @@ def mcnp_to_openmc(deck:InputDeck):
             openmc_surfaces[int(k)] = make_ycone(surf)
         elif isinstance(surf, ZCone):
             openmc_surfaces[int(k)] = make_zcone(surf)
+        elif isinstance(surf, XTorus):
+            openmc_surfaces[int(k)] = make_xtorus(surf)
+        elif isinstance(surf, YTorus):
+            openmc_surfaces[int(k)] = make_ytorus(surf)
+        elif isinstance(surf, YTorus):
+            openmc_surfaces[int(k)] = make_ztorus(surf)
         #TODO: Add in the rest of the conversions.
-        #TODO: This includes, Torii and X, Y, Z point surfaces.
+        #TODO: This includes X, Y, Z point surfaces.
         #TODO: Cones might need to become quadrics for rotations.
         else:
             print('SURFACE ERROR!\n', surf)
@@ -406,8 +449,9 @@ def mcnp_to_openmc(deck:InputDeck):
                 u_list = []
                 # Get lattice array of MCNP universes.
                 lattice = cell.get_lattice()
-                if lattice.type == '1' or lattice.type.upper() == 'REC':
-                    dim = ((1+lattice.k[1]-lattice.k[0]), (1+lattice.j[1]-lattice.j[0]), (1+lattice.i[1]-lattice.i[0]))
+                # Dimensions in k, j, i order
+                dim = lattice.dims[::-1] #((1+lattice.k[1]-lattice.k[0]), (1+lattice.j[1]-lattice.j[0]), (1+lattice.i[1]-lattice.i[0]))
+                if str(lattice.type) == '1' or str(lattice.type).upper() == 'REC':
                     openmc_lattice = np.empty(dim).astype(openmc.Universe)
                     for z in range(dim[0]):
                         for y in range(dim[1]):
@@ -424,8 +468,42 @@ def mcnp_to_openmc(deck:InputDeck):
                     fill = openmc.RectLattice()
                     fill.universes = openmc_lattice
                 #TODO: Work on HEX lattices
+                #TODO: Find out if OpenMC supports partial rings
                 else:
+                    # List of rings of the lattice
+                    rings = lattice.rings()
+                    openmc_rings = []
+                    for layer in rings[0]:
+                        openmc_rings.append([])
+                        for ring in layer:
+                            openmc_ring = []
+                            for r in ring:
+                                u_id = int(r.name)
+                                if u_id not in openmc_universes.keys():
+                                    openmc_universes[u_id] = openmc.Universe(universe_id=u_id)
+                                openmc_ring.append(openmc_universes[u_id])
+                                if openmc_ring[-1] not in u_list:
+                                    u_list.append(openmc_ring[-1])
+                            openmc_rings[-1].append(openmc_ring)
+                    #TODO: get the background fill
+                    # Might be redundant since we need a fully specified MCNP lattice
+                    # which means including elements outside the rings already.
+                    lat_u.append(u_list)
                     fill = openmc.HexLattice()
+                    fill.universes = openmc_rings
+                    #fill.num_rings = rings[1]
+                    #fill.num_axial = dim[0]
+                    # Get the pitch.
+                    # Since we assume equal X and Y pitch, and because the 1st and 2nd surfaces
+                    # must be parallel, we just need the distance for the first plane.
+                    #lat_surf = next(iter(cell.region.get_surfaces().items()))[1]
+                    #fill.pitch = [abs(next(iter(cell.region.get_surfaces().items()))[1].d)]
+                    lat_surfs = list(cell.region.get_surfaces().items())
+                    #print(lat_surfs)
+                    fill.pitch = [plane_distance(lat_surfs[0][1], lat_surfs[1][1])]
+                    fill.orientation = 'x'
+
+                
 
                 # Store universe ID of cells containing a lattice.
                 # Used later to condense cells/universes.
@@ -464,48 +542,64 @@ def mcnp_to_openmc(deck:InputDeck):
         # Go through cells and change the lattice universe fill to lattice object.
         for j in openmc_cells:
             if openmc_cells[j].fill == openmc_universes[k]:
-                # Use the region filled by the lattice to find the lower left corner of the lattice.
-                # Assuming the cell is rectangular (6 planes)
-                xlim = []
-                ylim = []
-                zlim = []
-                surfs = openmc_cells[j].region.get_surfaces()
-                for s in surfs:
-                    if isinstance(surfs[s], openmc.XPlane):
-                        xlim.append(surfs[s].x0)
-                    elif isinstance(surfs[s], openmc.YPlane):
-                        ylim.append(surfs[s].y0)
-                    elif isinstance(surfs[s], openmc.ZPlane):
-                        zlim.append(surfs[s].z0)
-                    elif isinstance(surfs[s], openmc.Plane):
-                        #TODO: Consider off axis planes
-                        if surfs[s].a == 1 and surfs[s].b == 0 and surfs[s].c == 0:
-                            xlim.append(surfs[s].d)
-                        elif surfs[s].a == 0 and surfs[s].b == 1 and surfs[s].c == 0:
-                            ylim.append(surfs[s].d)
-                        elif surfs[s].a == 0 and surfs[s].b == 0 and surfs[s].c == 1:
-                            zlim.append(surfs[s].d)
+                if isinstance(lat_fill, openmc.RectLattice):
+                    #TODO: What if the boundary is not a rectangle?
+                    # Use the region filled by the lattice to find the lower left corner of the lattice.
+                    # Assuming the cell is rectangular (6 planes)
+                    xlim = []
+                    ylim = []
+                    zlim = []
+                    surfs = openmc_cells[j].region.get_surfaces()
+                    for s in surfs:
+                        if isinstance(surfs[s], openmc.XPlane):
+                            xlim.append(surfs[s].x0)
+                        elif isinstance(surfs[s], openmc.YPlane):
+                            ylim.append(surfs[s].y0)
+                        elif isinstance(surfs[s], openmc.ZPlane):
+                            zlim.append(surfs[s].z0)
+                        elif isinstance(surfs[s], openmc.Plane):
+                            #TODO: Consider off axis planes
+                            if surfs[s].a == 1 and surfs[s].b == 0 and surfs[s].c == 0:
+                                xlim.append(surfs[s].d)
+                            elif surfs[s].a == 0 and surfs[s].b == 1 and surfs[s].c == 0:
+                                ylim.append(surfs[s].d)
+                            elif surfs[s].a == 0 and surfs[s].b == 0 and surfs[s].c == 1:
+                                zlim.append(surfs[s].d)
+                            else:
+                                print("Lattice bounding box off-axis")
                         else:
-                            print("Lattice bounding box off-axis")
-                    else:
-                        print("LATTICE ERROR!")
-                lat_fill.lower_left = [min(xlim), min(ylim), min(zlim)]
+                            print("LATTICE ERROR!")
+                    lat_fill.lower_left = [min(xlim), min(ylim), min(zlim)]
 
-                # Calculate the pitch from the lattice dimensions and container cell limits.
-                # Note that the lattice dims are in z,y,x order.
-                pitch = []
-                pitch.append((max(xlim)-min(xlim)) / dims[2])
-                pitch.append((max(ylim)-min(ylim)) / dims[1])
-                pitch.append((max(zlim)-min(zlim)) / dims[0])
-                lat_fill.pitch = pitch
+                    # Calculate the pitch from the lattice dimensions and container cell limits.
+                    # Note that the lattice dims are in z,y,x order.
+                    pitch = []
+                    pitch.append((max(xlim)-min(xlim)) / dims[2])
+                    pitch.append((max(ylim)-min(ylim)) / dims[1])
+                    pitch.append((max(zlim)-min(zlim)) / dims[0])
+                    lat_fill.pitch = pitch
 
-                # Find transformation to center the lattice element at 0,0,0
-                dispX = 0 - (max(xlim) - (0.5*dims[2]*pitch[0]))
-                dispY = 0 - (max(ylim) - (0.5*dims[1]*pitch[1]))
-                dispZ = 0 - (max(zlim) - (0.5*dims[0]*pitch[2]))
-                # Currently assume no rotation.
-                lat_disp.append( [dispX, dispY, dispZ])
-                
+                    # Find transformation to center the lattice element at 0,0,0
+                    dispX = 0 - (max(xlim) - (0.5*dims[2]*pitch[0]))
+                    dispY = 0 - (max(ylim) - (0.5*dims[1]*pitch[1]))
+                    dispZ = 0 - (max(zlim) - (0.5*dims[0]*pitch[2]))
+                    # Currently assume no rotation.
+                    lat_disp.append([dispX, dispY, dispZ])
+                    
+                    # Fill OpenMC cell with lattice.
+                    #openmc_cells[j].fill = lat_fill
+                #TODO: HEX Lattice!
+                elif isinstance(lat_fill, openmc.HexLattice):
+                    """Need to get:
+                    2. outside universe - use universe from corner of MCNP definition
+                    3. center of lattice - get center of region on MCNP lat cell
+                    """
+                    #surfs = openmc_cells[j].region.get_surfaces()
+                    lat_fill.center = [0, 0, 0]
+                    lat_disp.append([0, 0, 0])
+
+                    print('HEX LATTICE!')
+
                 # Fill OpenMC cell with lattice.
                 openmc_cells[j].fill = lat_fill
 

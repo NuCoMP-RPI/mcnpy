@@ -304,8 +304,36 @@ def element_to_zaid(zaid):
         zaid_num = z + a
     # The converted ZAID can now be checked against the available XS.
     if (zaid_num not in list(zaids_h5.keys())):
-        print('\nZAID WARNING! User input: ' + string + ' (interpretted as ' + zaid_num + ') has no MCNP XS!')
+        print('\nZAID WARNING! User input: ' + string + ' (interpretted as ' + zaid_num + ')' 
+        + 'not found!')
     xsdir.close()
     return zaid_num
 
 #TODO: Add lib checks back in.
+def library_check(zaid, library):
+    """Checks XS libraries for a ZAID. 
+    """
+    path = os.path.dirname(getsourcefile(lambda:0))
+    xsdir = h5.File(path+'//xslist.h5', 'r')
+    lib = str(library).lower()
+    # Confirms that the ZAID exists.
+    try:
+        libs_h5 = xsdir['ZAID'][zaid]
+    except:
+        print('\nZAID WARNING! User input: ' + zaid + ' not found!')
+        return library
+
+    # Libs can just have the number and no letter, either format qualifies.
+    found = False
+    for i in range(len(libs_h5)):
+        num = libs_h5[i][:2]
+        if (bytes(lib, 'utf-8') == num or bytes(lib, 'utf-8') == libs_h5[i]):
+            found = True
+            break
+
+    if (found == False):
+        print('\nWARNING! XS file for ' + zaid + '.' + lib + ' not found!')
+        print('Please check available XS libraries!')
+        return library
+    else:
+        return library

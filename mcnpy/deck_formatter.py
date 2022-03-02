@@ -62,6 +62,8 @@ def print_lattice(line, p, line_limit, comment):
                     lattice = lattice + '\nC    k = ' + str(indicies[2]+k+1) + '\n     '
         if (len(lat) > index):
             line_end = '\n     ' + line_wrap(' '.join(lat[index+1:]), '', line_limit-5)
+            if line_end.strip() == '':
+                line_end = ''
             #line_end = line_wrap(line_end, '', line_limit)
         else:
             line_end = ''

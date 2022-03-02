@@ -3,7 +3,7 @@ from mcnpy.cells import Cell
 from mcnpy.surfaces import Surface, RectangularPrism, CircularCylinder, HexagonalPrism, Polyhedron, Wedge, EllipticalCylinder, Box, TruncatedCone, Ellipsoid
 from mcnpy.materials import Material
 from mcnpy.universe import UniverseList
-from mcnpy import TransformationBase
+from mcnpy.geometry import Transformation
 from mcnpy.deck import Deck
 from mcnpy.gateway import gateway, is_instance_of
 from mcnpy.deck_formatter import formatter, preprocessor
@@ -74,7 +74,7 @@ class InputDeck():
             #self.surfaces.append(surfaces[i])
             self.surfaces[surfaces[i].name] = surfaces[i]
         for i in range(len(settings)):
-            if isinstance(settings[i], TransformationBase):
+            if isinstance(settings[i], Transformation):
                 if renumber is True:
                     settings[i].name = str(i+1)
                 self.transformations[settings[i].name] = settings[i]
@@ -198,8 +198,17 @@ class InputDeck():
                 self.universes[u_id] = _universe
 
     def add(self, card):
+        # Ensure there are no nulls before seriaization.
+        # _defaults must be added to each class.
+        defaults = getattr(card, '_defaults', None)
+        if callable(defaults):
+            card._defaults()
         if isinstance(card, Cell):
             self.cells[card.name] = card
+            # Because I'm just used to making the density negative.
+            if card.density < 0:
+                card.density = abs(card.density)
+                card.density_unit = '-'
             if self.serialized is False:
                 self.deck.cells.cells.addUnique(self.cells[card.name]._e_object)
             """if card.universe is not None:
@@ -219,7 +228,7 @@ class InputDeck():
             self.materials[card.name] = card
             if self.serialized is False:
                 self.deck.data.materials.addUnique(self.materials[card.name]._e_object)
-        elif isinstance(card, TransformationBase):
+        elif isinstance(card, Transformation):
             self.transformations[card.name] = card
             if self.serialized is False:
                 self.deck.data.settings.addUnique(self.settings[card.name]._e_object)
@@ -243,7 +252,7 @@ class InputDeck():
             del self.materials[card.name]
             if self.serialized is False:
                 self.deck.data.materials.remove(card)
-        elif isinstance(card, TransformationBase):
+        elif isinstance(card, Transformation):
             del self.transformations[card.name]
             if self.serialized is False:
                 self.deck.data.settings.remove(card)

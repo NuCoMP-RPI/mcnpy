@@ -1146,6 +1146,77 @@ class ZPoints(ZPointsBase, Surface):
     def __str__(self):
         return self.print_surface()
 
+class XTorus(XTorusBase, Surface):
+    """X axis parallel torus
+    """
+    def _init(self, name, x0, y0, z0, a, b, c, boundary_type='VACUUM', comment=None):
+        self.name = name
+        self.x0 = x0
+        self.y0 = y0
+        self.z0 = z0
+        self.a = a
+        self.b = b
+        self.c = c
+
+    def get_coefficients(self):
+        coef = OrderedDict()
+        coef['x0'] = self.x0
+        coef['y0'] = self.y0
+        coef['z0'] = self.z0
+        coef['a'] = self.a
+        coef['b'] = self.b
+        coef['c'] = self.c
+
+    def __str__(self):
+        return self.print_surface()
+
+class YTorus(YTorusBase, Surface):
+    """Y axis parallel torus
+    """
+    def _init(self, name, x0, y0, z0, a, b, c, boundary_type='VACUUM', comment=None):
+        self.name = name
+        self.x0 = x0
+        self.y0 = y0
+        self.z0 = z0
+        self.a = a
+        self.b = b
+        self.c = c
+
+    def get_coefficients(self):
+        coef = OrderedDict()
+        coef['x0'] = self.x0
+        coef['y0'] = self.y0
+        coef['z0'] = self.z0
+        coef['a'] = self.a
+        coef['b'] = self.b
+        coef['c'] = self.c
+
+    def __str__(self):
+        return self.print_surface()
+
+class ZTorus(ZTorusBase, Surface):
+    """Z axis parallel torus
+    """
+    def _init(self, name, x0, y0, z0, a, b, c, boundary_type='VACUUM', comment=None):
+        self.name = name
+        self.x0 = x0
+        self.y0 = y0
+        self.z0 = z0
+        self.a = a
+        self.b = b
+        self.c = c
+
+    def get_coefficients(self):
+        coef = OrderedDict()
+        coef['x0'] = self.x0
+        coef['y0'] = self.y0
+        coef['z0'] = self.z0
+        coef['a'] = self.a
+        coef['b'] = self.b
+        coef['c'] = self.c
+
+    def __str__(self):
+        return self.print_surface()
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)

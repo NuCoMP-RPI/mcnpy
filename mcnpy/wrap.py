@@ -188,6 +188,28 @@ def set_e_list(setter, feature, value):
                 + str(type(value[i])) + ' is invalid for feature "'
                 + str(feature.getName()) + '"')
 
+def return_value_converter(feature, value):
+    """Some functions will return numerical values as strings. This is usually
+    because alternate options like a Jump need to be supported. We want the 
+    numbers as numbers while in Python. The exceptions to this are 'name' 
+    features and cases like libraries where leading zeros are possible."""
+    if isinstance(value, str) and feature.getName() != 'name':
+        try:
+            if float(value)%1 == 0:
+                if int(value) != 0 and value.startswith('0') is False:
+                    return int(value)
+                elif int(value) == 0 and len(value) == 1:
+                    return int(value)
+                else:
+                    return value
+            else:
+                return float(value)
+        except:
+            return value
+    else:
+        return value
+
+
 def value_converter(setter, feature, value):
     """Provides type conversions when using setters."""
     try:
@@ -208,7 +230,8 @@ def value_converter(setter, feature, value):
                 setter.eSet(feature, float(value))
             except:
                 setter.eSet(feature, str(value))
-        elif isinstance(value, float):
+        # IDs/names are always INTs
+        elif isinstance(value, float) and feature.getName() == 'name':
             # Only for round numbers.
             if value%1 == 0:
                 try:
@@ -219,6 +242,17 @@ def value_converter(setter, feature, value):
                 raise Exception('"' + str(value) + '" of type '
             + str(type(value)) + ' is invalid for feature "'
             + str(feature.getName()) + '"')
+        # For other cases where numbers are stored as strings.
+        elif isinstance(value, float):
+            try:
+                setter.eSet(feature, int(value))
+            except:
+                setter.eSet(feature, str(value))
+        elif isinstance(value, str):
+            try:
+                setter.eSet(feature, float(value))
+            except:
+                setter.eSet(feature, int(value))
         else:
                 raise Exception('"' + str(value) + '" of type '
             + str(type(value)) + ' is invalid for feature "'
@@ -307,7 +341,7 @@ def wrap_e_class(e_class, e_factory):
                 #@get_wrapped_reference(feature)
                 def getter(self):
                     #print('GETTER RETURN TYPE:', self._e_object.eGet(feature, True))
-                    return self._e_object.eGet(feature, True)
+                    return return_value_converter(feature, self._e_object.eGet(feature, True))
                 @replace_if_contained(feature)
                 #@set_wrapped_reference(feature)
                 @string_or_int_to_enum(feature)

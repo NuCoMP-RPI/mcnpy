@@ -18,6 +18,7 @@ from .input_deck import InputDeck
 from mcnpy import example
 from mcnpy import mbody_decomp
 from mcnpy import region_from_expression
+#from mcnpy import source
 #from mcnpy import material_helper
 
 def kill_gateway():
