@@ -1,3 +1,4 @@
+from abc import ABC
 from .wrap import wrappers, overrides
 from .zaid_helper import element_to_zaid, zaid_to_element
 from .basic_structures import Point
@@ -55,8 +56,11 @@ PARTICLE = {
 	'HEAVY_IONS' : '#'
 }
 
-# TODO: Figure out how to best andle jumps.
-class CriticalitySource(CriticalitySourceBase):
+class SourceSetting(ABC):
+    """
+    """
+    
+class CriticalitySource(CriticalitySourceBase, SourceSetting):
     """def _init(self, histories=None, keff_guess=None, skip_cycles=None, cylces=None, source_point_count=None, normalize_tallies=None, max_cycles=None, average_by_cycles=None):
 
         self.histories = histories
@@ -68,7 +72,7 @@ class CriticalitySource(CriticalitySourceBase):
         self.max_cycles=max_cycles
         self.average_by_cycles = average_by_cycles"""
     def _init(self, **kwargs):
-        """
+        """KCODE
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
@@ -129,8 +133,9 @@ class CriticalitySource(CriticalitySourceBase):
         
 
 #TODO: Better distribution support
-class Source(SourceBase):
-
+class Source(SourceBase, SourceSetting):
+    """SDEF
+    """
     def _init(self, **kwargs):
         for k in kwargs:
             if k.lower() == 'loc':
@@ -214,8 +219,8 @@ class Source(SourceBase):
         def __repr__(self):
             return str(self)"""
 
-class CriticalitySourcePoints(CriticalitySourcePointsBase):
-    """
+class CriticalitySourcePoints(CriticalitySourcePointsBase, SourceSetting):
+    """KSRC
     """
     def _init(self, points):
         self.points = []
@@ -255,6 +260,105 @@ class SourceParticle(SourceParticleBase):
 
     def __repr__(self):
             return str(self)
+
+class SourceInfo(SourceInfoBase, SourceSetting):
+    """SI
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class SourceProbability(SourceProbabilityBase, SourceSetting):
+    """SP
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class SourceBias(SourceBiasBase, SourceSetting):
+    """SB
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class DependentSourceDistribution(DependentSourceDistributionBase, SourceSetting):
+    """DS
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class DependentSourceDistribution(DependentSourceDistributionBase, SourceSetting):
+    """#
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class SourceComment(SourceCommentBase, SourceSetting):
+    """SC
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class SurfaceSourceWrite(SurfaceSourceWriteBase, SourceSetting):
+    """SSW
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class SurfaceSourceRead(SurfaceSourceReadBase, SourceSetting):
+    """SSR
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class CriticalityOptions(CriticalityOptionsBase, SourceSetting):
+    """KOPTS
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class EntropyMesh(EntropyMeshBase, SourceSetting):
+    """HSRC
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class Depletion(DepletionBase, SourceSetting):
+    """BURN
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
     
 
 for name, wrapper in overrides.items():

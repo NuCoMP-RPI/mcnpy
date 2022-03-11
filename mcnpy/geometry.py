@@ -1,10 +1,15 @@
 import numpy as np
+from abc import ABC
 from .wrap import wrappers, overrides
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
-class Transformation(TransformationBase):
+class GeometrySetting(ABC):
     """
+    """
+
+class Transformation(TransformationBase, GeometrySetting):
+    """TR
     """
     def _init(self, name, transformation, unit=None):
         """`transformation` must be a `Transform` or a list containing at least a displacement.
@@ -66,6 +71,131 @@ class RotMatrix(RotMatrixBase):
         if m is not None:
             self.m = m
 
+class Volumes(VolumesBase, GeometrySetting):
+    """VOL
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class Areas(AreasBase, GeometrySetting):
+    """AREA
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class Fills(FillsBase, GeometrySetting):
+    """FILL
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class StochasticGeometry(StochasticGeometryBase, GeometrySetting):
+    """URAN
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class DeterministicMaterials(DeterministicMaterialsBase, GeometrySetting):
+    """DM
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class DeterministicWeightWindowGenerator(DeterministicWeightWindowGeneratorBase, GeometrySetting):
+    """DAWWG
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class EmbeddedGeometry(EmbeddedGeometryBase, GeometrySetting):
+    """EMBED
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class EmbeddedEdit(EmbeddedEditBase, GeometrySetting):
+    """EMBEE
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class EmbeddedEditEnergyBins(EmbeddedEditEnergyBinsBase, GeometrySetting):
+    """EMBEB
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class EmbeddedEditEnergyBinMultipliers(EmbeddedEditEnergyBinMultipliersBase, GeometrySetting):
+    """EMBEM
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class EmbeddedEditTimeBins(EmbeddedEditTimeBinsBase, GeometrySetting):
+    """EMBTB
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class EmbeddedEditTimeBinMultipliers(EmbeddedEditTimeBinMultipliersBase, GeometrySetting):
+    """EMBTM
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class EmbeddedEditDoseBins(EmbeddedEditDoseBinsBase, GeometrySetting):
+    """EMBDE
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class EmbeddedEditDoseBinMultipliers(EmbeddedEditDoseBinMultipliersBase, GeometrySetting):
+    """EMBDF
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)

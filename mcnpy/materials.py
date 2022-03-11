@@ -1,12 +1,16 @@
-from typing import Iterable
-from numpy import string_
+from abc import ABC
 from .wrap import wrappers, overrides
 from .zaid_helper import element_to_zaid, zaid_to_element, library_check
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
-class Material(MaterialBase):
+class MaterialSetting(ABC):
+    """
+    """
 
+class Material(MaterialBase):
+    """
+    """
     def _init(self, name, nuclides, comment=None, **kwargs):
         self.name = name
         self.nuclides = nuclides
@@ -20,7 +24,8 @@ class Material(MaterialBase):
             nuclide.unit = unit
 
 class MaterialNuclide(MaterialNuclideBase):
-
+    """
+    """
     def _init(self, name, fraction, unit='ATOM', library=None):
         self.name = element_to_zaid(name)
         self.fraction = abs(fraction)
@@ -55,7 +60,8 @@ class MaterialNuclide(MaterialNuclideBase):
         return str(self)
 
 class Library(LibraryBase):
-
+    """
+    """
     def _init(self, library, quantity=None):
 
         if isinstance(library, str):
@@ -83,8 +89,9 @@ class Library(LibraryBase):
         else:
             return str(self.library)
 
-class Sab(SabBase):
-
+class Sab(SabBase, MaterialSetting):
+    """MT
+    """
     def _init(self, material, libraries):
         self.material = material
         self.libraries = []
@@ -97,7 +104,8 @@ class Sab(SabBase):
                 self.libraries.append(SabLibrary(lib))
 
 class SabLibrary(SabLibraryBase):
-
+    """
+    """
     def _init(self, nuclide, library=None):
         self.nuclide = nuclide
         if library is not None:
@@ -107,8 +115,10 @@ class SabLibrary(SabLibraryBase):
                 self.library = Sablib(library)
 
 class Sablib(SablibBase):
-
+    """
+    """
     def _init(self, lib):
+        #self.lib = lib
         if isinstance(lib, str) is False:
             self.lib = str(lib)
         else:
@@ -118,6 +128,95 @@ class Sablib(SablibBase):
             else:
                 self.lib = lib
 
+class NuclideSubstitution(NuclideSubstitutionBase, MaterialSetting):
+    """MX
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class PhotonuclearNuclideSelection(PhotonuclearNuclideSelectionBase, MaterialSetting):
+    """MPN
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class OnTheFlyDopplerBroadening(OnTheFlyDopplerBroadeningBase, MaterialSetting):
+    """OTFDB
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class TotalFission(TotalFissionBase, MaterialSetting):
+    """TOTNU
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class FissionTurnoff(FissionTurnoffBase, MaterialSetting):
+    """NONU
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class AtomicWeight(AtomicWeightBase, MaterialSetting):
+    """AWTAB
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class CrossSectionFile(CrossSectionFileBase, MaterialSetting):
+    """XS
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class Void(VoidBase, MaterialSetting):
+    """VOID
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class MultigroupTransport(MultigroupTransportBase, MaterialSetting):
+    """MGOPT
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class DiscreteReactionCrossSection(DiscreteReactionCrossSectionBase, MaterialSetting):
+    """DRXS
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)

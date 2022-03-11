@@ -1,8 +1,17 @@
+from abc import ABC
 from mcnpy.wrap import wrappers, overrides
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
-class Mode(ModeBase):
+class PhysicsSetting(ABC):
+    """
+    """
+
+class ParticlePhysics(ABC):
+    """
+    """
+
+class Mode(ModeBase, PhysicsSetting):
     """Set particle physics modes.
 
     PARAMETERS
@@ -19,7 +28,16 @@ class Mode(ModeBase):
     def __repr__(self):
         return str(self)
 
-class NeutronPhysics(NeutronPhysicsBase):
+class VerticalMode(VerticalModeBase, PhysicsSetting):
+    """
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class NeutronPhysics(NeutronPhysicsBase, PhysicsSetting, ParticlePhysics):
     """Neutron physics options.
     
     PARAMETERS
@@ -34,14 +52,14 @@ class NeutronPhysics(NeutronPhysicsBase):
     i_els_model : -1 or 0 (DEFAULT=0)
     """
 
-    PROPERTIES = ['max_energy',
+    """PROPERTIES = ['max_energy',
                'max_analog',
                'unresolved_resonance',
                'recoil',
                'phys_cutoff',
                'photon_prod',
                'interaction',
-               'els_scattering']
+               'els_scattering']"""
 
     """def _init(self, emax=100, emcnf=0, iunr=0, colif=0, cut=-1, 
               ngam=1, i_int_model=0, i_els_model=0):
@@ -84,7 +102,7 @@ class NeutronPhysics(NeutronPhysicsBase):
                 setattr(self, k, None)"""
 
 
-class PhotonPhysics(PhotonPhysicsBase):
+class PhotonPhysics(PhotonPhysicsBase, PhysicsSetting, ParticlePhysics):
     """Photon physics options.
     
     PARAMETERS
@@ -144,7 +162,7 @@ class PhotonPhysics(PhotonPhysicsBase):
 
         
 
-class ElectronPhysics(ElectronPhysicsBase):
+class ElectronPhysics(ElectronPhysicsBase, PhysicsSetting, ParticlePhysics):
     """Electron physics options.
     
     PARAMETERS
@@ -166,7 +184,7 @@ class ElectronPhysics(ElectronPhysicsBase):
     ckvnum : float (DEFAULT=0)
     """
 
-    PROPERTIES = ['max_energy',
+    """PROPERTIES = ['max_energy',
                   'prod_by_photons',
                   'photon_prod',
                   'brem_dist',
@@ -180,7 +198,7 @@ class ElectronPhysics(ElectronPhysicsBase):
                   'els_scattering',
                   'stopping_power',
                   'single_event_energy',
-                  'cerenkov']
+                  'cerenkov']"""
 
     """def _init(self, emax=100, ides=0, iphot=0, ibad=0, istrg=0, bnum=1,
               xnum=1, rnok=1, enum=1, numb=0, i_mcs_model=0, el_scatt='J',
@@ -233,7 +251,7 @@ class ElectronPhysics(ElectronPhysicsBase):
                 setattr(self, k, None)"""
 
 
-class ProtonPhysics(ProtonPhysicsBase):
+class ProtonPhysics(ProtonPhysicsBase, PhysicsSetting, ParticlePhysics):
     """Proton physics options.
     
     PARAMETERS
@@ -251,7 +269,7 @@ class ProtonPhysics(ProtonPhysicsBase):
     drp : float (DEFAULT=0MeV)
     """
 
-    PROPERTIES = ['max_energy',
+    """PROPERTIES = ['max_energy',
                   'max_analog',
                   'phys_cutoff',
                   'straggling',
@@ -262,7 +280,7 @@ class ProtonPhysics(ProtonPhysicsBase):
                   'stopping_power',
                   'single_event_energy',
                   'cerenkov',
-                  'delta_ray_cutoff']
+                  'delta_ray_cutoff']"""
 
     """def _init(self, emax=100, ean=0, tabl=-1, istrg=0, recl=0, 
               i_mcs_model=0, i_int_model=0, i_els_model=0, efac=0.917, ckvnum=0, 
@@ -311,7 +329,7 @@ class ProtonPhysics(ProtonPhysicsBase):
                 setattr(self, k, None)"""
 
 
-class OtherParticlePhysics(OtherParticlePhysicsBase):
+class OtherParticlePhysics(OtherParticlePhysicsBase, PhysicsSetting, ParticlePhysics):
     """Other Particle physics options.
     
     PARAMETERS
@@ -329,7 +347,7 @@ class OtherParticlePhysics(OtherParticlePhysicsBase):
     drp : float (DEFAULT=0MeV)
     """
 
-    PROPERTIES = ['max_energy',
+    """PROPERTIES = ['max_energy',
                   'straggling',
                   'muon_xrays',
                   'k_shell_photon',
@@ -338,7 +356,7 @@ class OtherParticlePhysics(OtherParticlePhysicsBase):
                   'els_scattering',
                   'stopping_power',
                   'cerenkov',
-                  'delta_ray_cutoff']
+                  'delta_ray_cutoff']"""
 
     """def _init(self, particle, emax=100, istrg=0, 
               xmunum=-1, xmugam=0.65, i_mcs_model=0, 
@@ -387,6 +405,159 @@ class OtherParticlePhysics(OtherParticlePhysicsBase):
             for k in self.PROPERTIES[entry+1:]:
                 setattr(self, k, None)"""
 
+
+class Activation(ActivationBase, PhysicsSetting):
+    """ACT
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class EnergyCutoffs(EnergyCutoffsBase, PhysicsSetting):
+    """ELPT
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class Temperatures(TemperaturesBase, PhysicsSetting):
+    """TMP
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class ThermalTimes(ThermalTimesBase, PhysicsSetting):
+    """THTME
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class ModelPhysics(ModelPhysicsBase, PhysicsSetting):
+    """MPHYS
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class Multiplicity(MultiplicityBase, PhysicsSetting):
+    """FMULT
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class Transport(TransportBase, PhysicsSetting):
+    """TROPT
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class UncollidedSecondaries(UncollidedSecondariesBase, PhysicsSetting):
+    """UNC
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class MagneticField(MagneticFieldBase, PhysicsSetting):
+    """BFLD
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class MagneticFieldAssign(MagneticFieldAssignBase, PhysicsSetting):
+    """BFLCL
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class PhysModelLCA(PhysModelLCABase, PhysicsSetting):
+    """LCA
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class PhysModelLCB(PhysModelLCBBase, PhysicsSetting):
+    """LCB
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class PhysModelLCC(PhysModelLCCBase, PhysicsSetting):
+    """LCC
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class PhysModelLEA(PhysModelLEABase, PhysicsSetting):
+    """LEA
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class PhysModelLEB(PhysModelLEBBase, PhysicsSetting):
+    """LEB
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class PhysicsCutoff(PhysicsCutoffBase, PhysicsSetting):
+    """CUT
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class CosyMap(CosyMapBase, PhysicsSetting):
+    """COSYP
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)

@@ -1,3 +1,4 @@
+from abc import ABC
 from mcnpy.wrap import wrappers, overrides
 from mcnpy.region import Complement
 from mcnpy.lattice import Lattice
@@ -6,9 +7,12 @@ import numpy as np
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
 class Cell(CellBase):
-    """My custom cell class."""
-
-    def _init(self, name, region, density=0.0, material=None, universe=None, comment=None, **kwargs):
+    """Cell class
+    """
+    def _init(self, name, region, density=0.0, material=None, universe=None, 
+              comment=None, **kwargs):
+        """Define a `Cell`.
+        """
         self.name = name
         self.universe = universe
         self.material = material
@@ -46,6 +50,8 @@ class Cell(CellBase):
         return lattice
 
     def get_importances(self):
+        """Returns cell importances.
+        """
         imp = self.importances
         importances = {}
         for i in imp:
@@ -54,7 +60,8 @@ class Cell(CellBase):
         return importances
 
     def set_importances(self, importances:dict):
-        """`importances` is a `dict` where the `cell importances` are keys and `lists of particles` are values.
+        """`importances` is a `dict` where the `cell importances` are keys and 
+        `lists of particles` are values.
         Example: `{1.0 : ['n', 'p']}`
         """
         imp = []
@@ -72,11 +79,13 @@ class Cell(CellBase):
             string += '{: <16}=\t{}\n'.format('\tComment', self.comment)
             string += '{: <16}=\t{}\n'.format('\tRegion', self.region)
             if (self.material != 0 and self.material is not None):
-                string += '{: <16}=\t{}\n'.format('\tMaterial', self.material.name)
+                string += '{: <16}=\t{}\n'.format('\tMaterial', 
+                                                  self.material.name)
             else:
                 string += '{: <16}=\t{}\n'.format('\tMaterial', self.material)
             string += '{: <16}=\t{}\n'.format('\tDensity', self.density)
-            string += '{: <16}=\t{}\n'.format('\tDensity Unit', str(self.density_unit))
+            string += '{: <16}=\t{}\n'.format('\tDensity Unit', 
+                                              str(self.density_unit))
             #string += '{: <16}=\t{}\n'.format('\tUniverse', self.universe)
 
             return string
@@ -84,9 +93,13 @@ class Cell(CellBase):
     def __repr__(self):
         return '(Cell ' + self.name + ')'
 
-#TODO: Would be nice if particles were automatically added to mode from here.
-class CellImportance(CellImportanceBase):
+class CellKeyword(ABC):
     """
+    """
+
+#TODO: Would be nice if particles were automatically added to mode from here.
+class CellImportance(CellImportanceBase, CellKeyword):
+    """IMP
     """
     def _init(self, importance, particles):
         self.importance = importance
@@ -100,10 +113,11 @@ class CellImportance(CellImportanceBase):
         return str(self)
 
 
-class CellFill(CellFillBase):
+class CellFill(CellFillBase, CellKeyword):
     """Custom CellFill class.
     """
-    def _init(self, fill, unit, lattice, transformation, transform, transformations, transforms, i, j, k):
+    def _init(self, fill, unit, lattice, transformation, transform, 
+             transformations, transforms, i, j, k):
         self.fill = fill
         self.unit = unit
         self.lattice = lattice
@@ -115,8 +129,11 @@ class CellFill(CellFillBase):
         self.j = j
         self.k = k
 
-    def universe_fill(self, universe, cell, transform=None, transformation=None):
-        """`CellFill` using a `UniverseList`, `UniverseBase`, or `UniversesBase`."""
+    def universe_fill(self, universe, cell, transform=None, 
+                      transformation=None):
+        """`CellFill` using a `UniverseList`, `UniverseBase`, or 
+        `UniversesBase`.
+        """
         if type(universe).__name__ == 'UniverseList':
             self.fill = universe._e_object
         else:
@@ -143,6 +160,54 @@ class CellFill(CellFillBase):
             cell.lattice = '1'
         else:
             cell.lattice = '2'
+
+
+class CellExponentialTransform(CellExponentialTransformBase, CellKeyword):
+    """EXT
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class CellForcedCollision(CellForcedCollisionBase, CellKeyword):
+    """FCL
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class CellWeightWindow(CellWeightWindowBase, CellKeyword):
+    """WWN
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class CellDeterministicContribution(CellDeterministicContributionBase, 
+                                    CellKeyword):
+    """DXC
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
+class CellUncollidedSecondaries(CellUncollidedSecondariesBase, CellKeyword):
+    """UNC
+    """
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k.lower(), kwargs[k])
+
 
 
 for name, wrapper in overrides.items():

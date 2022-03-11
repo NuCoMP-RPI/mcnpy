@@ -1,0 +1,78 @@
+\hypertarget{classmcnp__api_1_1mcnpy_1_1region_1_1Region}{}\doxysection{mcnp\+\_\+api.\+mcnpy.\+region.\+Region Class Reference}
+\label{classmcnp__api_1_1mcnpy_1_1region_1_1Region}\index{mcnp\_api.mcnpy.region.Region@{mcnp\_api.mcnpy.region.Region}}
+Inheritance diagram for mcnp\+\_\+api.\+mcnpy.\+region.\+Region\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.466960cm]{classmcnp__api_1_1mcnpy_1_1region_1_1Region}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a3a62184e00abf81737f5d32dbc4f3bd4}\label{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a3a62184e00abf81737f5d32dbc4f3bd4}} 
+def {\bfseries \+\_\+\+\_\+and\+\_\+\+\_\+} (self, other)
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a08e3021c296fa0a8848b40be1316968b}\label{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a08e3021c296fa0a8848b40be1316968b}} 
+def {\bfseries \+\_\+\+\_\+or\+\_\+\+\_\+} (self, other)
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a4c2d287eae21b3a0a671f3a55b6f12a9}\label{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a4c2d287eae21b3a0a671f3a55b6f12a9}} 
+def {\bfseries \+\_\+\+\_\+invert\+\_\+\+\_\+} (self)
+\item 
+def \mbox{\hyperlink{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a5f7dba5158b01884a18f8ac3b809db24}{get\+\_\+surfaces}} (self, surfaces=None)
+\begin{DoxyCompactList}\small\item\em Recursively find all surfaces referenced by a region and return them. \end{DoxyCompactList}\item 
+def \mbox{\hyperlink{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a5418600cde2047387f3a9b003589662f}{remove\+\_\+redundant\+\_\+surfaces}} (self, redundant\+\_\+surfaces)
+\begin{DoxyCompactList}\small\item\em Recursively remove all redundant surfaces referenced by this region. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a5f7dba5158b01884a18f8ac3b809db24}\label{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a5f7dba5158b01884a18f8ac3b809db24}} 
+\index{mcnp\_api.mcnpy.region.Region@{mcnp\_api.mcnpy.region.Region}!get\_surfaces@{get\_surfaces}}
+\index{get\_surfaces@{get\_surfaces}!mcnp\_api.mcnpy.region.Region@{mcnp\_api.mcnpy.region.Region}}
+\doxysubsubsection{\texorpdfstring{get\_surfaces()}{get\_surfaces()}}
+{\footnotesize\ttfamily def mcnp\+\_\+api.\+mcnpy.\+region.\+Region.\+get\+\_\+surfaces (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{surfaces = {\ttfamily None} }\end{DoxyParamCaption})}
+
+
+
+Recursively find all surfaces referenced by a region and return them. 
+
+\begin{DoxyVerb}    Parameters
+    ----------
+    surfaces: collections.OrderedDict, optional
+        Dictionary mapping surface IDs to :class:`mcnpy.Surface` instances
+
+    Returns
+    -------
+    surfaces: collections.OrderedDict
+        Dictionary mapping surface IDs to :class:`mcnpy.Surface` instances
+\end{DoxyVerb}
+ 
+
+Reimplemented in \mbox{\hyperlink{classmcnp__api_1_1mcnpy_1_1region_1_1Complement_ac1a5f027ba8acd7b7e8ab54c600fd8ce}{mcnp\+\_\+api.\+mcnpy.\+region.\+Complement}}.
+
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a5418600cde2047387f3a9b003589662f}\label{classmcnp__api_1_1mcnpy_1_1region_1_1Region_a5418600cde2047387f3a9b003589662f}} 
+\index{mcnp\_api.mcnpy.region.Region@{mcnp\_api.mcnpy.region.Region}!remove\_redundant\_surfaces@{remove\_redundant\_surfaces}}
+\index{remove\_redundant\_surfaces@{remove\_redundant\_surfaces}!mcnp\_api.mcnpy.region.Region@{mcnp\_api.mcnpy.region.Region}}
+\doxysubsubsection{\texorpdfstring{remove\_redundant\_surfaces()}{remove\_redundant\_surfaces()}}
+{\footnotesize\ttfamily def mcnp\+\_\+api.\+mcnpy.\+region.\+Region.\+remove\+\_\+redundant\+\_\+surfaces (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{redundant\+\_\+surfaces }\end{DoxyParamCaption})}
+
+
+
+Recursively remove all redundant surfaces referenced by this region. 
+
+\begin{DoxyVerb}    .. versionadded:: 0.12
+
+    Parameters
+    ----------
+    redundant_surfaces : dict
+        Dictionary mapping redundant surface IDs to class:`mcnpy.Surface`
+        instances that should replace them.
+\end{DoxyVerb}
+ 
+
+Reimplemented in \mbox{\hyperlink{classmcnp__api_1_1mcnpy_1_1region_1_1Complement_ac6f65fa61ef2b3d403a20add55b37bc8}{mcnp\+\_\+api.\+mcnpy.\+region.\+Complement}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+region.\+py\end{DoxyCompactItemize}

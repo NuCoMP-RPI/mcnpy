@@ -1,0 +1,166 @@
+\hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck}{}\doxysection{mcnp\+\_\+api.\+mcnpy.\+input\+\_\+deck.\+Input\+Deck Class Reference}
+\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck}\index{mcnp\_api.mcnpy.input\_deck.InputDeck@{mcnp\_api.mcnpy.input\_deck.InputDeck}}
+
+
+An object containing dicts for cells, surfaces, and materials.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a5b8e9c2384ba0b10da533931bf761950}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a5b8e9c2384ba0b10da533931bf761950}} 
+def {\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, cells=None, surfaces=None, materials=None, geom\+\_\+settings=None, mat\+\_\+settings=None, out\+\_\+settings=None, misc\+\_\+settings=None, src\+\_\+settings=None, phys\+\_\+settings=None, vr\+\_\+settings=None, tally\+\_\+settings=None, tallies=None, term\+\_\+settings=None, settings=None, transformations=None, universes=None)
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a6e27de2e879ea62788951127c493507b}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a6e27de2e879ea62788951127c493507b}} 
+def {\bfseries import\+\_\+from\+\_\+file} (self, filename=\textquotesingle{}inp.\+mcnp\textquotesingle{}, renumber=False, preprocess=False)
+\begin{DoxyCompactList}\small\item\em For reading a deck from a file. \end{DoxyCompactList}\item 
+def \mbox{\hyperlink{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a2238413ef632337ab67d2ef1dd07f1e3}{direct\+\_\+export}} (self, title=None)
+\begin{DoxyCompactList}\small\item\em For serializing the original deck. \end{DoxyCompactList}\item 
+def \mbox{\hyperlink{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a97e94c4512362edce49934b77bf6a5c7}{export}} (self, filename=\textquotesingle{}inp.\+mcnp\textquotesingle{}, title=None, renumber=False)
+\begin{DoxyCompactList}\small\item\em For exporting to a textual MCNP input file. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a4d7c166731f2bbd7e494e359e52e2317}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a4d7c166731f2bbd7e494e359e52e2317}} 
+def {\bfseries \+\_\+\+\_\+repr\+\_\+\+\_\+} (self)
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a7a6c9b0a0b94cbd010ac368c74fa8815}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a7a6c9b0a0b94cbd010ac368c74fa8815}} 
+def {\bfseries get\+\_\+universe} (self, cell)
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a7658774f8323d75849abb50e1cdd985d}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a7658774f8323d75849abb50e1cdd985d}} 
+def {\bfseries add} (self, card)
+\begin{DoxyCompactList}\small\item\em Add a card to the deck. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aaba263b763453eda445db4e6f5210428}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aaba263b763453eda445db4e6f5210428}} 
+def {\bfseries remove} (self, card)
+\begin{DoxyCompactList}\small\item\em Remove a card from the deck. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aeefd75e09281e4fdca6e01296fe282e5}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aeefd75e09281e4fdca6e01296fe282e5}} 
+def {\bfseries add\+\_\+all} (self, cards)
+\begin{DoxyCompactList}\small\item\em Add a list of cards to the deck. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aefc38643e1650bba4502145b7c8f040b}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aefc38643e1650bba4502145b7c8f040b}} 
+def {\bfseries remove\+\_\+all} (self, cards)
+\begin{DoxyCompactList}\small\item\em Remove a list of cards from the deck. \end{DoxyCompactList}\item 
+def \mbox{\hyperlink{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a9a55cc996274acbaedb91a4c9aa9ccbd}{get\+\_\+all\+\_\+surfaces}} (self)
+\begin{DoxyCompactList}\small\item\em Return all surfaces used in the geometry. \end{DoxyCompactList}\item 
+def \mbox{\hyperlink{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a2f0c450f326c7bb300cbf25590e2e384}{get\+\_\+redundant\+\_\+surfaces}} (self)
+\begin{DoxyCompactList}\small\item\em Return all of the topologically redundant surface IDs. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a25e7e7ecd5fc6c8130da9e000332ffb0}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a25e7e7ecd5fc6c8130da9e000332ffb0}} 
+def {\bfseries remove\+\_\+redundant\+\_\+surfaces} (self)
+\begin{DoxyCompactList}\small\item\em Remove redundant surfaces from the geometry. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_adfb5bfc1f36f2d9a708ced95cf84a809}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_adfb5bfc1f36f2d9a708ced95cf84a809}} 
+def {\bfseries remove\+\_\+unused\+\_\+surfaces} (self)
+\begin{DoxyCompactList}\small\item\em Removes any surface cards that are unused from the deck. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a64cb9a0689cc5bff552baf86bec07597}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a64cb9a0689cc5bff552baf86bec07597}} 
+{\bfseries cells}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a7da1a893cd09627ffbe77d2b7dc59192}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a7da1a893cd09627ffbe77d2b7dc59192}} 
+{\bfseries surfaces}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a9571de085e60a49a7bdeb3c90a9063d1}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a9571de085e60a49a7bdeb3c90a9063d1}} 
+{\bfseries settings}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aa60a6f3e6f63aa33a1d2b1026efde8f8}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aa60a6f3e6f63aa33a1d2b1026efde8f8}} 
+{\bfseries transformations}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aeabacb433c8210b675fc1788377e4f17}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aeabacb433c8210b675fc1788377e4f17}} 
+{\bfseries geom\+\_\+settings}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_ab239946e3272ff8ef08f2d66c83fbd3a}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_ab239946e3272ff8ef08f2d66c83fbd3a}} 
+{\bfseries mat\+\_\+settings}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a89c32fee34d606d2173dc8399c5bfeb5}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a89c32fee34d606d2173dc8399c5bfeb5}} 
+{\bfseries out\+\_\+settings}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_adee0272dc87b60a59673b06a0db03074}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_adee0272dc87b60a59673b06a0db03074}} 
+{\bfseries misc\+\_\+settings}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a5d87c32184a19eb3907a26b87ff5fcdb}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a5d87c32184a19eb3907a26b87ff5fcdb}} 
+{\bfseries src\+\_\+settings}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a47ec3f4f5d21b7cb5f2b0d289fdff4e3}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a47ec3f4f5d21b7cb5f2b0d289fdff4e3}} 
+{\bfseries phys\+\_\+settings}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_ac7e4661c8949e3dac860dd8151f12228}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_ac7e4661c8949e3dac860dd8151f12228}} 
+{\bfseries vr\+\_\+settings}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_ab6fdcf83ebdd439351412291e21aafb6}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_ab6fdcf83ebdd439351412291e21aafb6}} 
+{\bfseries tally\+\_\+settings}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a29232642384c29ef98ef85e42569d892}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a29232642384c29ef98ef85e42569d892}} 
+{\bfseries tallies}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aeeb27cc160b2578c6734d97728b81204}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aeeb27cc160b2578c6734d97728b81204}} 
+{\bfseries term\+\_\+settings}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a0c258da9533a4207d4fd51a720d8da84}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a0c258da9533a4207d4fd51a720d8da84}} 
+{\bfseries materials}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a55e7b291f0528923c2b6e5e3443834f6}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a55e7b291f0528923c2b6e5e3443834f6}} 
+{\bfseries universes}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aa53213eaea58da7c30b3c7024d6e7ed7}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_aa53213eaea58da7c30b3c7024d6e7ed7}} 
+{\bfseries deck}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a845f4e7ec4886e1ca5c9a4fd2d530d02}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a845f4e7ec4886e1ca5c9a4fd2d530d02}} 
+{\bfseries serialized}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+An object containing dicts for cells, surfaces, and materials. 
+
+Most other data cards are stored as lists. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a2238413ef632337ab67d2ef1dd07f1e3}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a2238413ef632337ab67d2ef1dd07f1e3}} 
+\index{mcnp\_api.mcnpy.input\_deck.InputDeck@{mcnp\_api.mcnpy.input\_deck.InputDeck}!direct\_export@{direct\_export}}
+\index{direct\_export@{direct\_export}!mcnp\_api.mcnpy.input\_deck.InputDeck@{mcnp\_api.mcnpy.input\_deck.InputDeck}}
+\doxysubsubsection{\texorpdfstring{direct\_export()}{direct\_export()}}
+{\footnotesize\ttfamily def mcnp\+\_\+api.\+mcnpy.\+input\+\_\+deck.\+Input\+Deck.\+direct\+\_\+export (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{title = {\ttfamily None} }\end{DoxyParamCaption})}
+
+
+
+For serializing the original deck. 
+
+Will preserve comments and most user formatting. Line comments may conflict with additions to an existing card. Only call this when your modifications are complete. \mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a97e94c4512362edce49934b77bf6a5c7}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a97e94c4512362edce49934b77bf6a5c7}} 
+\index{mcnp\_api.mcnpy.input\_deck.InputDeck@{mcnp\_api.mcnpy.input\_deck.InputDeck}!export@{export}}
+\index{export@{export}!mcnp\_api.mcnpy.input\_deck.InputDeck@{mcnp\_api.mcnpy.input\_deck.InputDeck}}
+\doxysubsubsection{\texorpdfstring{export()}{export()}}
+{\footnotesize\ttfamily def mcnp\+\_\+api.\+mcnpy.\+input\+\_\+deck.\+Input\+Deck.\+export (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{filename = {\ttfamily \textquotesingle{}inp.mcnp\textquotesingle{}},  }\item[{}]{title = {\ttfamily None},  }\item[{}]{renumber = {\ttfamily False} }\end{DoxyParamCaption})}
+
+
+
+For exporting to a textual MCNP input file. 
+
+As of now, it exports to a string. \mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a9a55cc996274acbaedb91a4c9aa9ccbd}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a9a55cc996274acbaedb91a4c9aa9ccbd}} 
+\index{mcnp\_api.mcnpy.input\_deck.InputDeck@{mcnp\_api.mcnpy.input\_deck.InputDeck}!get\_all\_surfaces@{get\_all\_surfaces}}
+\index{get\_all\_surfaces@{get\_all\_surfaces}!mcnp\_api.mcnpy.input\_deck.InputDeck@{mcnp\_api.mcnpy.input\_deck.InputDeck}}
+\doxysubsubsection{\texorpdfstring{get\_all\_surfaces()}{get\_all\_surfaces()}}
+{\footnotesize\ttfamily def mcnp\+\_\+api.\+mcnpy.\+input\+\_\+deck.\+Input\+Deck.\+get\+\_\+all\+\_\+surfaces (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Return all surfaces used in the geometry. 
+
+\hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_autotoc_md1}{}\doxysubsubsection{Returns}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_autotoc_md1}
+collections.\+Ordered\+Dict Dictionary mapping surface IDs to \+:class\+:{\ttfamily mcnpy.\+Surface} instances \mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a2f0c450f326c7bb300cbf25590e2e384}\label{classmcnp__api_1_1mcnpy_1_1input__deck_1_1InputDeck_a2f0c450f326c7bb300cbf25590e2e384}} 
+\index{mcnp\_api.mcnpy.input\_deck.InputDeck@{mcnp\_api.mcnpy.input\_deck.InputDeck}!get\_redundant\_surfaces@{get\_redundant\_surfaces}}
+\index{get\_redundant\_surfaces@{get\_redundant\_surfaces}!mcnp\_api.mcnpy.input\_deck.InputDeck@{mcnp\_api.mcnpy.input\_deck.InputDeck}}
+\doxysubsubsection{\texorpdfstring{get\_redundant\_surfaces()}{get\_redundant\_surfaces()}}
+{\footnotesize\ttfamily def mcnp\+\_\+api.\+mcnpy.\+input\+\_\+deck.\+Input\+Deck.\+get\+\_\+redundant\+\_\+surfaces (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Return all of the topologically redundant surface IDs. 
+
+\begin{DoxyVerb}    Returns
+    -------
+    dict
+        Dictionary whose keys are the ID of a redundant surface and whose
+        values are the topologically equivalent :class:`mcnpy.Surface`
+        that should replace it.
+\end{DoxyVerb}
+ 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+input\+\_\+deck.\+py\end{DoxyCompactItemize}

@@ -1,20 +1,45 @@
 from collections import OrderedDict, defaultdict
 from mcnpy.cells import Cell
-from mcnpy.surfaces import Surface, RectangularPrism, CircularCylinder, HexagonalPrism, Polyhedron, Wedge, EllipticalCylinder, Box, TruncatedCone, Ellipsoid
-from mcnpy.materials import Material
+from mcnpy.surfaces import Surface, RectangularPrism, CircularCylinder
+from mcnpy.surfaces import HexagonalPrism, Polyhedron, Wedge, EllipticalCylinder
+from mcnpy.surfaces import Box, TruncatedCone, Ellipsoid
+from mcnpy.materials import Material, MaterialSetting
 from mcnpy.universe import UniverseList
-from mcnpy.geometry import Transformation
+from mcnpy.geometry import Transformation, GeometrySetting
+from mcnpy.termination import TerminationSetting
+from mcnpy.output import OutputSetting
+from mcnpy.misc_data import MiscSetting
+from mcnpy.source import SourceSetting
+from mcnpy.physics import PhysicsSetting
+from mcnpy.variance_reduction import VarianceReductionSetting
+from mcnpy.tally import Tally, TallySetting
 from mcnpy.deck import Deck
-from mcnpy.gateway import gateway, is_instance_of
+from mcnpy.gateway import gateway
 from mcnpy.deck_formatter import formatter, preprocessor
 
 class InputDeck():
-    """An object containing dicts for cells, surfaces, and materials. All other data cards are stored as a list."""
-    def __init__(self, cells=None, surfaces=None, settings=None, transformations=None, materials=None, universes=None):
+    """An object containing dicts for cells, surfaces, and materials. Most other 
+    data cards are stored as lists."""
+    def __init__(self, cells=None, surfaces=None, materials=None, 
+                 geom_settings=None, mat_settings=None, out_settings=None, 
+                 misc_settings=None, src_settings=None, phys_settings=None, 
+                 vr_settings=None, tally_settings=None, tallies=None, 
+                 term_settings=None, settings=None, transformations=None, 
+                 universes=None):
         self.cells = cells
         self.surfaces = surfaces
-        self.settings = settings
+        self.settings = settings #Just a catch-all if something isn't subclassed
         self.transformations = transformations
+        self.geom_settings = geom_settings
+        self.mat_settings = mat_settings
+        self.out_settings = out_settings
+        self.misc_settings = misc_settings
+        self.src_settings = src_settings
+        self.phys_settings = phys_settings
+        self.vr_settings = vr_settings
+        self.tally_settings = tally_settings
+        self.tallies = tallies
+        self.term_settings = term_settings
         self.materials = materials
         self.universes = universes
         self.deck = None
@@ -24,16 +49,39 @@ class InputDeck():
             self.cells = {}
         if self.surfaces is None:
             self.surfaces = {}
-        if self.settings is None:
-            self.settings = []
+        if self.tallies is None:
+            self.tallies = {}
         if self.transformations is None:
             self.transformations = {}
         if self.materials is None:
             self.materials = {}
         if self.universes is None:
             self.universes = {}
+
+        if self.settings is None:
+            self.settings = []
+
+        if self.geom_settings is None:
+            self.geom_settings = []
+        if self.out_settings is None:
+            self.out_settings = []
+        if self.misc_settings is None:
+            self.misc_settings = []
+        if self.src_settings is None:
+            self.src_settings = []
+        if self.vr_settings is None:
+            self.vr_settings = []
+        if self.tally_settings is None: #TODO: Most classes have IDs
+            self.tally_settings = []
+        if self.term_settings is None:
+            self.term_settings = []
+        if self.phys_settings is None:
+            self.phys_settings = []
+        if self.mat_settings is None:
+            self.mat_settings = []
     
-    def import_from_file(self, filename='inp.mcnp', renumber=False, preprocess=False):
+    def import_from_file(self, filename='inp.mcnp', renumber=False, 
+                         preprocess=False):
         """For reading a deck from a file.
         """
         self.serialized = False
@@ -43,7 +91,8 @@ class InputDeck():
             inp = gateway.loadFile(filename)
             self.deck = inp
         except:
-            raise Exception('Error importing MCNP Deck from file "' + filename + '"')
+            raise Exception('Error importing MCNP Deck from file "' + filename 
+                            + '"')
         cells = inp.cells.cells
         surfaces = inp.surfaces.surfaces
         settings = inp.data.settings
@@ -60,10 +109,14 @@ class InputDeck():
             if renumber is True:
                 surfaces[i].name = str(id)
                 # Leave room for adding macrobodies.
-                if isinstance(surfaces[i], RectangularPrism) or isinstance(surfaces[i], Box) or isinstance(surfaces[i], Polyhedron):
+                if (isinstance(surfaces[i], RectangularPrism) 
+                    or isinstance(surfaces[i], Box) 
+                    or isinstance(surfaces[i], Polyhedron)):
                     #print('HERE')
                     id = id+6
-                elif isinstance(surfaces[i], CircularCylinder) or isinstance(surfaces[i], EllipticalCylinder) or isinstance(surfaces[i], TruncatedCone):
+                elif (isinstance(surfaces[i], CircularCylinder) 
+                      or isinstance(surfaces[i], EllipticalCylinder) 
+                      or isinstance(surfaces[i], TruncatedCone)):
                     id = id+3
                 elif isinstance(surfaces[i], Wedge):
                     id = id+5
@@ -78,6 +131,26 @@ class InputDeck():
                 if renumber is True:
                     settings[i].name = str(i+1)
                 self.transformations[settings[i].name] = settings[i]
+            elif isinstance(settings[i], Tally):
+                self.tallies[settings[i].name] = settings[i]
+            elif isinstance(settings[i], GeometrySetting):
+                self.geom_settings.append(settings[i])
+            elif isinstance(settings[i], OutputSetting):
+                self.out_settings.append(settings[i])
+            elif isinstance(settings[i], MiscSetting):
+                self.misc_settings.append(settings[i])
+            elif isinstance(settings[i], SourceSetting):
+                self.src_settings.append(settings[i])
+            elif isinstance(settings[i], VarianceReductionSetting):
+                self.vr_settings.append(settings[i])
+            elif isinstance(settings[i], TallySetting):
+                self.tally_settings.append(settings[i])
+            elif isinstance(settings[i], MaterialSetting):
+                self.mat_settings.append(settings[i])
+            elif isinstance(settings[i], TerminationSetting):
+                self.term_settings.append(settings[i])
+            elif isinstance(settings[i], PhysicsSetting):
+                self.phys_settings.append(settings[i])
             else:
                 self.settings.append(settings[i])
         for i in range(len(materials)):
@@ -87,16 +160,17 @@ class InputDeck():
             self.materials[materials[i].name] = materials[i]
 
     def direct_export(self, title=None):
-        """For serializing the original deck. Will preserve comments and most user formatting.
-        Line comments may conflict with additions to an existing card. Only call this when your
-        modifications are complete.
+        """For serializing the original deck. Will preserve comments and most 
+        user formatting. Line comments may conflict with additions to an 
+        existing card. Only call this when your modifications are complete.
         """
         if self.serialized is False:
             self.serialized = True
             deck_string = gateway.printDeck(self.deck)
             return deck_string 
         else:
-            message = 'The original deck has already been serialized. Use `.export()` instead or restart your script.'
+            message = ('The original deck has already been serialized. Use ' 
+                       + '`.export()` instead or restart your script.')
             return message
 
     def export(self, filename='inp.mcnp', title=None, renumber=False):
@@ -105,70 +179,200 @@ class InputDeck():
         inp = Deck()
         inp.initialize()
         if renumber is False:
+            # CELLS
             for k in self.cells:
                 inp.cells.cells.addUnique(self.cells[k]._e_object)
+            # SURFACES
             for k in self.surfaces:
                 inp.surfaces.surfaces.addUnique(self.surfaces[k]._e_object)
-            for i in range(len(self.settings)):
-                inp.data.settings.addUnique(self.settings[i]._e_object)
-            for k in self.materials:
-                inp.data.materials.addUnique(self.materials[k]._e_object)
+
+            # DATA
+            for k in self.geom_settings:
+                inp.data.settings.addUnique(k._e_object)
             for k in self.transformations:
                 inp.data.settings.addUnique(self.transformations[k]._e_object)
+            for k in self.phys_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.src_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.vr_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.tallies:
+                inp.data.settings.addUnique(self.tallies[k]._e_object)
+            for k in self.tally_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.out_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.term_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.misc_settings:
+                inp.data.settings.addUnique(k._e_object)
+            
+            # Materials
+            for k in self.materials:
+                inp.data.materials.addUnique(self.materials[k]._e_object)
+            # Material Settings
+            for k in self.mat_settings:
+                inp.data.settings.addUnique(k._e_object)
+
+            # Other DATA
+            for k in self.settings:
+                inp.data.settings.addUnique(k._e_object)
+
         else:
+            # CELLS
             i = 0
             for k in self.cells:
                 i = i+1
                 self.cells[k].name = str(i)
                 inp.cells.cells.addUnique(self.cells[k]._e_object)
+            # SURFACES
             i = 0
             for k in self.surfaces:
                 i = i+1
                 self.surfaces[k].name = str(i)
                 inp.surfaces.surfaces.addUnique(self.surfaces[k]._e_object)
-            for i in range(len(self.settings)):
-                inp.data.settings.addUnique(self.settings[i]._e_object)
-            i = 0
-            for k in self.materials:
-                i = i+1
-                self.materials[k].name = str(i)
-                inp.data.materials.addUnique(self.materials[k]._e_object)
+            # DATA
+            for k in self.geom_settings:
+                inp.data.settings.addUnique(k._e_object)
             i = 0
             for k in self.transformations:
                 i = i+1
                 self.transformations[k].name = str(i)
                 inp.data.settings.addUnique(self.transformations[k]._e_object)
+            for k in self.phys_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.src_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.vr_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.tallies:
+                inp.data.settings.addUnique(self.tallies[k]._e_object)
+            for k in self.tally_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.out_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.term_settings:
+                inp.data.settings.addUnique(k._e_object)
+            for k in self.misc_settings:
+                inp.data.settings.addUnique(k._e_object)
+            
+            # Materials
+            i = 0
+            for k in self.materials:
+                i = i+1
+                self.materials[k].name = str(i)
+                inp.data.materials.addUnique(self.materials[k]._e_object)
+            # Material Settings
+            for k in self.mat_settings:
+                inp.data.settings.addUnique(k._e_object)
+
+            # Other DATA
+            for k in self.settings:
+                inp.data.settings.addUnique(k._e_object)
 
         deck_string = gateway.printDeck(gateway.deckResource(inp, filename))
 
         return formatter(deck_string, title)
 
     def __repr__(self):
-        string = 'MCNP Deck'
+        string = 'MCNP Deck\n'
+        
+        string += '\n\t**CELL CARDS**\n'
         if self.cells is not None:
-            string += '\n\t# Cells:\t' + str(len(self.cells))
+            string += '{0: <16}{1}{2}\n'.format('\tCells', '=\t', 
+                                                str(len(self.cells)))
         else:
-            string += '\n\t# Cells:\tNone'
-        if self.surfaces is not None:
-            string += '\n\t# Surfaces:\t' + str(len(self.surfaces))
-        else:
-            string += '\n\t# Surfaces:\tNone'
-        if self.settings is not None:
-            string += '\n\t# Settings:\t' + str(len(self.settings))
-        else:
-            string += '\n\t# Settings:\tNone'
-        if self.materials is not None:
-            string += '\n\t# Materials:\t' + str(len(self.materials))
-        else:
-            string += '\n\t# Materials:\tNone'
-        if self.transformations is not None:
-            string += '\n\t# TR Cards:\t' + str(len(self.transformations))
-        else:
-            string += '\n\t# Materials:\tNone'
+            string += '{0: <16}{1}{2}\n'.format('\tCells', '=\t', 'None')
         if self.universes is not None:
-            string += '\n\t# Universes:\t' + str(len(self.universes))
+            string += '{0: <16}{1}{2}\n'.format('\tUniverses', '=\t', 
+                                                str(len(self.universes)))
         else:
-            string += '\n\t# Universes:\tNone'
+            string += '{0: <16}{1}{2}\n'.format('\tUniverses', '=\t', 'None')
+        
+        string += '\n\t**SURFACE CARDS**\n'
+        if self.surfaces is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tSurfaces', '=\t', 
+                                                str(len(self.surfaces)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tSurfaces', '=\t', 
+                                                str(len(self.surfaces)))
+        
+        string += '\n\t**DATA CARDS**\n'
+        if self.geom_settings is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tGeometry', '=\t', 
+                                                str(len(self.geom_settings)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tGeometry', '=\t', 'None')
+        if self.transformations is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tTransformation', '=\t', 
+                                                str(len(self.transformations)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tTransformation', '=\t', 
+                                                'None')
+        if self.phys_settings is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tPhysics', '=\t', 
+                                                str(len(self.phys_settings)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tPhysics', '=\t', 'None')
+        if self.src_settings is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tSource', '=\t', 
+                                                str(len(self.src_settings)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tSource', '=\t', 'None')
+        if self.vr_settings is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tVar. Reduction', '=\t', 
+                                                str(len(self.vr_settings)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tVar. Reduction', '=\t', 
+                                                'None')
+        if self.tallies is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tTallies', '=\t', 
+                                                str(len(self.tallies)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tTallies', '=\t', 'None')
+        if self.tally_settings is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tTal. Settings', '=\t', 
+                                                str(len(self.tally_settings)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tTal. Settings', '=\t', 
+                                                'None')
+        if self.out_settings is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tOutput', '=\t', 
+                                                str(len(self.out_settings)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tOutput', '=\t', 'None')
+        if self.term_settings is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tTermination', '=\t', 
+                                                str(len(self.term_settings)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tTermination', '=\t', 
+                                                'None')
+        if self.misc_settings is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tMisc', '=\t', 
+                                                str(len(self.misc_settings)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tMisc', '=\t', 'None')
+        
+        
+        if self.settings is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tOther Data', '=\t', 
+                                                str(len(self.settings)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tOther Data', '=\t', 'None')
+        
+        string += '\n\t**MATERIAL CARDS**\n'
+        if self.materials is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tMaterials', '=\t', 
+                                                str(len(self.materials)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tMaterials', '=\t', 'None')
+        if self.mat_settings is not None:
+            string += '{0: <16}{1}{2}\n'.format('\tMat. Settings', '=\t', 
+                                                str(len(self.mat_settings)))
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tMat. Settings', '=\t', 
+                                                'None')
 
         return string
 
@@ -198,6 +402,8 @@ class InputDeck():
                 self.universes[u_id] = _universe
 
     def add(self, card):
+        """Add a card to the deck.
+        """
         # Ensure there are no nulls before seriaization.
         # _defaults must be added to each class.
         defaults = getattr(card, '_defaults', None)
@@ -223,21 +429,78 @@ class InputDeck():
         elif isinstance(card, Surface):
             self.surfaces[card.name] = card
             if self.serialized is False:
-                self.deck.surfaces.surfaces.addUnique(self.surfaces[card.name]._e_object)
+                self.deck.surfaces.surfaces.addUnique(self.surfaces
+                                                      [card.name]._e_object)
         elif isinstance(card, Material):
             self.materials[card.name] = card
             if self.serialized is False:
-                self.deck.data.materials.addUnique(self.materials[card.name]._e_object)
+                self.deck.data.materials.addUnique(self.materials
+                                                   [card.name]._e_object)
         elif isinstance(card, Transformation):
             self.transformations[card.name] = card
             if self.serialized is False:
-                self.deck.data.settings.addUnique(self.settings[card.name]._e_object)
+                self.deck.data.settings.addUnique(self.settings
+                                                  [card.name]._e_object)
+        elif isinstance(card, Tally):
+            self.tallies[card.name] = card
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.settings
+                                                  [card.name]._e_object)
+        
+        elif isinstance(card, GeometrySetting):
+            self.geom_settings.append(card)
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.geom_settings
+                                                  [-1]._e_object)
+        elif isinstance(card, PhysicsSetting):
+            self.phys_settings.append(card)
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.phys_settings
+                                                  [-1]._e_object)
+        elif isinstance(card, SourceSetting):
+            self.src_settings.append(card)
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.src_settings
+                                                 [-1]._e_object)
+        elif isinstance(card, VarianceReductionSetting):
+            self.vr_settings.append(card)
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.vr_settings
+                                                  [-1]._e_object)
+        elif isinstance(card, TallySetting):
+            self.tally_settings.append(card)
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.tally_settings
+                                                  [-1]._e_object)
+        elif isinstance(card, OutputSetting):
+            self.out_settings.append(card)
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.out_settings
+                                                  [-1]._e_object)
+        elif isinstance(card, TerminationSetting):
+            self.term_settings.append(card)
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.term_settings
+                                                  [-1]._e_object)
+        elif isinstance(card, MiscSetting):
+            self.misc_settings.append(card)
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.misc_settings
+                                                  [-1]._e_object)
+        elif isinstance(card, MaterialSetting):
+            self.mat_settings.append(card)
+            if self.serialized is False:
+                self.deck.data.settings.addUnique(self.mat_settings
+                                                  [-1]._e_object)
+        
         else:
             self.settings.append(card)
             if self.serialized is False:
                 self.deck.data.settings.addUnique(self.settings[-1]._e_object)
 
     def remove(self, card):
+        """Remove a card from the deck.
+        """
         if isinstance(card, Cell):
             if card.universe is not None:
                 self.universes[card.universe.name].remove(card)
@@ -256,16 +519,60 @@ class InputDeck():
             del self.transformations[card.name]
             if self.serialized is False:
                 self.deck.data.settings.remove(card)
+        elif isinstance(card, Tally):
+            del self.tallies[card.name]
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
+        elif isinstance(card, GeometrySetting):
+            self.geom_settings.remove(card)
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
+        elif isinstance(card, PhysicsSetting):
+            self.phys_settings.remove(card)
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
+        elif isinstance(card, SourceSetting):
+            self.src_settings.remove(card)
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
+        elif isinstance(card, VarianceReductionSetting):
+            self.vr_settings.remove(card)
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
+        elif isinstance(card, TallySetting):
+            self.tally_settings.remove(card)
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
+        elif isinstance(card, OutputSetting):
+            self.out_settings.remove(card)
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
+        elif isinstance(card, TerminationSetting):
+            self.term_settings.remove(card)
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
+        elif isinstance(card, MiscSetting):
+            self.misc_settings.remove(card)
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
+        elif isinstance(card, MaterialSetting):
+            self.mat_settings.remove(card)
+            if self.serialized is False:
+                self.deck.data.settings.remove(card)
         else:
             self.settings.remove(card)
             if self.serialized is False:
                 self.deck.data.settings.remove(card)
 
     def add_all(self, cards):
+        """Add a list of cards to the deck.
+        """
         for i in range(len(cards)):
             self.add(cards[i])
 
     def remove_all(self, cards):
+        """Remove a list of cards from the deck.
+        """
         for i in range(len(cards)):
             self.remove(cards[i])
 
@@ -303,16 +610,11 @@ class InputDeck():
         tally = defaultdict(list)
         for s in self.surfaces:
             surf = self.surfaces[s]
-            #coeffs = surf.get_coefficients() #tuple(surf.coefficients[k] for k in surf.get_coefficients())
             coeffs = tuple(surf.get_coefficients().values())
-            #key = (type(surf).__name__,) + coeffs
             if surf.transformation is None:
                 key = (type(surf).__name__, None) + coeffs
             else:
                 key = (type(surf).__name__, surf.transformation.name) + coeffs
-            #print(key)
-            #if surf.transformation is not None:
-            #    key = surf.transformation.name + key
             tally[key].append(surf)
         return {replace.name: keep
                 for keep, *redundant in tally.values()
@@ -344,4 +646,5 @@ class InputDeck():
                 unused.append(surface)
                 
         self.remove_all(unused)
-        print(str(len(unused))+' Surfaces were removed for being the same as others.')
+        print(str(len(unused))+' Surfaces were removed for being the same as ' 
+              + 'others.')

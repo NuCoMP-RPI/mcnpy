@@ -1,0 +1,56 @@
+\hypertarget{classmcnp__api_1_1mcnpy_1_1physics_1_1ElectronPhysics}{}\doxysection{mcnp\+\_\+api.\+mcnpy.\+physics.\+Electron\+Physics Class Reference}
+\label{classmcnp__api_1_1mcnpy_1_1physics_1_1ElectronPhysics}\index{mcnp\_api.mcnpy.physics.ElectronPhysics@{mcnp\_api.mcnpy.physics.ElectronPhysics}}
+
+
+Electron physics options.  
+
+
+Inheritance diagram for mcnp\+\_\+api.\+mcnpy.\+physics.\+Electron\+Physics\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.178988cm]{classmcnp__api_1_1mcnpy_1_1physics_1_1ElectronPhysics}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1physics_1_1ElectronPhysics_a4c19861c51eb070872105eced913e65c}\label{classmcnp__api_1_1mcnpy_1_1physics_1_1ElectronPhysics_a4c19861c51eb070872105eced913e65c}} 
+def {\bfseries \+\_\+\+\_\+str\+\_\+\+\_\+} (self)
+\item 
+\mbox{\Hypertarget{classmcnp__api_1_1mcnpy_1_1physics_1_1ElectronPhysics_acc5c43c4d7d768ea68f0b8ce41175193}\label{classmcnp__api_1_1mcnpy_1_1physics_1_1ElectronPhysics_acc5c43c4d7d768ea68f0b8ce41175193}} 
+def {\bfseries \+\_\+\+\_\+repr\+\_\+\+\_\+} (self)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Electron physics options. 
+
+\begin{DoxyVerb}PARAMETERS
+----------
+emax : float (DEFAULT=100MeV)
+ides : 0 or 1 (DEFAULT=0)
+iphot : 0 or 1 (DEFAULT=0)
+ibad : 0 or 1 (DEFAULT=0)
+istrg : 0 or 1 (DEFAULT=0)
+bnum : float (DEFAULT=1)
+xnum : float (DEFAULT=1)
+rnok : float (DEFAULT=1)
+enum : float (DEFAULT=1)
+numb : float (DEFAULT=0)
+i_mcs_model : -1 or 0 (DEFAULT=0)
+el_scatt : float (DEFAULT=J)
+efac : float 0.8 to 0.99 (DEFAULT=0.917)
+electron_method_boundary : float (DEFAULT=1.0e-3)
+ckvnum : float (DEFAULT=0)
+\end{DoxyVerb}
+
+
+PROPERTIES = \mbox{[}\textquotesingle{}max\+\_\+energy\textquotesingle{}, \textquotesingle{}prod\+\_\+by\+\_\+photons\textquotesingle{}, \textquotesingle{}photon\+\_\+prod\textquotesingle{}, \textquotesingle{}brem\+\_\+dist\textquotesingle{}, \textquotesingle{}straggling\textquotesingle{}, \textquotesingle{}brem\+\_\+mult\textquotesingle{}, \textquotesingle{}xray\+\_\+mult\textquotesingle{}, \textquotesingle{}knock\+\_\+on\textquotesingle{}, \textquotesingle{}electron\+\_\+mult\textquotesingle{}, \textquotesingle{}brem\+\_\+prod\textquotesingle{}, \textquotesingle{}clmb\+\_\+scattering\textquotesingle{}, \textquotesingle{}els\+\_\+scattering\textquotesingle{}, \textquotesingle{}stopping\+\_\+power\textquotesingle{}, \textquotesingle{}single\+\_\+event\+\_\+energy\textquotesingle{}, \textquotesingle{}cerenkov\textquotesingle{}\mbox{]}
+
+def \+\_\+init(self, emax=100, ides=0, iphot=0, ibad=0, istrg=0, bnum=1, xnum=1, rnok=1, enum=1, numb=0, i\+\_\+mcs\+\_\+model=0, el\+\_\+scatt=\textquotesingle{}J\textquotesingle{}, efac=0.\+917, electron\+\_\+method\+\_\+boundary=1.\+0e-\/3, ckvnum=0)\+:
+
+self.\+max\+\_\+energy = emax self.\+prod\+\_\+by\+\_\+photons = ides self.\+photon\+\_\+prod = iphot self.\+brem\+\_\+dist = ibad self.\+straggling = istrg self.\+brem\+\_\+mult = bnum self.\+xray\+\_\+mult = xnum self.\+knock\+\_\+on = rnok self.\+electron\+\_\+multiplier = enum self.\+brem\+\_\+prod = numb self.\+clmb\+\_\+scattering = i\+\_\+mcs\+\_\+model self.\+els\+\_\+scattering = el\+\_\+scatt self.\+stopping\+\_\+power = efac self.\+single\+\_\+event\+\_\+energy = electron\+\_\+method\+\_\+boundary self.\+cerenkov = ckvnum 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+physics.\+py\end{DoxyCompactItemize}
