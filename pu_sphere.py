@@ -163,7 +163,7 @@ def search_for_keff(make_deck, initial_guess=None, target=1.0,
         # Generate our arguments
         args = {'f': search_function, 'a': bracket[0], 'b': bracket[1]}
         if tol is not None:
-            args['rtol'] = tol
+            args['xtol'] = tol
 
         # Set the root finding method
         if bracketed_method == 'brentq':

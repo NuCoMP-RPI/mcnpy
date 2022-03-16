@@ -22,7 +22,9 @@ def make_deck(h:float):
     # Find and modify KCODE card.
     for card in deck.settings:
         if isinstance(card, mp.CriticalitySourceBase):
-            card.histories = 1e3
+            card.histories = 1e5
+            card.skip_cycles = 10
+            card.cycles = 210
 
     # Print MCTAL file.
     print_dump = mp.PrintDumpBase()
@@ -47,11 +49,9 @@ def get_keff(file:str):
 def run_mcnp(file:str):
     """Run MCNP from script.
     """
-    path = r'/home/kowalp/'
+    path = r'/home/peter/MCNP620/scripts/'
 
-    command = ["qsub", "-pe", "orte", "108", "-sync", "y", path + "submit-mcnp620_mcnpy.sh", file]
-
-    with Popen(command, stdin=PIPE, stdout=PIPE, bufsize=1, universal_newlines=True) as p:
+    with Popen(['bash', path + 'execute.sh', file], stdin=PIPE, stdout=PIPE, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
             """print(line, end='') # process line here"""
 

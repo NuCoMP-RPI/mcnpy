@@ -594,9 +594,60 @@ def mcnp_to_openmc(deck:InputDeck):
                     2. outside universe - use universe from corner of MCNP definition
                     3. center of lattice - get center of region on MCNP lat cell
                     """
-                    #surfs = openmc_cells[j].region.get_surfaces()
-                    lat_fill.center = [0, 0, 0]
-                    lat_disp.append([0, 0, 0])
+                    # Time for some assumptions...
+                    # We assume the lattice boundary is pretty regular meaning that
+                    # it is probably just defined by planes or a cylinder/quadric.
+                    # We also assume the Z direction to be axial. 
+                    # This should work as long as some sets of planes are axis aligned.
+                    surfs = openmc_cells[j].region.get_surfaces()
+                    x, y, z = 0, 0, 0
+                    xlim = []
+                    ylim = []
+                    zlim = []
+                    center = []
+                    for s in surfs:
+                        print(s)
+                        print(surfs[s].bounding_box('-'))
+                        print(surfs[s].bounding_box('+'))
+                        if isinstance(surfs[s], openmc.XPlane):
+                            xlim.append(surfs[s].x0)
+                        elif isinstance(surfs[s], openmc.YPlane):
+                            ylim.append(surfs[s].y0)
+                        elif isinstance(surfs[s], openmc.ZPlane):
+                            zlim.append(surfs[s].z0)
+                        elif isinstance(surfs[s], openmc.Plane):
+                            #TODO: Consider off axis planes
+                            if surfs[s].a == 1 and surfs[s].b == 0 and surfs[s].c == 0:
+                                xlim.append(surfs[s].d)
+                            elif surfs[s].a == 0 and surfs[s].b == 1 and surfs[s].c == 0:
+                                ylim.append(surfs[s].d)
+                            elif surfs[s].a == 0 and surfs[s].b == 0 and surfs[s].c == 1:
+                                zlim.append(surfs[s].d)
+                            else:
+                                print("Lattice bounding box off-axis")
+                        elif isinstance(surfs[s], openmc.Quadric):
+                            x = surfs[s].g * -0.5
+                            y = surfs[s].h * -0.5
+                            z = surfs[s].j * -0.5
+                    #print(xlim, ylim, zlim)
+                    if len(xlim) > 0:
+                        center.append(min(xlim) + ((max(xlim)-min(xlim)) / 2))
+                    else:
+                        center.append(x)
+                    if len(ylim) > 0:
+                        center.append(min(ylim) + ((max(ylim)-min(ylim)) / 2))
+                    else:
+                        center.append(y)
+                    if len(zlim) > 0:
+                        center.append(min(zlim) + ((max(zlim)-min(zlim)) / 2))
+                    else:
+                        center.append(z)
+                    #print(x,y,z)
+                    #print(center)
+                    
+                    lat_fill.center = center
+                    lat_disp.append([0-center[0], 0-center[1], 0-center[2]])
+                    lat_fill.pitch.append((max(zlim)-min(zlim) / dims[0]))
 
                     print('HEX LATTICE!')
 
