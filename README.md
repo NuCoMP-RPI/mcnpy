@@ -2,21 +2,37 @@
 Newer version of `mcnpy` with dynamic wrapping.
 
 # Dependencies
-- `Py4j`.
-- Everything else comes with a basic Anaconda3 install.
+- `py4j`.
+- `h5py`
+- `psutil`
+- `numpy`
+- Everything should come with a standard Python install
 
 # Installing Py4j
 1. `pip install py4j`
     - Be aware of which environment it is installed to.
     - Use `conda activate ENV_NAME` to switch.
 2. Locate `py4j0.x.jar`. Probable locations:
-    - Either `/usr/share/py4j/py4j0.x.jar` or `/usr/local/share/py4j/py4j0.x.jar` for system-wide install on Linux.
+    - Either `/usr/share/py4j/py4j0.x.jar` or `/usr/local/share/py4j/py4j0.x.jar`  
+    for system-wide install on Linux.
     - `{virtual_env_dir}/share/py4j/py4j0.x.jar` for installation in a virtual environment.
     - `C:\python\share\py4j\py4j0.x.jar` for system-wide install on Windows.
 3. Copy `py4j.x.jar` to `mcnpy/lib` directory.
     - Note that a version of `py4j.x.jar` is included with `mcnpy` by default.
 
 # How to Use
+Even though `mcnpy` is still in development, there's the option to install it from a wheel.  
+The wheel was built in `Pop!_OS 21.10 x86_64` with `Python 3.8.8`. It has run  
+successfully with newer Python versions, but there has been no extensive testing.
+## From Wheel
+1. Enter your Python environment of choice.
+2. Run `pip install mcnpy-X.whl` where `X` is the version.
+3. You can now import `mcnpy` from anywhere.
+4. Uninstall with `pip uninstall mcnpy`.
+5. To build your own wheel, run `python setup.py bdist_wheel` from within  
+the `mcnpy` directory.
+
+## From Repo
 1. Place `/mcnpy/` into your working directory.
     - Eventually everything will be packaged for a global install.
 2. Import `mcnpy` as a Python package.
@@ -40,7 +56,7 @@ Using `translate_to_openmc.py`, and OpenMC geometry and material XML files can b
   handle complex model's such as ORNL's HFIR (`hfir.mcnp`)
 
 ## Setup
-- `/mcnpy/` must also be located in your working directory.
+- `/mcnpy/` must also be located in your working directory or otherwise installed.
 - The OpenMC Python API is required by this script. This is most easily achieved by  
   [installing OpenMC](https://docs.openmc.org/en/stable/quickinstall.html). 
     - On Windows, running an Ubuntu Linux subsystem can make the install very  
