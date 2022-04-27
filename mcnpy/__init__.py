@@ -1,32 +1,71 @@
-"""
-### `mcnpy` - The MCNP API from NuCoMP
-  Read, write, and edit MCNP decks like a pro.
-"""
 import atexit
-from .java_server import Server
+from time import sleep
+from mcnpy.java_server import Server
 server = Server()
-from .gateway import gateway, copy
+
+# This accomodates the brief delay for the server to start running.
+running = False
+sleep_time = 0.0
+while running is False:
+    try:
+        from mcnpy.gateway import gateway
+        running = True
+        # sleep_time will be 0.0 if the server is already running.
+        # An alternate message prints in that case.
+        if sleep_time > 0.0:
+            print('MCNP Gateway Server Started')
+    except:
+        # Change wait time if necessary.
+        wait = 0.01
+        sleep(wait)
+        sleep_time += wait
+        # TODO: Figure out a realistic upper limit for the wait.
+        if sleep_time == 5.0:
+            break
+
+# TODO: Remove when we're confident about stable startup.
+print('I slept for: ' + str(sleep_time) + ' seconds!')
+
+"""try:
+    from mcnpy.gateway import gateway
+    running = True
+except:
+    server.kill()
+    running = False
+if running is False:
+    raise Exception('Error reaching Java Gateway.\n Try increasing the startup '
+                    + 'delay by editing ".../mcnpy/server_delay".')"""
+
 # All of the automatic wrappers.
-from .wrap import *
+from mcnpy.wrap import *
 # All of the custom wrappers.
-from .override import *
+from mcnpy.override import *
 
 # Custom classes that deviate from the parse tree.
-from .universe import UniverseList
-from .lattice import Lattice
-from .input_deck import InputDeck
-from mcnpy import example
-from mcnpy import mbody_decomp
-from mcnpy import region_from_expression
-#from mcnpy import source
+from mcnpy.deck import *
+from mcnpy.example import *
+from mcnpy.lattice import *
+from mcnpy.mbody_decomp import *
+from mcnpy.universe import UniverseList
+
 #from mcnpy import material_helper
 
-def kill_gateway():
-    """Kills the Py4j gateway and the MCNP Gateway Server.
-      Should be called at the end of your Python script to
-      avoid leaving a Java process running.
+def _kill_gateway():
+    """Kills the Py4j gateway and the MCNP Gateway Server. Automatically called upon exit after importing module.
     """
-    gateway.shutdown()
-    server.kill()
 
-atexit.register(kill_gateway)
+    # Shutdown gateway if server started via popen.
+    # This will leave an externally started server running.
+    if server.pid is None:
+        gateway.shutdown()
+    # Try to kill the server.
+    try:
+        server.kill()
+    # Exception occurs is an externally started server is killed before exiting
+    # the Python script.
+    except:
+        # Since the server is already killed, we just shutdown the gateway.
+        gateway.shutdown()
+        print('MCNP Gateway Server Killed Externally')
+
+atexit.register(_kill_gateway)

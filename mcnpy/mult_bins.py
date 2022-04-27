@@ -1,14 +1,9 @@
-from abc import ABC
 from mcnpy.wrap import wrappers, overrides
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
-class MiscSetting(ABC):
-    """
-    """
-
-class Random(RandomBase, MiscSetting):
-    __doc__ = RandomBase().__doc__
+class AttnMatSet(AttnMatSetBase):
+    __doc__ = AttnMatSetBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -16,8 +11,8 @@ class Random(RandomBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class Debug(DebugBase, MiscSetting):
-    __doc__ = DebugBase().__doc__
+class AttnSet(AttnSetBase):
+    __doc__ = AttnSetBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -25,8 +20,8 @@ class Debug(DebugBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class LostParticles(LostParticlesBase, MiscSetting):
-    __doc__ = LostParticlesBase().__doc__
+class MultBin(MultBinBase):
+    __doc__ = MultBinBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -34,8 +29,8 @@ class LostParticles(LostParticlesBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class IntegerArray(IntegerArrayBase, MiscSetting):
-    __doc__ = IntegerArrayBase().__doc__
+class MultBinSet(MultBinSetBase):
+    __doc__ = MultBinSetBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -43,8 +38,8 @@ class IntegerArray(IntegerArrayBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class FloatArray(FloatArrayBase, MiscSetting):
-    __doc__ = FloatArrayBase().__doc__
+class MultBinSets(MultBinSetsBase):
+    __doc__ = MultBinSetsBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -52,8 +47,8 @@ class FloatArray(FloatArrayBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class Files(FilesBase, MiscSetting):
-    __doc__ = FilesBase().__doc__
+class MultSet(MultSetBase):
+    __doc__ = MultSetBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -61,8 +56,8 @@ class Files(FilesBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class ReadFile(ReadFileBase, MiscSetting):
-    __doc__ = ReadFileBase().__doc__
+class MultSetSpecial(MultSetSpecialBase):
+    __doc__ = MultSetSpecialBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -70,8 +65,8 @@ class ReadFile(ReadFileBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class VerticalCell(VerticalCellBase, MiscSetting):
-    __doc__ = VerticalCellBase().__doc__
+class RxnLists(RxnListsBase):
+    __doc__ = RxnListsBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -79,8 +74,35 @@ class VerticalCell(VerticalCellBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class VerticalSurface(VerticalSurfaceBase, MiscSetting):
-    __doc__ = VerticalSurfaceBase().__doc__
+class RxnMult(RxnMultBase):
+    __doc__ = RxnMultBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class RxnNum(RxnNumBase):
+    __doc__ = RxnNumBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class Rxns(RxnsBase):
+    __doc__ = RxnsBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class RxnSum(RxnSumBase):
+    __doc__ = RxnSumBase().__doc__
 
     def _init(self, **kwargs):
         """

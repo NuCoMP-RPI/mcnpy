@@ -1,6 +1,51 @@
 import numpy as np
 
 class Lattice():
+    """Rectangular or hexagonal lattice structure of repeated universes.
+    
+    Parameters
+    ----------
+    i : iterable of int
+        Indices of innermost lattice dimension.
+    j : iterable of int
+        Indicies of second lattice dimension.
+    k : iterable of int
+        Indicies of outermost lattice dimension.
+    lattice : numpy.array
+        Array of `mcnpy.Universe` objects or their IDs.
+    type : str, optional
+        Lattice type, 'REC' or 'HEX'
+    universes : dict, optional
+        Dictionary mapping universe IDs to `mcnpy.Univese` objects.
+    transforms : numpy.array, optional
+        Array of `mcnpy.Transform` objects for lattice elements.
+    transformations : numpy.array, optional
+        Array of `mcnpy.Transformation` objects for lattice elements.
+
+    Attributes
+    ----------
+    i : iterable of int
+        Indices of innermost lattice dimension.
+    j : iterable of int
+        Indicies of second lattice dimension.
+    k : iterable of int
+        Indicies of outermost lattice dimension.
+    lattice : numpy.array
+        Array of mcnpy.Universe objects or their IDs.
+    type : str, optional
+        Lattice type, 'REC' or 'HEX'
+    universes : dict
+        Dictionary mapping universe IDs to `mcnpy.Univese` objects.
+    transforms : numpy.array
+        Array of `mcnpy.Transform` objects for lattice elements.
+    transformations : numpy.array
+        Array of `mcnpy.Transformation` objects for lattice elements.
+    dims : iterable of int
+        The i, j, k dimensions of the lattice.
+    size : int
+        Number of elements in the lattice.
+
+    """
     def __init__(self, i=[], j=[], k=[], lattice=None, type='REC', universes=None, transforms=None, transformations=None):
         """Class for lattices. Defined by max indicies `i`, `j`, `k`, and a 3D array `lattice`. The array should be defined uning `numpy.array()` where `k` indicies are your outermost dimension followed by `j` and `i`. Elements of `lattice` can be `Universe` objects or simply their IDs. For the latter, `universes = dict()` where its keys are universe IDs and its values are the `Universe` objects.
         """

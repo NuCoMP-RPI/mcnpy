@@ -8,8 +8,10 @@ class TerminationSetting(ABC):
     """
 
 class HistoryCutoff(HistoryCutoffBase, TerminationSetting):
-    """NPS
+    __doc__ = """NPS
     """
+    __doc__ += HistoryCutoffBase().__doc__
+
     def _init(self, **kwargs):
         """
         """
@@ -17,8 +19,10 @@ class HistoryCutoff(HistoryCutoffBase, TerminationSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class PrecisionCutoff(PrecisionCutoffBase, TerminationSetting):
-    """STOP
+    __doc__ = """STOP
     """
+    __doc__ += PrecisionCutoffBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -26,8 +30,10 @@ class PrecisionCutoff(PrecisionCutoffBase, TerminationSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class CpuTimeCutoff(CpuTimeCutoffBase, TerminationSetting):
-    """CTME
+    __doc__ = """CTME
     """
+    __doc__ += CpuTimeCutoffBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """

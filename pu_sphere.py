@@ -1,73 +1,49 @@
 def make_deck(r:float):
     """Create Pu sphere in MCNP with radius `r`.
     """
-    deck = mp.InputDeck()
+    deck = Deck()
 
     # Materials
     pu = [Nuclide(name='pu239', fraction=0.046982),
           Nuclide(name='pu240', fraction=0.0025852),
           Nuclide(name='pu241', fraction=0.00014915)]
-    """water = [Nuclide(name='h1', fraction=0.066766),
-             Nuclide(name='o16', fraction=0.033383)]"""
-    m_pu = mp.Material(name=1, nuclides=pu)
-    #m_water = mp.Material(name=2, nuclides=water)
-    """sab_water = mp.SabBase()
-    sab_water.material = m_water
-    lwtr = mp.SabLibraryBase()
-    lwtr.nuclide = 'lwtr'
-    sab_water.libraries = [lwtr]"""
-    #deck.add_all([m_pu, m_water, sab_water])
+    m_pu = Material(name=1, nuclides=pu)
     deck.add_all([m_pu])
 
     # Surfaces
     sphere_pu = Sphere(name=1, x0=0, y0=0, z0=0, r=r)
-    #sphere_water = Sphere(name=2, x0=0, y0=0, z0=0, r=29.5217)
-    #deck.add_all([sphere_pu, sphere_water])
     deck.add(sphere_pu)
 
     # Cells
-    cell_pu = mp.Cell(name=1, material=m_pu, density=0.04971635, region=-sphere_pu)
-    """cell_water = mp.Cell(name=2, material=m_water, density=0.100149, 
-                         region=+sphere_pu & -sphere_water)"""
-    cell_outside = mp.Cell(name=3, material=None, region=+sphere_pu)
+    cell_pu = Cell(name=1, material=m_pu, density=0.04971635, region=-sphere_pu)
+    cell_outside = Cell(name=3, material=None, region=+sphere_pu)
     # Cell importances
-    imp_n1 = mp.CellImportanceBase()
-    imp_n1.particles = ['n']
-    imp_n1.importance = 1
-    imp_n0 = mp.CellImportanceBase()
-    imp_n0.particles = ['n']
-    imp_n0.importance = 0
-    cell_pu.importances = [imp_n1]
-    #cell_water.importances = [imp_n1]
-    cell_outside.importances = [imp_n0]
+    par = ['n']
+    imp = [{1.0 : par}, {0 : par}]
+    cell_pu.importances = imp[0]
+    cell_outside.importances = imp[1]
     deck.add_all([cell_pu, cell_outside])
 
     # Kcode
-    kcode = mp.CriticalitySourceBase()
-    kcode.histories = 1e3
-    kcode.keff_guess = 1.0
-    kcode.skip_cycles = 10
-    kcode.cycles = 210
-    ksrc = mp.CriticalitySourcePointsBase()
-    src_points = [mp.Point(0,0,0)]
-    ksrc.points = src_points
+    kcode = CriticalitySource(histories=1e3, keff_guess=1.0, skip_cycles=10, cycles=210)
+    ksrc = CriticalitySourcePoints([(0,0,0)])
     deck.add_all([kcode, ksrc])
 
-    # Outputs
-    #deck.add(mp.PrintBase())
-    print_dump = mp.PrintDumpBase()
-    print_dump.jump = ['j', 'j']
-    print_dump.print_mctal = 1
-    deck.add(print_dump)
+    # Print MCTAL file.
+    deck.add(PrintDump(print_mctal=1))
 
-    return deck.export(title='Pu Sphere')
+    # Write the deck to file
+    filename = 'optimization/pu_sphere.mcnp'
+    deck.write(filename, title='Pu Sphere')
 
+    # Return name of deck file
+    return filename
 
 def get_keff(file:str):
     """Get final keff from an MCTAL file.
     """
     m = Mctal(file)
-    kc =m.GetKcode()
+    kc = m.GetKcode()
     keff = MctalKcode.AVG_COMBINED_KEFF
     keff_std = MctalKcode.AVG_COMBINED_KEFF_STD
 
@@ -123,10 +99,7 @@ def _search_keff(guess, target, make_deck, print_iterations,
 
     # Build the model
     print('Building')
-    filename = 'optimization/pu_sphere.mcnp'
-    deck = open(filename, 'w')
-    deck.write(make_deck(float(guess)))
-    deck.close()
+    filename = make_deck(float(guess))
 
     # Run the model and obtain keff
     print('Running')
@@ -202,9 +175,11 @@ def search_for_keff(make_deck, initial_guess=None, target=1.0,
 if __name__ == '__main__':
     import sys, time
     import scipy.optimize as sopt
-    import mcnpy as mp
+    from mcnpy import Deck, Material, Cell
     from mcnpy import MaterialNuclide as Nuclide
+    from mcnpy.source import CriticalitySource, CriticalitySourcePoints
     from mcnpy.surfaces import Sphere
+    from mcnpy.output import PrintDump
     from mcnptools import Mctal, MctalKcode
     from subprocess import Popen, PIPE, CalledProcessError
 

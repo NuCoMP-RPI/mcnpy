@@ -1,8 +1,8 @@
 def make_deck(h:float):
     """Change control rod heights for HFIR.
     """
-    deck = mp.InputDeck()
-    deck.import_from_file('hfir.mcnp')
+    deck = Deck()
+    deck.read('hfir.mcnp', preprocess=True)
 
     # Change rod heights with TR cards.
     deck.transformations['100'].transformation.disp3 = -h
@@ -10,37 +10,39 @@ def make_deck(h:float):
 
     # Use available material XS.
     for k in deck.materials:
-        mat = deck.materials[k]
-        nuclides = mat.nuclides
+        nuclides = deck.materials[k].nuclides
         for nuclide in nuclides:
-            zaid = zaid_to_element(nuclide.name).lower()
-            if zaid == 'mo0' or zaid == 'ca0':
-                nuclide.library.library = 60
-            elif nuclide.library.library == 3:
-                nuclide.library.library = 70
+            element = zaid_to_element(nuclide.name).lower()
+            if element == 'mo0' or element == 'ca0':
+                nuclide.library.library = '60'
+            elif nuclide.library.library == '03':
+                print('HERE')
+                nuclide.library.library = '70'
 
     # Find and modify KCODE card.
-    for card in deck.settings:
-        if isinstance(card, mp.CriticalitySourceBase):
+    for card in deck.src_settings:
+        if isinstance(card, CriticalitySource):
             card.histories = 1e5
             card.skip_cycles = 10
             card.cycles = 210
 
     # Print MCTAL file.
-    print_dump = mp.PrintDumpBase()
-    print_dump.jump = ['j', 'j']
-    print_dump.print_mctal = 1
-    deck.add(print_dump)
+    deck.add(PrintDump(print_mctal=1))
 
-    # Keep original formatting.
-    return deck.direct_export()
+    # Write the deck to file
+    filename = 'optimization/hfir_crit_search.mcnp'
+    deck.write(filename)
+
+    # Return name of deck file
+    return filename
+    #return deck.direct_export()
 
 
 def get_keff(file:str):
     """Get final keff from an MCTAL file.
     """
     m = Mctal(file)
-    kc =m.GetKcode()
+    kc = m.GetKcode()
     keff = MctalKcode.AVG_COMBINED_KEFF
     keff_std = MctalKcode.AVG_COMBINED_KEFF_STD
 
@@ -63,9 +65,7 @@ def _search_keff(guess, target, make_deck, print_iterations,
     # Build the model
     print('Building')
     filename = 'optimization/hfir_crit_search.mcnp'
-    deck = open(filename, 'w')
-    deck.write(make_deck(float(guess)))
-    deck.close()
+    filename = make_deck(float(guess))
 
     # Run the model and obtain keff
     print('Running')
@@ -141,7 +141,9 @@ def search_for_keff(make_deck, initial_guess=None, target=1.0,
 if __name__ == '__main__':
     import sys, time
     import scipy.optimize as sopt
-    import mcnpy as mp
+    from mcnpy import Deck
+    from mcnpy.output import PrintDump
+    from mcnpy.source import CriticalitySource
     from mcnpy.zaid_helper import zaid_to_element
     from mcnptools import Mctal, MctalKcode
     from subprocess import Popen, PIPE, CalledProcessError

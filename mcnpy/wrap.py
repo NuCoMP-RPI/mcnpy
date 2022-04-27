@@ -1,7 +1,8 @@
 from py4j.protocol import Py4JError, register_output_converter, register_input_converter, REFERENCE_TYPE
 from py4j.java_gateway import JavaObject
-
-from .gateway import gateway, is_instance_of
+from py4j.java_collections import JavaList
+from re import compile, sub, search
+from .gateway import gateway, is_instance_of, get_documentation
 from .util import camel_to_snake_case
 
 
@@ -116,11 +117,11 @@ def replace_if_contained(feature):
         def setter_decorated(self, value):
             EReference = gateway.jvm.org.eclipse.emf.ecore.EReference
             if is_instance_of(feature, EReference) and feature.isContainment():
-                """Avoids error with lists and tuples not having containing features."""
-                """if isinstance(value, tuple) or isinstance(value, list) or value is None:
-                    containing_feature = None #value[0].eContainingFeature()
-                else:
-                    containing_feature = value.eContainingFeature()"""
+                # """Avoids error with lists and tuples not having containing features."""
+                # """if isinstance(value, tuple) or isinstance(value, list) or value is None:
+                #     containing_feature = None #value[0].eContainingFeature()
+                # else:
+                #     containing_feature = value.eContainingFeature()"""
                 try:
                     containing_feature = value.eContainingFeature()
                 except:
@@ -189,10 +190,10 @@ def set_e_list(setter, feature, value):
                 + str(feature.getName()) + '"')
 
 def return_value_converter(feature, value):
-    """Some functions will return numerical values as strings. This is usually
-    because alternate options like a Jump need to be supported. We want the 
-    numbers as numbers while in Python. The exceptions to this are 'name' 
-    features and cases like libraries where leading zeros are possible."""
+    # Some functions will return numerical values as strings. This is usually
+    # because alternate options like a Jump need to be supported. We want the 
+    # numbers as numbers while in Python. The exceptions to this are 'name' 
+    # features and cases like libraries where leading zeros are possible.
     if isinstance(value, str) and feature.getName() != 'name':
         try:
             if float(value)%1 == 0:
@@ -207,6 +208,21 @@ def return_value_converter(feature, value):
         except:
             return value
     else:
+        # Want to return the emum literal istead of the java object.
+        # TODO: Test for more emum types (works on cell importances)
+        EAttribute = gateway.jvm.org.eclipse.emf.ecore.EAttribute
+        if is_instance_of(feature, EAttribute):
+            EEnum = gateway.jvm.org.eclipse.emf.ecore.EEnum
+            data_type = feature.getEAttributeType()
+            if isinstance(value, JavaList):
+                if is_instance_of(data_type, EEnum):
+                    e_list = []
+                    for i in range(len(value)):
+                        e_list.append(value[i].toString())
+                    return e_list
+            if is_instance_of(data_type, EEnum):
+                return value.toString()
+
         return value
 
 
@@ -296,12 +312,12 @@ def get_wrapped_reference(feature):
 def wrap_e_class(e_class, e_factory):
     """Return a Python class which wraps and implements an EClass."""
     def __init__(self, *args, **kwargs):
-        """This might be a little sketchy, but the output converter for 
-        automatic-wrapping is turned off and on. EObjects need to be 
-        unwrapped for self._e_object = e_factory.create(e_class). Otherwise,
-        we create an infinite loop of wrappers. In this case, we actually 
-        want the unwrapped EObject. After this, we can turn the auto-wrapping
-        back on. Not sure if there's a more elegant way to handle this."""
+        #This might be a little sketchy, but the output converter for 
+        #automatic-wrapping is turned off and on. EObjects need to be 
+        #unwrapped for self._e_object = e_factory.create(e_class). Otherwise,
+        #we create an infinite loop of wrappers. In this case, we actually 
+        #want the unwrapped EObject. After this, we can turn the auto-wrapping
+        #back on. Not sure if there's a more elegant way to handle this.
         register_output_converter(REFERENCE_TYPE, 
                 (lambda target_id, 
                 gateway_client: JavaObject(target_id, gateway_client)))
@@ -332,6 +348,9 @@ def wrap_e_class(e_class, e_factory):
     #                  'org.eclipse.emf.ecore.InternalEObject']
     body = {attr.__name__: attr for attr in 
             (__init__, _init, __str__, __hash__, __eq__)}
+    # Convert javadoc metamodel annotations to docstrings.
+    body['__doc__'] = javadoc_to_docstring(e_class)
+
     e_classes = [e_class]
     for e_cls in e_classes:
         for e_super_class in e_cls.getESuperTypes():
@@ -370,8 +389,48 @@ def wrap_e_class(e_class, e_factory):
             cap_name = feature.getName().capitalize()
             body['get'+cap_name] = body[snake_name].fget
             body['set'+cap_name] = body[snake_name].fset
+
     return type(e_class.getName(), (InternalEObject,), body)
 
+_DOC_PATTERNS = (compile('<em>[\w\s_]*</em>}'),
+                compile('#get[A-Z][\w_]*\s<em>'),
+                compile('#is[A-Z][\w_]*\s<em>'),
+                (compile('<\/?\w*>'), ''),
+                (compile('{@link\s[\w.#]*\s'), ''),
+                (compile('}\s:\s'), ' : '),
+                (compile('{@link\sgov.lanl.mcnp.mcnp'), 'mcnpy'),
+                (compile('}'), ''),
+                (compile('EList of'), 'iterable of'))
+                #(compile(':\sString'), ': str'),
+                #(compile(':\sdouble'), ': float'))
+
+def javadoc_to_docstring(e_class):
+    """Reformats JavaDoc into NumPy docstring.
+    """
+    javadoc = get_documentation(e_class)
+    if javadoc is not None:
+        lines = javadoc.splitlines()
+        docstring = ''
+
+        for line in lines:
+            find_name2 = search(_DOC_PATTERNS[1], line)
+            find_name3 = search(_DOC_PATTERNS[2], line)
+            if find_name2 is not None:
+                new_name = camel_to_snake_case(line[find_name2.start()+4:find_name2.end()-5])
+                line = sub(_DOC_PATTERNS[0], new_name, line)
+            elif find_name3 is not None:
+                new_name = camel_to_snake_case(line[find_name3.start()+3:find_name3.end()-5])
+                line = sub(_DOC_PATTERNS[0], new_name, line)
+            for pattern in _DOC_PATTERNS[3:]:
+                line = sub(pattern[0], pattern[1], line)
+            line = line.replace('String', 'str').replace('double', 'float').replace('Integer', 'int').replace('Double', 'float')
+
+            docstring += line + '\n'
+        
+        return docstring
+    else:
+        return 'Python class for ' + e_class.toString()
+    
 
 def wrap_e_package(e_package):
     """Wrap every EClass contained in an EPackage."""

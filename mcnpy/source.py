@@ -1,7 +1,7 @@
 from abc import ABC
 from .wrap import wrappers, overrides
 from .zaid_helper import element_to_zaid, zaid_to_element
-from .basic_structures import Point
+from .structures import Point
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -61,59 +61,13 @@ class SourceSetting(ABC):
     """
     
 class CriticalitySource(CriticalitySourceBase, SourceSetting):
-    """def _init(self, histories=None, keff_guess=None, skip_cycles=None, cylces=None, source_point_count=None, normalize_tallies=None, max_cycles=None, average_by_cycles=None):
+    __doc__ = CriticalitySourceBase().__doc__
 
-        self.histories = histories
-        self.keff_guess = keff_guess
-        self.skip_cycles = skip_cycles
-        self.cycles = cylces
-        self.source_point_count = source_point_count
-        self.normalize_tallies = normalize_tallies
-        self.max_cycles=max_cycles
-        self.average_by_cycles = average_by_cycles"""
     def _init(self, **kwargs):
         """KCODE
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
-
-        """for k in kwargs:
-            # Not a jump.
-            if kwargs[k] != 'j' and kwargs[k] != 'J':
-                if k.lower() == 'histories':
-                    self.histories = kwargs[k]
-                elif k.lower() == 'keff_guess':
-                    self.keff_guess = kwargs[k]
-                elif k.lower() == 'skip_cycles':
-                    self.skip_cycles = kwargs[k]
-                elif k.lower() == 'cycles':
-                    self.cycles = kwargs[k]
-                elif k.lower() == 'source_point_count':
-                    self.source_point_count = kwargs[k]
-                elif k.lower() == 'normalize_tallies':
-                    self.normalize_tallies = kwargs[k]
-                elif k.lower() == 'max_cycles':
-                    self.max_cycles = kwargs[k]
-                elif k.lower() == 'average_by_cycles':
-                    self.average_by_cycles = kwargs[k]
-            # Jump
-            else:
-                if k.lower() == 'histories':
-                    self.j_histories = kwargs[k]
-                elif k.lower() == 'keff_guess':
-                    self.j_keff_guess = kwargs[k]
-                elif k.lower() == 'skip_cycles':
-                    self.j_skip_cycles = kwargs[k]
-                elif k.lower() == 'cycles':
-                    self.j_cycles = kwargs[k]
-                elif k.lower() == 'source_point_count':
-                    self.j_source_point_count = kwargs[k]
-                elif k.lower() == 'normalize_tallies':
-                    self.j_normalize_tallies = kwargs[k]
-                elif k.lower() == 'max_cycles':
-                    self.j_max_cycles = kwargs[k]
-                elif k.lower() == 'average_by_cycles':
-                    self.j_average_by_cycles = kwargs[k]"""
 
     def __str__(self):
         string = 'KCODE\n'
@@ -131,11 +85,10 @@ class CriticalitySource(CriticalitySourceBase, SourceSetting):
     def __repr__(self) -> str:
         return str(self)
         
-
 #TODO: Better distribution support
 class Source(SourceBase, SourceSetting):
-    """SDEF
-    """
+    __doc__ = SourceBase().__doc__
+
     def _init(self, **kwargs):
         for k in kwargs:
             if k.lower() == 'loc':
@@ -220,8 +173,8 @@ class Source(SourceBase, SourceSetting):
             return str(self)"""
 
 class CriticalitySourcePoints(CriticalitySourcePointsBase, SourceSetting):
-    """KSRC
-    """
+    __doc__ = CriticalitySourcePointsBase().__doc__
+    
     def _init(self, points):
         self.points = []
         for p in points:
@@ -236,8 +189,8 @@ class CriticalitySourcePoints(CriticalitySourcePointsBase, SourceSetting):
         return str(self)
 
 class SourceParticle(SourceParticleBase):
-    """
-    """
+    __doc__ = SourceParticleBase().__doc__
+    
     def _init(self, par):
         """
         """
@@ -262,8 +215,8 @@ class SourceParticle(SourceParticleBase):
             return str(self)
 
 class SourceInfo(SourceInfoBase, SourceSetting):
-    """SI
-    """
+    __doc__ = SourceInfoBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -271,8 +224,8 @@ class SourceInfo(SourceInfoBase, SourceSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class SourceProbability(SourceProbabilityBase, SourceSetting):
-    """SP
-    """
+    __doc__ = SourceProbabilityBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -280,8 +233,8 @@ class SourceProbability(SourceProbabilityBase, SourceSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class SourceBias(SourceBiasBase, SourceSetting):
-    """SB
-    """
+    __doc__ = SourceBiasBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -289,17 +242,17 @@ class SourceBias(SourceBiasBase, SourceSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class DependentSourceDistribution(DependentSourceDistributionBase, SourceSetting):
-    """DS
-    """
+    __doc__ = DependentSourceDistributionBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
 
-class DependentSourceDistribution(DependentSourceDistributionBase, SourceSetting):
-    """#
-    """
+class VerticalSourceDistribution(VerticalSourceDistributionBase, SourceSetting):
+    __doc__ = DependentSourceDistributionBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -307,8 +260,8 @@ class DependentSourceDistribution(DependentSourceDistributionBase, SourceSetting
             setattr(self, k.lower(), kwargs[k])
 
 class SourceComment(SourceCommentBase, SourceSetting):
-    """SC
-    """
+    __doc__ = SourceCommentBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -316,8 +269,8 @@ class SourceComment(SourceCommentBase, SourceSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class SurfaceSourceWrite(SurfaceSourceWriteBase, SourceSetting):
-    """SSW
-    """
+    __doc__ = SurfaceSourceWriteBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -325,8 +278,8 @@ class SurfaceSourceWrite(SurfaceSourceWriteBase, SourceSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class SurfaceSourceRead(SurfaceSourceReadBase, SourceSetting):
-    """SSR
-    """
+    __doc__ = SurfaceSourceReadBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -334,8 +287,8 @@ class SurfaceSourceRead(SurfaceSourceReadBase, SourceSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class CriticalityOptions(CriticalityOptionsBase, SourceSetting):
-    """KOPTS
-    """
+    __doc__ = CriticalityOptionsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -343,8 +296,8 @@ class CriticalityOptions(CriticalityOptionsBase, SourceSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class EntropyMesh(EntropyMeshBase, SourceSetting):
-    """HSRC
-    """
+    __doc__ = EntropyMeshBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -352,14 +305,130 @@ class EntropyMesh(EntropyMeshBase, SourceSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class Depletion(DepletionBase, SourceSetting):
-    """BURN
-    """
+    __doc__ = DepletionBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
     
+class DepletionMaterial(DepletionMaterialBase, SourceSetting):
+    __doc__ = DepletionMaterialBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class DepletionOmittedIsotopes(DepletionOmittedIsotopesBase, SourceSetting):
+    __doc__ = DepletionOmittedIsotopesBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class SourceBiasFunction(SourceBiasFunctionBase, SourceSetting):
+    __doc__ = SourceBiasFunctionBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class SourceCell(SourceCellBase, SourceSetting):
+    __doc__ = SourceCellBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class SourceDist(SourceDistBase, SourceSetting):
+    __doc__ = SourceDistBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class SourceID(SourceIDBase, SourceSetting):
+    __doc__ = SourceIDBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class SourceInfoCells(SourceInfoCellsBase, SourceSetting):
+    __doc__ = SourceInfoCellsBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class SourceInfoDistributions(SourceInfoDistributionsBase, SourceSetting):
+    __doc__ = SourceInfoDistributionsBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class SourceInfoParticles(SourceInfoParticlesBase, SourceSetting):
+    __doc__ = SourceInfoParticlesBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class SourceProbabilityFunction(SourceProbabilityFunctionBase, SourceSetting):
+    __doc__ = SourceProbabilityFunctionBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class SurfaceSourceReadCylindricalWindow(SurfaceSourceReadCylindricalWindowBase):
+    __doc__ = SurfaceSourceReadCylindricalWindowBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class SurfaceSourceWriteCrossing(SurfaceSourceWriteCrossingBase):
+    __doc__ = SurfaceSourceWriteCrossingBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class SurfaceSourceWriteFromCell(SurfaceSourceWriteFromCellBase):
+    __doc__ = SurfaceSourceWriteFromCellBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)

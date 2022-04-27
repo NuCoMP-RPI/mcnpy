@@ -2,23 +2,58 @@ from mcnpy.wrap import wrappers, overrides
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
-class UnaryCellBins(UnaryCellBinBase):
-    def _init(self, cell, index, universe):
-        """
-        """
-        self.cell = cell
-        self.index = index
-        self.universe = universe
+class Point(PointBase):
+    __doc__ = PointBase().__doc__
+
+    def _init(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def aspoint(p):
+        return Point(p[0], p[1], p[2])
 
     def __str__(self):
-        if self.cell is None and self.universe is None:
-            return None
-        elif self.universe is not None:
-            return 'U=' + self.universe.name
-        else:
-            return self.cell.name
+        string = '(' + str(self.x) + ', ' + str(self.y) + ', ' + str(self.z) + ')'
+        return string
+
+    def __repr__(self):
+        return 'Point: ' + str(self)
+
+class PPoint(PPointBase):
+    __doc__ = PPointBase().__doc__
+    
+    def _init(self, d:float, r:float):
+        self.d = d
+        self.r = r
+
+    def __str__(self):
+        string = '(' + str(self.d) + ', ' + str(self.r) + ')'
+        return string
+
+    def __repr__(self):
+        return 'PPoint: ' + str(self)
+
+class Vector(VectorBase):
+    __doc__ = VectorBase().__doc__
+    
+    def _init(self, name, x, y, z):
+        self.name = name
+        self.x = x
+        self.y = y,
+        self.z = z
+
+    def __str__(self):
+        string = ('V' + self.name + ':(' + str(self.x) + ', ' + str(self.y) 
+                  + ', ' + str(self.z) + ')')
+        return string
+
+    def __repr__(self):
+        return 'V' + self.name
 
 class RangeInt(RangeIntBase):
+    __doc__ = RangeIntBase().__doc__
+
     def _init(self, value, sign=None):
         """
         """
@@ -35,6 +70,8 @@ class RangeInt(RangeIntBase):
             return str(self.value)
 
 class LatticeRange(LatticeRangeBase):
+    __doc__ = LatticeRangeBase().__doc__
+
     def _init(self, i0, j0, k0, i1=None, j1=None, k1=None):
         if i0 is not None:
             self.i0 = RangeInt(i0)
@@ -69,6 +106,8 @@ class LatticeRange(LatticeRangeBase):
         return string
 
 class LatticeCoordinate(LatticeCoordinateBase):
+    __doc__ = LatticeCoordinateBase().__doc__
+
     def _init(self, i, j, k):
         self.i = i
         self.j = j
@@ -78,6 +117,8 @@ class LatticeCoordinate(LatticeCoordinateBase):
         return '( ' + str(self.i) + ' ' + str(self.j) + ' ' + str(self.k) + ' )'
 
 class LatticeCoordinates(LatticeCoordinatesBase):
+    __doc__ = LatticeCoordinatesBase().__doc__
+
     def _init(self, coordinates:list):
         self.coordinates = coordinates
 
@@ -91,6 +132,8 @@ class LatticeCoordinates(LatticeCoordinatesBase):
         return string
 
 class LatticeFlatIndex(LatticeFlatIndexBase):
+    __doc__ = LatticeFlatIndexBase().__doc__
+
     def _init(self, i):
         self.i = i
 
@@ -98,9 +141,47 @@ class LatticeFlatIndex(LatticeFlatIndexBase):
         return str(self.i)
 
 class LatticeIndex(LatticeIndexBase):
+    __doc__ = LatticeIndexBase().__doc__
+
     def _init(self, index=None, universe=None):
         self.index = index
         self.universe = universe
+
+class File(FileBase):
+    __doc__ = FileBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class Point_WS(Point_WSBase):
+    __doc__ = Point_WSBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class ReacPairs(ReacPairsBase):
+    __doc__ = ReacPairsBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class Values(ValuesBase):
+    __doc__ = ValuesBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)

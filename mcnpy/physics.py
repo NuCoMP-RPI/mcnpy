@@ -1,5 +1,6 @@
 from abc import ABC
 from mcnpy.wrap import wrappers, overrides
+from mcnpy.structures import Point
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -12,12 +13,7 @@ class ParticlePhysics(ABC):
     """
 
 class Mode(ModeBase, PhysicsSetting):
-    """Set particle physics modes.
-
-    PARAMETERS
-    ----------
-    particles : list<particle>
-    """
+    __doc__ = ModeBase().__doc__
 
     def _init(self, particles):
         self.particles = particles
@@ -40,7 +36,7 @@ class VerticalMode(VerticalModeBase, PhysicsSetting):
 class NeutronPhysics(NeutronPhysicsBase, PhysicsSetting, ParticlePhysics):
     """Neutron physics options.
     
-    PARAMETERS
+    Parameters
     ----------
     emax : float (DEFAULT=100MeV)
     emcnf : float (DEFAULT=0MeV)
@@ -52,25 +48,6 @@ class NeutronPhysics(NeutronPhysicsBase, PhysicsSetting, ParticlePhysics):
     i_els_model : -1 or 0 (DEFAULT=0)
     """
 
-    """PROPERTIES = ['max_energy',
-               'max_analog',
-               'unresolved_resonance',
-               'recoil',
-               'phys_cutoff',
-               'photon_prod',
-               'interaction',
-               'els_scattering']"""
-
-    """def _init(self, emax=100, emcnf=0, iunr=0, colif=0, cut=-1, 
-              ngam=1, i_int_model=0, i_els_model=0):
-        self.max_energy = emax
-        self.max_analog = emcnf
-        self.unresolved_resonance = iunr
-        self.recoil = colif
-        self.phys_cutoff = cut
-        self.photon_prod = ngam
-        self.interaction = i_int_model
-        self.els_scattering = i_els_model"""
     def _init(self, **kwargs):
         """
         """
@@ -87,25 +64,10 @@ class NeutronPhysics(NeutronPhysicsBase, PhysicsSetting, ParticlePhysics):
     def __repr__(self):
         return str(self)
 
-    # Applies defaults to avoid serializing nulls.
-    # Automatically called when adding card to deck.
-    """def _defaults(self):
-        entry = len(self.PROPERTIES)-1
-        for k in self.PROPERTIES:
-            if getattr(self, k) is None:
-                setattr(self, k, 'J')
-            else:
-                entry = self.PROPERTIES.index(k)
-        # Avoid printing all options if possible
-        if entry != len(self.PROPERTIES)-1:
-            for k in self.PROPERTIES[entry+1:]:
-                setattr(self, k, None)"""
-
-
 class PhotonPhysics(PhotonPhysicsBase, PhysicsSetting, ParticlePhysics):
     """Photon physics options.
     
-    PARAMETERS
+    Parameters
     ----------
     empf : float (DEFAULT=100MeV)
     ides : 0 or 1 (DEFAULT=0)
@@ -115,21 +77,6 @@ class PhotonPhysics(PhotonPhysicsBase, PhysicsSetting, ParticlePhysics):
     fism : 0 or 1 (DEFAULT=0)
     """
 
-    PROPERTIES = ['max_energy',
-               'particle_prod',
-               'coh_scattering',
-               'photonuclear',
-               'doppler',
-               'photofission']
-
-    """def _init(self, empf=100, ides=0, nocoh=0, ispn=0, nodop=0, fism=0):
-        
-        self.max_energy = empf
-        self.particle_prod = ides
-        self.coh_scattering = nocoh
-        self.photonuclear = ispn
-        self.doppler = nodop
-        self.photofission = fism"""
     def _init(self, **kwargs):
         """
         """
@@ -146,26 +93,10 @@ class PhotonPhysics(PhotonPhysicsBase, PhysicsSetting, ParticlePhysics):
     def __repr__(self):
         return str(self)
 
-    # Applies defaults to avoid serializing nulls.
-    # Automatically called when adding card to deck.
-    """def _defaults(self):
-        entry = len(self.PROPERTIES)-1
-        for k in self.PROPERTIES:
-            if getattr(self, k) is None:
-                setattr(self, k, 'J')
-            else:
-                entry = self.PROPERTIES.index(k)
-        # Avoid printing all options if possible
-        if entry != len(self.PROPERTIES)-1:
-            for k in self.PROPERTIES[entry+1:]:
-                setattr(self, k, None)"""
-
-        
-
 class ElectronPhysics(ElectronPhysicsBase, PhysicsSetting, ParticlePhysics):
     """Electron physics options.
     
-    PARAMETERS
+    Parameters
     ----------
     emax : float (DEFAULT=100MeV)
     ides : 0 or 1 (DEFAULT=0)
@@ -184,42 +115,6 @@ class ElectronPhysics(ElectronPhysicsBase, PhysicsSetting, ParticlePhysics):
     ckvnum : float (DEFAULT=0)
     """
 
-    """PROPERTIES = ['max_energy',
-                  'prod_by_photons',
-                  'photon_prod',
-                  'brem_dist',
-                  'straggling',
-                  'brem_mult',
-                  'xray_mult',
-                  'knock_on',
-                  'electron_mult',
-                  'brem_prod',
-                  'clmb_scattering',
-                  'els_scattering',
-                  'stopping_power',
-                  'single_event_energy',
-                  'cerenkov']"""
-
-    """def _init(self, emax=100, ides=0, iphot=0, ibad=0, istrg=0, bnum=1,
-              xnum=1, rnok=1, enum=1, numb=0, i_mcs_model=0, el_scatt='J',
-              efac=0.917, electron_method_boundary=1.0e-3, ckvnum=0):
-
-        self.max_energy = emax
-        self.prod_by_photons = ides
-        self.photon_prod = iphot
-        self.brem_dist = ibad
-        self.straggling = istrg
-        self.brem_mult = bnum
-        self.xray_mult = xnum
-        self.knock_on = rnok
-        self.electron_multiplier = enum
-        self.brem_prod = numb
-        self.clmb_scattering = i_mcs_model
-        self.els_scattering = el_scatt
-        self.stopping_power = efac
-        self.single_event_energy = electron_method_boundary
-        self.cerenkov = ckvnum"""
-
     def _init(self, **kwargs):
         """
         """
@@ -236,25 +131,10 @@ class ElectronPhysics(ElectronPhysicsBase, PhysicsSetting, ParticlePhysics):
     def __repr__(self):
         return str(self)
 
-    # Applies defaults to avoid serializing nulls.
-    # Automatically called when adding card to deck.
-    """def _defaults(self):
-        entry = len(self.PROPERTIES)-1
-        for k in self.PROPERTIES:
-            if getattr(self, k) is None:
-                setattr(self, k, 'J')
-            else:
-                entry = self.PROPERTIES.index(k)
-        # Avoid printing all options if possible
-        if entry != len(self.PROPERTIES)-1:
-            for k in self.PROPERTIES[entry+1:]:
-                setattr(self, k, None)"""
-
-
 class ProtonPhysics(ProtonPhysicsBase, PhysicsSetting, ParticlePhysics):
     """Proton physics options.
     
-    PARAMETERS
+    Parameters
     ----------
     emax : float (DEFAULT=100MeV)
     ean : float (DEFAULT=0)
@@ -269,35 +149,6 @@ class ProtonPhysics(ProtonPhysicsBase, PhysicsSetting, ParticlePhysics):
     drp : float (DEFAULT=0MeV)
     """
 
-    """PROPERTIES = ['max_energy',
-                  'max_analog',
-                  'phys_cutoff',
-                  'straggling',
-                  'recoil',
-                  'clmb_scattering',
-                  'interaction',
-                  'els_scattering',
-                  'stopping_power',
-                  'single_event_energy',
-                  'cerenkov',
-                  'delta_ray_cutoff']"""
-
-    """def _init(self, emax=100, ean=0, tabl=-1, istrg=0, recl=0, 
-              i_mcs_model=0, i_int_model=0, i_els_model=0, efac=0.917, ckvnum=0, 
-              drp=0):
-
-        self.max_energy = emax
-        self.max_analog = ean
-        self.phys_cutoff = tabl
-        self.straggling = istrg
-        self.recoil = recl
-        self.clmb_scattering = i_mcs_model
-        self.interaction = i_int_model
-        self.els_scattering = i_els_model
-        self.stopping_power = efac
-        self.cerenkov = ckvnum
-        self.delta_ray_cutoff = drp
-"""
     def _init(self, **kwargs):
         """
         """
@@ -314,25 +165,10 @@ class ProtonPhysics(ProtonPhysicsBase, PhysicsSetting, ParticlePhysics):
     def __repr__(self):
         return str(self)
 
-    # Applies defaults to avoid serializing nulls.
-    # Automatically called when adding card to deck.
-    """def _defaults(self):
-        entry = len(self.PROPERTIES)-1
-        for k in self.PROPERTIES:
-            if getattr(self, k) is None:
-                setattr(self, k, 'J')
-            else:
-                entry = self.PROPERTIES.index(k)
-        # Avoid printing all options if possible
-        if entry != len(self.PROPERTIES)-1:
-            for k in self.PROPERTIES[entry+1:]:
-                setattr(self, k, None)"""
-
-
 class OtherParticlePhysics(OtherParticlePhysicsBase, PhysicsSetting, ParticlePhysics):
     """Other Particle physics options.
     
-    PARAMETERS
+    Parameters
     ----------
     particle : particle (other than N, P, E, H)
     emax : float (DEFAULT=100MeV)
@@ -346,34 +182,6 @@ class OtherParticlePhysics(OtherParticlePhysicsBase, PhysicsSetting, ParticlePhy
     ckvnum : float (DEFAULT=0)
     drp : float (DEFAULT=0MeV)
     """
-
-    """PROPERTIES = ['max_energy',
-                  'straggling',
-                  'muon_xrays',
-                  'k_shell_photon',
-                  'clmb_scattering',
-                  'interaction',
-                  'els_scattering',
-                  'stopping_power',
-                  'cerenkov',
-                  'delta_ray_cutoff']"""
-
-    """def _init(self, particle, emax=100, istrg=0, 
-              xmunum=-1, xmugam=0.65, i_mcs_model=0, 
-              i_int_model=0, i_els_model=0, efac=0.917, 
-              ckvnum=0, drp=0):
-
-        self.particle = particle
-        self.max_energy = emax
-        self.straggling = istrg
-        self.muon_xrays = xmunum
-        self.k_shell_photon = xmugam
-        self.clmb_scattering = i_mcs_model
-        self.interaction = i_int_model
-        self.els_scattering = i_els_model
-        self.stopping_power = efac
-        self.cerenkov = ckvnum
-        self.delta_ray_cutoff = drp"""
 
     def _init(self, **kwargs):
         """
@@ -391,24 +199,9 @@ class OtherParticlePhysics(OtherParticlePhysicsBase, PhysicsSetting, ParticlePhy
     def __repr__(self):
         return str(self)
 
-    # Applies defaults to avoid serializing nulls.
-    # Automatically called when adding card to deck.
-    """def _defaults(self):
-        entry = len(self.PROPERTIES)-1
-        for k in self.PROPERTIES:
-            if getattr(self, k) is None:
-                setattr(self, k, 'J')
-            else:
-                entry = self.PROPERTIES.index(k)
-        # Avoid printing all options if possible
-        if entry != len(self.PROPERTIES)-1:
-            for k in self.PROPERTIES[entry+1:]:
-                setattr(self, k, None)"""
-
-
 class Activation(ActivationBase, PhysicsSetting):
-    """ACT
-    """
+    __doc__ = ActivationBase().__doc__
+
     def _init(self, **kwargs):
         """
         """
@@ -416,8 +209,8 @@ class Activation(ActivationBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class EnergyCutoffs(EnergyCutoffsBase, PhysicsSetting):
-    """ELPT
-    """
+    __doc__ = EnergyCutoffsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -425,8 +218,8 @@ class EnergyCutoffs(EnergyCutoffsBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class Temperatures(TemperaturesBase, PhysicsSetting):
-    """TMP
-    """
+    __doc__ = TemperaturesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -434,8 +227,8 @@ class Temperatures(TemperaturesBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class ThermalTimes(ThermalTimesBase, PhysicsSetting):
-    """THTME
-    """
+    __doc__ = ThermalTimesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -443,8 +236,8 @@ class ThermalTimes(ThermalTimesBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class ModelPhysics(ModelPhysicsBase, PhysicsSetting):
-    """MPHYS
-    """
+    __doc__ = ModelPhysicsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -452,8 +245,8 @@ class ModelPhysics(ModelPhysicsBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class Multiplicity(MultiplicityBase, PhysicsSetting):
-    """FMULT
-    """
+    __doc__ = MultiplicityBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -461,8 +254,8 @@ class Multiplicity(MultiplicityBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class Transport(TransportBase, PhysicsSetting):
-    """TROPT
-    """
+    __doc__ = TransportBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -470,8 +263,8 @@ class Transport(TransportBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class UncollidedSecondaries(UncollidedSecondariesBase, PhysicsSetting):
-    """UNC
-    """
+    __doc__ = UncollidedSecondariesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -479,26 +272,86 @@ class UncollidedSecondaries(UncollidedSecondariesBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class MagneticField(MagneticFieldBase, PhysicsSetting):
-    """BFLD
-    """
-    def _init(self, **kwargs):
+    __doc__ = MagneticFieldBase().__doc__
+    
+    def _init(self, name, type, **kwargs):
         """
         """
+        self.name = name
+        self.type = type
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
+
+    @property
+    def name(self):
+        return self._e_object.getName()
+
+    @property
+    def vector(self):
+        _v = self._e_object.getVector()
+        return (_v.x, _v.y, _v.z)
+
+    @property
+    def axis(self):
+        _v = self._e_object.getAxis()
+        return (_v.x, _v.y, _v.z) 
+
+    @property
+    def fringe_field_surfaces(self):
+        if self.type == 'QUADFF':
+            return self._e_object.getFringeFieldSurfaces()
+        else:
+            return None
+
+    @property
+    def reference_point(self):
+        _v = self._e_object.getReferencePoint()
+        return (_v.x, _v.y, _v.z) 
+
+    @name.setter
+    def name(self, name):
+        if name is not None:
+            self._e_object.setName(str(name))
+
+    @vector.setter
+    def vector(self, v):
+        if isinstance(v, Point):
+            self._e_object.setVector(v)
+        else:
+            self._e_object.setVector(Point(v[0], v[1], v[2]))
+
+    @axis.setter
+    def axis(self, v):
+        if isinstance(v, Point):
+            self._e_object.setAxis(v)
+        else:
+            self._e_object.setAxis(Point(v[0], v[1], v[2]))
+
+    @fringe_field_surfaces.setter
+    def fringe_field_surfaces(self, ffs):
+        if self.type == 'QUADFF':
+            self._e_object.setFringeFieldSurfaces(ffs)
+        else:
+            self._e_object.setFringeFieldSurfaces(None)
+
+    @reference_point.setter
+    def reference_point(self, v):
+        if isinstance(v, Point):
+            self._e_object.setReferencePoint(v)
+        else:
+            self._e_object.setReferencePoint(Point(v[0], v[1], v[2]))
 
 class MagneticFieldAssign(MagneticFieldAssignBase, PhysicsSetting):
-    """BFLCL
-    """
-    def _init(self, **kwargs):
+    __doc__ = MagneticFieldAssignBase().__doc__
+    
+    def _init(self, mag_field):
         """
         """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+        self.mag_field = mag_field
 
 class PhysModelLCA(PhysModelLCABase, PhysicsSetting):
-    """LCA
-    """
+    __doc__ = PhysModelLCABase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -506,8 +359,8 @@ class PhysModelLCA(PhysModelLCABase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class PhysModelLCB(PhysModelLCBBase, PhysicsSetting):
-    """LCB
-    """
+    __doc__ = PhysModelLCBBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -515,8 +368,8 @@ class PhysModelLCB(PhysModelLCBBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class PhysModelLCC(PhysModelLCCBase, PhysicsSetting):
-    """LCC
-    """
+    __doc__ = PhysModelLCCBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -524,8 +377,8 @@ class PhysModelLCC(PhysModelLCCBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class PhysModelLEA(PhysModelLEABase, PhysicsSetting):
-    """LEA
-    """
+    __doc__ = PhysModelLEABase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -533,8 +386,8 @@ class PhysModelLEA(PhysModelLEABase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class PhysModelLEB(PhysModelLEBBase, PhysicsSetting):
-    """LEB
-    """
+    __doc__ = PhysModelLEBBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -542,8 +395,8 @@ class PhysModelLEB(PhysModelLEBBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class PhysicsCutoff(PhysicsCutoffBase, PhysicsSetting):
-    """CUT
-    """
+    __doc__ = PhysicsCutoffBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -551,8 +404,8 @@ class PhysicsCutoff(PhysicsCutoffBase, PhysicsSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class CosyMap(CosyMapBase, PhysicsSetting):
-    """COSYP
-    """
+    __doc__ = CosyMapBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """

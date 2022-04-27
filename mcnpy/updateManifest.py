@@ -2,7 +2,7 @@ import os
 from os import listdir
 from os.path import isfile, join
 
-mypath = os.path.abspath(os.getcwd()) + '/lib'
+mypath = os.path.abspath(join(os.getcwd(), 'lib'))
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
 manifest = open('./manifest.mf', 'w')

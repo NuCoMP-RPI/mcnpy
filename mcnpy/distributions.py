@@ -1,14 +1,9 @@
-from abc import ABC
 from mcnpy.wrap import wrappers, overrides
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
-class MiscSetting(ABC):
-    """
-    """
-
-class Random(RandomBase, MiscSetting):
-    __doc__ = RandomBase().__doc__
+class Distribution(DistributionBase):
+    __doc__ = DistributionBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -16,8 +11,8 @@ class Random(RandomBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class Debug(DebugBase, MiscSetting):
-    __doc__ = DebugBase().__doc__
+class Distributions(DistributionsBase):
+    __doc__ = DistributionsBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -25,8 +20,8 @@ class Debug(DebugBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class LostParticles(LostParticlesBase, MiscSetting):
-    __doc__ = LostParticlesBase().__doc__
+class DependentSourceVolumer(DependentSourceVolumerBase):
+    __doc__ = DependentSourceVolumerBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -34,8 +29,8 @@ class LostParticles(LostParticlesBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class IntegerArray(IntegerArrayBase, MiscSetting):
-    __doc__ = IntegerArrayBase().__doc__
+class DependentSourceParticles(DependentSourceParticlesBase):
+    __doc__ = DependentSourceParticlesBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -43,8 +38,8 @@ class IntegerArray(IntegerArrayBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class FloatArray(FloatArrayBase, MiscSetting):
-    __doc__ = FloatArrayBase().__doc__
+class DependentSourceDistributions(DependentSourceDistributionsBase):
+    __doc__ = DependentSourceDistributionsBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -52,8 +47,8 @@ class FloatArray(FloatArrayBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class Files(FilesBase, MiscSetting):
-    __doc__ = FilesBase().__doc__
+class DependentSourceCells(DependentSourceCellsBase):
+    __doc__ = DependentSourceCellsBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -61,8 +56,8 @@ class Files(FilesBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class ReadFile(ReadFileBase, MiscSetting):
-    __doc__ = ReadFileBase().__doc__
+class DependentSourceDistributionBins(DependentSourceDistributionBinsBase):
+    __doc__ = DependentSourceDistributionBinsBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -70,8 +65,8 @@ class ReadFile(ReadFileBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class VerticalCell(VerticalCellBase, MiscSetting):
-    __doc__ = VerticalCellBase().__doc__
+class DependentSourceDistributionMatches(DependentSourceDistributionMatchesBase):
+    __doc__ = DependentSourceDistributionMatchesBase().__doc__
 
     def _init(self, **kwargs):
         """
@@ -79,8 +74,17 @@ class VerticalCell(VerticalCellBase, MiscSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class VerticalSurface(VerticalSurfaceBase, MiscSetting):
-    __doc__ = VerticalSurfaceBase().__doc__
+class NestedDistribution(NestedDistributionBase):
+    __doc__ = NestedDistributionBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class ZeroDist(ZeroDistBase):
+    __doc__ = ZeroDistBase().__doc__
 
     def _init(self, **kwargs):
         """

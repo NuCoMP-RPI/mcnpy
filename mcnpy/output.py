@@ -8,8 +8,8 @@ class OutputSetting(ABC):
     """
 
 class Print(PrintBase, OutputSetting):
-    """PRINT
-    """
+    __doc__ = PrintBase().__doc__
+
     def _init(self, **kwargs):
         """
         """
@@ -17,8 +17,8 @@ class Print(PrintBase, OutputSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class DontPrintTallies(DontPrintTalliesBase, OutputSetting):
-    """TALNP
-    """
+    __doc__ = DontPrintTalliesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -26,8 +26,8 @@ class DontPrintTallies(DontPrintTalliesBase, OutputSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class PrintDump(PrintDumpBase, OutputSetting):
-    """PRDMP
-    """
+    __doc__ = PrintDumpBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -35,8 +35,8 @@ class PrintDump(PrintDumpBase, OutputSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class ParticleTrack(ParticleTrackBase, OutputSetting):
-    """PTRAC
-    """
+    __doc__ = ParticleTrackBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -44,8 +44,8 @@ class ParticleTrack(ParticleTrackBase, OutputSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class CreateLahet(CreateLahetBase, OutputSetting):
-    """HISTP
-    """
+    __doc__ = CreateLahetBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -53,14 +53,40 @@ class CreateLahet(CreateLahetBase, OutputSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class InteractivePlot(InteractivePlotBase, OutputSetting):
-    """MPLOT
-    """
+    __doc__ = InteractivePlotBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
 
+class Events(EventsBase):
+    __doc__ = EventsBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class ParticleTrackFilter(ParticleTrackFilterBase):
+    __doc__ = ParticleTrackFilterBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class ParticleTrackTally(ParticleTrackTallyBase):
+    __doc__ = ParticleTrackTallyBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)

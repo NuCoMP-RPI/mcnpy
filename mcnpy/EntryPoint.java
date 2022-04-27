@@ -11,13 +11,14 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.resource.SaveOptions;
 import org.eclipse.xtext.serializer.ISerializer;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.testing.validation.ValidationTestHelper;
 import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.eclipse.emf.ecore.util.EcoreUtil.EqualityHelper;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.EClass;
 //import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 
 import gov.lanl.mcnp.McnpStandaloneSetup;
@@ -50,6 +51,13 @@ public class EntryPoint {
 	public ResourceSet resourceSet;
 
 	public McnpFactory factory = McnpFactory.eINSTANCE;
+
+    public String getDocs(EClass e_class)
+    {
+        String doc = EcoreUtil.getDocumentation(e_class);
+
+        return(doc);
+    }
 
     public String printDeck(Deck DECK)
     {
@@ -144,6 +152,10 @@ public class EntryPoint {
     public static void main(String[] args) {
         GatewayServer gatewayServer = new GatewayServer(new EntryPoint());
         gatewayServer.start();
+        System.out.println("MCNP Gateway Server Started");
+    }
+
+    public void startupComplete() {
         System.out.println("MCNP Gateway Server Started");
     }
     

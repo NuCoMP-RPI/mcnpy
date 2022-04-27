@@ -1,4 +1,6 @@
 from abc import ABC
+from mcnpy.structures import Vector
+from mcnpy.variance_reduction import DeterministicTransportSphere as DTS
 from mcnpy.wrap import wrappers, overrides
 from mcnpy.region import Complement
 from mcnpy.lattice import Lattice
@@ -7,12 +9,11 @@ import numpy as np
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
 class Cell(CellBase):
-    """Cell class
-    """
+    __doc__ = CellBase().__doc__
+
     def _init(self, name, region, density=0.0, material=None, universe=None, 
               comment=None, **kwargs):
-        """Define a `Cell`.
-        """
+        """Define a `Cell`."""
         self.name = name
         self.universe = universe
         self.material = material
@@ -21,54 +22,121 @@ class Cell(CellBase):
         if density < 0:
             self.density_unit = '-'
         #self.density_unit = density_unit
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
         for k in kwargs:
-            if k.lower() == 'importances':
-                self.set_importances(kwargs[k])
-            elif k.lower() == 'fill':
-                _fill = CellFill()
-                if isinstance(kwargs[k], Lattice):
-                    _fill.lattice_fill(kwargs[k], self)
-                else:
-                    _fill.universe_fill(kwargs[k], self)
-            else:
-                setattr(self, k.lower(), kwargs[k])
+            setattr(self, k.lower(), kwargs[k])
 
-    def get_lattice(self):
-        """Returns a `Lattice` object.
-        """
-        fill = self.fill
-        lattice = Lattice(i=fill.i, j=fill.j, k=fill.k, type=self.lattice)
-        lat = np.array(fill.lattice)
-        dims = []
-        dims.append(fill.i[1]-fill.i[0]+1)
-        dims.append(fill.j[1]-fill.j[0]+1)
-        dims.append(fill.k[1]-fill.k[0]+1)
-        lat = lat.reshape(dims[2], dims[1], dims[0])
-        lattice.lattice = lat
+    @property
+    def name(self):
+        return self._e_object.getName()
 
-        return lattice
+    @property
+    def density(self):
+        return self._e_object.getDensity()
 
-    def get_importances(self):
-        """Returns cell importances.
-        """
-        imp = self.importances
-        importances = {}
+    @property
+    def no_fission(self):
+        return self._e_object.getNoFission()
+
+    @property
+    def importances(self):
+        imp = self._e_object.getImportances()
+        _importances = {}
         for i in imp:
-            importances[i.importance] = i.particles
-        
-        return importances
+            _importances[i.importance] = i.particles
+        return _importances
 
-    def set_importances(self, importances:dict):
-        """`importances` is a `dict` where the `cell importances` are keys and 
-        `lists of particles` are values.
-        Example: `{1.0 : ['n', 'p']}`
-        """
-        imp = []
+    @property
+    def temperature(self):
+        return (self._e_object.getTemperature(), self.tmp_id)
+
+    @property
+    def fill(self):
+        _fill = self._e_object.getFill()
+        if self.lattice is not None:
+            lattice = Lattice(i=_fill.i, j=_fill.j, k=_fill.k, type=self.lattice)
+            lat = np.array(_fill.lattice)
+            dims = []
+            dims.append(_fill.i[1]-_fill.i[0]+1)
+            dims.append(_fill.j[1]-_fill.j[0]+1)
+            dims.append(_fill.k[1]-_fill.k[0]+1)
+            lat = lat.reshape(dims[2], dims[1], dims[0])
+            lattice.lattice = lat
+
+            return lattice
+        else:
+            return _fill
+    
+    @name.setter
+    def name(self, name):
+        """name : str
+        Unique numeric identifier for the cell."""
+        if name is not None:
+            self._e_object.setName(str(name))
+
+    @density.setter
+    def density(self, density):
+        if density < 0:
+            self.density_unit = '-'
+        self._e_object.setDensity(abs(density))
+
+    @no_fission.setter
+    def no_fission(self, nonu):
+        if nonu <= 0:
+            self._e_object.setNoFission(0)
+        else:
+            self._e_object.setNoFission(1)
+
+    @temperature.setter
+    def temperature(self, temp):
+        _tmp = self._e_object.getTemperature()
+        _tmp_id = self._e_object.getTmpID()
+        if isinstance(temp, (list, tuple)):
+            if isinstance(temp[0], (list, tuple)):
+                for i in range(len(temp[0])):
+                    _tmp.append(temp[0][i])
+                    _tmp_id.append(temp[1][i])
+            else:
+                for i in range(len(temp)):
+                    _tmp.append(temp[i])
+        else:
+            _tmp.append(temp)
+
+    @fill.setter
+    def fill(self, fill, transform=None, transformation=None):
+        _fill = CellFill()
+        if isinstance(fill, Lattice):
+            _fill.lattice = fill.flatten()
+            _fill.i = fill.i
+            _fill.j = fill.j
+            _fill.k = fill.k
+            if fill.transforms is not None:
+                _fill.transforms = fill.transforms
+            if fill.transformations is not None:
+                _fill.transformations = fill.transformations
+            if fill.type == 'REC':
+                self.lattice = '1'
+            else:
+                self.lattice = '2'
+        else:
+            if type(fill).__name__ == 'UniverseList':
+                _fill.fill = fill._e_object
+            else:
+                _fill.fill = fill
+            if transform is not None:
+                _fill.transform = transform
+            if transformation is not None:
+                _fill.transformation = transformation
+        
+        self._e_object.setFill(_fill)
+
+    @importances.setter
+    def importances(self, importances:dict):
+        imp = self._e_object.getImportances()
         for i in importances:
             imp.append(CellImportance(i, importances[i]))
-        self.importances = imp
-        
+
 
     def __invert__(self):
         return Complement(self)
@@ -93,14 +161,10 @@ class Cell(CellBase):
     def __repr__(self):
         return '(Cell ' + self.name + ')'
 
-class CellKeyword(ABC):
-    """
-    """
-
 #TODO: Would be nice if particles were automatically added to mode from here.
-class CellImportance(CellImportanceBase, CellKeyword):
-    """IMP
-    """
+class CellImportance(CellImportanceBase):
+    __doc__ = CellImportanceBase().__doc__
+
     def _init(self, importance, particles):
         self.importance = importance
         self.particles = particles
@@ -113,9 +177,9 @@ class CellImportance(CellImportanceBase, CellKeyword):
         return str(self)
 
 
-class CellFill(CellFillBase, CellKeyword):
-    """Custom CellFill class.
-    """
+class CellFill(CellFillBase):
+    __doc__ = CellFillBase().__doc__
+
     def _init(self, fill, unit, lattice, transformation, transform, 
              transformations, transforms, i, j, k):
         self.fill = fill
@@ -162,53 +226,101 @@ class CellFill(CellFillBase, CellKeyword):
             cell.lattice = '2'
 
 
-class CellExponentialTransform(CellExponentialTransformBase, CellKeyword):
-    """EXT
-    """
-    def _init(self, **kwargs):
+class CellExponentialTransform(CellExponentialTransformBase):
+    __doc__ = CellExponentialTransformBase().__doc__
+    
+    def _init(self, particles, magnitude, axis=None, vector=None):
         """
         """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+        self.particles = particles
+        self.magnitiude = magnitude
+        self.axis = axis
+        self.vector = vector
 
-class CellForcedCollision(CellForcedCollisionBase, CellKeyword):
-    """FCL
-    """
-    def _init(self, **kwargs):
-        """
-        """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+    @property
+    def vector(self):
+        _v = self._e_object.getVector()
+        if _v is None:
+            return None
+        else:
+            return (_v.name, _v.x, _v.y, _v.z)
 
-class CellWeightWindow(CellWeightWindowBase, CellKeyword):
-    """WWN
-    """
-    def _init(self, **kwargs):
-        """
-        """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+    @vector.setter
+    def vector(self, v):
+        if isinstance(v, Vector):
+            self._e_object.setVector(v)
+        else:
+            self._e_object.setVector(Vector(str(v[0]), v[1], v[2], v[3]))
 
-class CellDeterministicContribution(CellDeterministicContributionBase, 
-                                    CellKeyword):
-    """DXC
-    """
-    def _init(self, **kwargs):
+class CellForcedCollision(CellForcedCollisionBase):
+    __doc__ = CellForcedCollisionBase().__doc__
+    
+    def _init(self, particles, which_particles):
         """
         """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+        self.particles = particles
+        self.which_particles = which_particles
 
-class CellUncollidedSecondaries(CellUncollidedSecondariesBase, CellKeyword):
-    """UNC
-    """
-    def _init(self, **kwargs):
+class CellWeightWindow(CellWeightWindowBase):
+    __doc__ = CellWeightWindowBase().__doc__
+    
+    def _init(self, particles, weight_window, index=None):
         """
         """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+        self.particles = particles
+        self.weight_window = weight_window
+        self.index = index
 
+class CellDeterministicContribution(CellDeterministicContributionBase):
+    __doc__ = CellDeterministicContributionBase().__doc__
+    
+    def _init(self, particles, sphere):
+        """
+        """
+        self.particles = particles
+        self.sphere = sphere
 
+    @property
+    def sphere(self):
+        _s = self._e_object.getSphere()
+        if _s is None:
+            return None
+        else:
+            return (_s.x, _s.y, _s.z, _s.ri, _s.ro)
+
+    @sphere.setter
+    def sphere(self, s):
+        if isinstance(s, ):
+            self._e_object.setSphere(s)
+        else:
+            self._e_object.setSphere(DTS(str(s[0]), s[1], s[2], s[3], s[4]))
+
+class CellDetectorContribution(CellDetectorContributionBase):
+    __doc__ = CellDetectorContributionBase().__doc__
+    
+    def _init(self, tally, probability):
+        """
+        """
+        self.tally = tally
+        self.probability = probability
+
+class CellEnergyCutoff(CellEnergyCutoffBase):
+    __doc__ = CellEnergyCutoffBase().__doc__
+    
+    def _init(self, particles, lower_cutoff):
+        """
+        """
+        self.particles = particles
+        self.lower_cutoff = lower_cutoff
+
+class CellUncollidedSecondaries(CellUncollidedSecondariesBase):
+    __doc__ = CellUncollidedSecondariesBase().__doc__
+    
+    def _init(self, particles, uncollided):
+        """
+        """
+        self.particles = particles
+        self.uncollided = uncollided
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)

@@ -90,7 +90,7 @@ def decompose(deck):
         region_str = str(deck.cells[k].region)
         #print(region_str)
         while len(re.findall('~\d', region_str)) > 0:
-            deck.cells[k].region = mp.region_from_expression.from_expression(str(deck.cells[k].region), deck.surfaces, deck.cells)
+            deck.cells[k].region = mp.Region.from_expression(str(deck.cells[k].region), deck.surfaces, deck.cells)
             region_str = str(deck.cells[k].region)
         # Replace macrobodies with simple surfaces.
         for j in mbodies:
@@ -99,7 +99,7 @@ def decompose(deck):
             # Positive halfspaces.
             region_str = re.sub('(?<!\d)'+j+'(?!\d)', mbodies[j][0], region_str)
         #print(deck.cells[k], region_str)
-        deck.cells[k].region = mp.region_from_expression.from_expression(region_str, deck.surfaces, deck.cells)
+        deck.cells[k].region = mp.Region.from_expression(region_str, deck.surfaces, deck.cells)
 
 def boundary(surf):
     #TODO: Add in the other case
@@ -448,7 +448,7 @@ def mcnp_to_openmc(deck:InputDeck):
             else:
                 u_list = []
                 # Get lattice array of MCNP universes.
-                lattice = cell.get_lattice()
+                lattice = cell.fill
                 # Dimensions in k, j, i order
                 dim = lattice.dims[::-1] #((1+lattice.k[1]-lattice.k[0]), (1+lattice.j[1]-lattice.j[0]), (1+lattice.i[1]-lattice.i[0]))
                 if str(lattice.type) == '1' or str(lattice.type).upper() == 'REC':

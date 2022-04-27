@@ -1,25 +1,79 @@
 from subprocess import Popen, DEVNULL
 from inspect import getsourcefile
-from os.path import abspath
-import time
+from os.path import dirname, isfile, join
+#from time import sleep
+import psutil
+
+def is_server_running():
+    """Check is the server is already running and get its PID. Used to prevent spawning excess Java processes. Looks for the command `java -jar .../mcnpy/EntryPoint.jar`. In other words, an instance of `EntryPoint.jar` running from within a directory ending in `mcnpy` will be identified as the Java server.
+    """
+    for proc in psutil.process_iter():
+        try:
+            cmd = proc.cmdline()
+            if len(cmd) == 3 and cmd[0] == 'java':
+                if cmd[1] == '-jar' and cmd[2].endswith(join('mcnpy', 'EntryPoint.jar')):
+                    return proc.pid
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return None;
 
 class Server():
+    """The Java Gateway Server which enables Python to access the Java API.
+    """
     def __init__(self):
-        jar_path = abspath(getsourcefile(lambda:0))
-        self.cmd = jar_path[:jar_path.find('java_server.py')] + 'EntryPoint.jar'
-        """Output is suppressed to hide
-        'WARN  on.impl.AbstractLexerBasedConverter  - Only terminal rules are supported by lexer based converters but got ID which is an instance of ParserRule' messages. 
-        """
-        self.proc = Popen(['java', '-jar', self.cmd], stdout=DEVNULL, stderr=DEVNULL)
-        # Wait briefly so the MCNP gateway can get started properly.
-        time.sleep(1)
-        print('MCNP Gateway Server Started')
+        jar_path = dirname(getsourcefile(lambda:0))
+        self.cmd = join(jar_path, 'EntryPoint.jar')
+        self.pid = is_server_running()
+        if self.pid is None:
+            self.start()
+        else:
+            print('MCNP Gateway Server Already Running')
 
-    def restart(self):
-        self.proc = Popen(['java', '-jar', self.cmd], stdout=DEVNULL, stderr=DEVNULL)
-        time.sleep(1)
-        print('MCNP Gateway Server Started')
+    def start(self):
+        """Starts the Java Server.
+        """
+
+        # Output is suppressed to hide:
+        # 'WARN  on.impl.AbstractLexerBasedConverter  - Only terminal rules are 
+        # supported by lexer based converters but got ID which is an instance of
+        #  ParserRule' messages. 
+        self.proc = Popen(['java', '-jar', self.cmd], stdout=DEVNULL, 
+                          stderr=DEVNULL)
+        
+        # TODO: Test wait time on other systems.
+        #sleep(delay)
+        #print('MCNP Gateway Server Started')
 
     def kill(self):
-        Popen.kill(self.proc)
-        print('MCNP Gateway Server Killed')
+        """Kill Java Server."""
+
+        # If we opened it with Popen.
+        if self.pid is None:
+            Popen.kill(self.proc)
+            print('MCNP Gateway Server Killed')
+        # If it was already running.
+        else:
+            if psutil.Process(self.pid).is_running():
+                print('MCNP Gateway Server (pid=' + str(self.pid) 
+                    + ') is Still Running!')
+                parent_pid = psutil.Process(self.pid).parent().pid
+                print('Terminate from Parent Process (pid=' + str(parent_pid) 
+                    + ') or Cmdline')
+            else:
+                print('MCNP Gateway Server Killed')
+            #psutil.Process(self.pid).kill()
+        #print('MCNP Gateway Server Killed')
+
+    def _get_delay(self):
+        path = dirname(getsourcefile(lambda:0))
+        if isfile(join(path,'server_delay')):
+            with open(join(path,'server_delay'), 'r') as f:
+                return float(f.read())
+        else:
+            return 1.0
+
+    """def set_delay(self, delay):
+        path = dirname(getsourcefile(lambda:0))
+        if isfile(join(path,'server_delay')):
+            with open(join(path,'server_delay'), 'w') as f:
+                f.write(str(delay))"""

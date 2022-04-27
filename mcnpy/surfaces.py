@@ -4,12 +4,12 @@ import numpy as np
 
 from mcnpy.wrap import wrappers, overrides
 from mcnpy.region import *
-from mcnpy.basic_structures import Point
+from mcnpy.structures import Point
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
 class Halfspace(HalfspaceBase):
-    """My custom halfspace class."""
+    __doc__ = HalfspaceBase().__doc__
 
     def _init(self, side, surface):
         self.side = side
@@ -83,11 +83,12 @@ class Halfspace(HalfspaceBase):
 
 
 class Surface(SurfaceBase):
-    """My custom surface class."""
+    __doc__ = SurfaceBase().__doc__
 
     def _init(self, name=None, boundary_type='vacuum', comment=None):
         self.name = name
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
         self.boundary_type = boundary_type
         self.coefficients = {}
 
@@ -151,8 +152,9 @@ class Macrobody(ABC):
 # Macrobodies
 
 class Sphere(SphereBase, Surface):
-    """Sphere defined by origin `(x0, y0, z0)` and radius `r`.
+    __doc__ = """Sphere defined by origin `(x0, y0, z0)` and radius `r`.
     """
+    __doc__ += SphereBase().__doc__
 
     def _init(self, name, x0:float, y0:float, z0:float, r:float, 
               boundary_type='VACUUM', comment=None):
@@ -162,7 +164,8 @@ class Sphere(SphereBase, Surface):
         self.z0 = z0
         self.r = r
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -177,9 +180,10 @@ class Sphere(SphereBase, Surface):
         return self.print_surface()
 
 class RectangularPrism(RectangularPrismBase, Surface, Macrobody):
-    """A rectangular parallelpiped defined by X, Y, and Z limits.
+    __doc__ = """A rectangular parallelpiped defined by X, Y, and Z limits.
     Can be infinite in 1 dimension if upper and lower bounds are equal.
     """
+    __doc__ += RectangularPrismBase().__doc__
 
     def _init(self, name, x0:float, x1:float, y0:float, y1:float, z0:float, 
               z1:float, boundary_type='VACUUM', comment=None):
@@ -191,7 +195,8 @@ class RectangularPrism(RectangularPrismBase, Surface, Macrobody):
         self.z0 = z0
         self.z1 = z1
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
         self.facet = None
 
     def get_coefficients(self):
@@ -209,8 +214,9 @@ class RectangularPrism(RectangularPrismBase, Surface, Macrobody):
         return self.print_surface()
 
 class Box(BoxBase, Surface, Macrobody):
-    """A Box defined by a corner and 2 or 3 vectors.
+    __doc__ = """A Box defined by a corner and 2 or 3 vectors.
     """
+    __doc__ += BoxBase().__doc__
 
     def _init(self, name, corner:Point, vectors:list, boundary_type='VACUUM', 
               comment=None):
@@ -218,7 +224,8 @@ class Box(BoxBase, Surface, Macrobody):
         self.corner = corner
         self.vectors = vectors
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -231,9 +238,10 @@ class Box(BoxBase, Surface, Macrobody):
         return self.print_surface()
 
 class CircularCylinder(CircularCylinderBase, Surface, Macrobody):
-    """A right circular cylinder defined by the center of its `base`, an `axis` 
+    __doc__ = """A right circular cylinder defined by the center of its `base`, an `axis` 
     vector, and radius `r`.
     """
+    __doc__ += CircularCylinderBase().__doc__
 
     def _init(self, name, base:Point, axis:Point, r:float, 
               boundary_type='VACUUM', comment=None):
@@ -242,7 +250,8 @@ class CircularCylinder(CircularCylinderBase, Surface, Macrobody):
         self.axis = axis
         self.r = r
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
         self.facet = None
 
     def get_coefficients(self):
@@ -257,10 +266,11 @@ class CircularCylinder(CircularCylinderBase, Surface, Macrobody):
         return self.print_surface()
 
 class HexagonalPrism(HexagonalPrismBase, Surface, Macrobody):
-    """Right Hexagonal Prism defined by a `base` point, `height` vector, and 
+    __doc__ = """Right Hexagonal Prism defined by a `base` point, `height` vector, and 
     facet vectors `facet1`, `facet2`, and `facet3`. The second and third facet 
     vectors are optional.
     """
+    __doc__ += HexagonalPrismBase().__doc__
 
     def _init(self, name, base:Point, height:Point, facet1:Point, facet2=None, 
               facet3=None, boundary_type='VACUUM', comment=None):
@@ -271,7 +281,8 @@ class HexagonalPrism(HexagonalPrismBase, Surface, Macrobody):
         self.facet2 = facet2
         self.facet3 = facet3
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -287,10 +298,11 @@ class HexagonalPrism(HexagonalPrismBase, Surface, Macrobody):
         return self.print_surface()
 
 class EllipticalCylinder(EllipticalCylinderBase, Surface, Macrobody):
-    """Right Elliptical Cylinder defined by a `base` point, `axis` height 
+    __doc__ = """Right Elliptical Cylinder defined by a `base` point, `axis` height 
     vector, ellipse major axis vector `v1`, and ellipse minor axis vector `v1` 
     or radius `r`.
     """
+    __doc__ += EllipticalCylinderBase().__doc__
 
     def _init(self, name, base:Point, axis:Point, v1:Point, v2=None, rm=None, 
               boundary_type='VACUUM', comment=None):
@@ -301,7 +313,8 @@ class EllipticalCylinder(EllipticalCylinderBase, Surface, Macrobody):
         self.v2 = v2
         self.rm = rm
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -317,9 +330,10 @@ class EllipticalCylinder(EllipticalCylinderBase, Surface, Macrobody):
         return self.print_surface()
 
 class TruncatedCone(TruncatedConeBase, Surface, Macrobody):
-    """Truncated Right Angle Cone defined by a `base` point, `axis` height 
+    __doc__ = """Truncated Right Angle Cone defined by a `base` point, `axis` height 
     vector, radius of the lower cone `r0`, and radius of the upper cone `r1`.
     """
+    __doc__ += TruncatedConeBase().__doc__
 
     def _init(self, name, base:Point, axis:Point, r0:float, r1:float, 
               boundary_type='VACUUM', comment=None):
@@ -329,7 +343,8 @@ class TruncatedCone(TruncatedConeBase, Surface, Macrobody):
         self.r0 = r0
         self.r1 = r1
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -344,9 +359,10 @@ class TruncatedCone(TruncatedConeBase, Surface, Macrobody):
         return self.print_surface()
 
 class Wedge(WedgeBase, Surface, Macrobody):
-    """A Wedge defined by a `vertex`, 2 `vectors` for sides of the triangular 
+    __doc__ = """A Wedge defined by a `vertex`, 2 `vectors` for sides of the triangular 
     base, and an `axis` height vector.
     """
+    __doc__ += WedgeBase().__doc__
 
     def _init(self, name, vertex:Point, axis:Point, vectors:list, 
               boundary_type='VACUUM', comment=None):
@@ -355,7 +371,8 @@ class Wedge(WedgeBase, Surface, Macrobody):
         self.axis = axis
         self.vectors = vectors
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -369,12 +386,9 @@ class Wedge(WedgeBase, Surface, Macrobody):
         return self.print_surface()
 
 class Ellipsoid(EllipsoidBase, Surface, Macrobody):
-    """An Ellipsoid defined by a 2 points/vectors and a radius. By default, `rm`
-     is the major radius and `v1` and `v2` are the coordinates of the first and 
-     second focii. If `rm < 0` (meaning `rm` is now the minor radius), then `v1`
-      is the coordinates of the ellipsoid's center and `v2` is its major axis 
-      vector.
+    __doc__ = """An Ellipsoid defined by a 2 points/vectors and a radius. By default, `rm` is the major radius and `v1` and `v2` are the coordinates of the first and second focii. If `rm < 0` (meaning `rm` is now the minor radius), then `v1` is the coordinates of the ellipsoid's center and `v2` is its major axis vector.
     """
+    __doc__ += EllipsoidBase().__doc__
 
     def _init(self, name, v1:Point, v2:Point, rm:float, boundary_type='VACUUM', 
               comment=None):
@@ -383,7 +397,8 @@ class Ellipsoid(EllipsoidBase, Surface, Macrobody):
         self.v2 = v2
         self.rm = rm
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -397,29 +412,9 @@ class Ellipsoid(EllipsoidBase, Surface, Macrobody):
         return self.print_surface()
 
 class Polyhedron(PolyhedronBase, Surface, Macrobody):
-    """An Arbitrary Polyhedron. There must be eight triplets of entries input 
-    for the ARB to describe the (x,y,z) of the corners, although some may not be
-     used (just use triplets of zeros). These are followed by six more entries, 
-     ni, which follow a prescribed convention: each entry is a four-digit 
-     integer that defines a side of the ARB in terms of the corners for the 
-     side. For example, the entry 1278 would define this plane surface to be 
-     bounded by the first, second, seventh, and eighth triplets (or 
-     equivalently, corners). Since three points are sufficient to determine the 
-     plane, only the first, second, and seventh corners would be used in this 
-     example to determine the plane. The distance from the plane to the fourth 
-     corner (corner 8 in the example) is determined by MCNP6. If the absolute 
-     value of this distance is greater than 1.0E-6, an error message is given 
-     and the distance is printed in the OUTP file along with the (x,y,z) that
-      would lie on the plane. If the fourth digit is zero, the fourth point is 
-      ignored. For a four-sided ARB, four non-zero four-digit integers (last 
-      digit is zero for four-sided since there are only three corners for each 
-      side) are required to define the sides. For a five-sided ARB, five 
-      non-zero four-digit integers are required, and six non-zero four-digit 
-      integers are required for a six-sided ARB. Since there must be 30 entries 
-      altogether for an ARB (or MCNP6 gives an error message), the last two 
-      integers are zero for the four-sided ARB and the last integer is zero for 
-      a five-sided ARB.
+    __doc__ = """An Arbitrary Polyhedron. There must be eight triplets of entries input for the ARB to describe the (x,y,z) of the corners, although some may not be used (just use triplets of zeros). These are followed by six more entries, ni, which follow a prescribed convention: each entry is a four-digit integer that defines a side of the ARB in terms of the corners for the side. For example, the entry 1278 would define this plane surface to be bounded by the first, second, seventh, and eighth triplets (or equivalently, corners). Since three points are sufficient to determine the plane, only the first, second, and seventh corners would be used in this example to determine the plane. The distance from the plane to the fourth corner (corner 8 in the example) is determined by MCNP6. If the absolute value of this distance is greater than 1.0E-6, an error message is given and the distance is printed in the OUTP file along with the (x,y,z) that would lie on the plane. If the fourth digit is zero, the fourth point is ignored. For a four-sided ARB, four non-zero four-digit integers (last digit is zero for four-sided since there are only three corners for each side) are required to define the sides. For a five-sided ARB, five non-zero four-digit integers are required, and six non-zero four-digit integers are required for a six-sided ARB. Since there must be 30 entries altogether for an ARB (or MCNP6 gives an error message), the last two integers are zero for the four-sided ARB and the last integer is zero for a five-sided ARB.
     """
+    __doc__ += PolyhedronBase().__doc__
 
     def _init(self, name, corners:list, sides:list, boundary_type='VACUUM', 
               comment=None):
@@ -427,7 +422,8 @@ class Polyhedron(PolyhedronBase, Surface, Macrobody):
         self.corners = corners
         self.sides = sides
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -479,8 +475,9 @@ class Polyhedron(PolyhedronBase, Surface, Macrobody):
 #TODO: Add transformation functions for tori and X, Y, Z surfaces.
 
 class Plane(PlaneBase, Surface):
-    """A plane defined by Ax + By + Cz - D = 0.
+    __doc__ = """A plane defined by Ax + By + Cz - D = 0.
     """
+    __doc__ += PlaneBase().__doc__
 
     def _init(self, name, a:float, b:float, c:float, d:float, 
               boundary_type='VACUUM', comment=None):
@@ -490,7 +487,8 @@ class Plane(PlaneBase, Surface):
         self.c = c
         self.d = d
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -523,14 +521,16 @@ class Plane(PlaneBase, Surface):
         return self.print_surface()
 
 class XPlane(XPlaneBase, Surface):
-    """A plane defined by x - x0 = 0.
+    __doc__ = """A plane defined by x - x0 = 0.
     """
+    __doc__ += XPlaneBase().__doc__
 
     def _init(self, name, x0:float, boundary_type='VACUUM', comment=None):
         self.name = name
         self.x0 = x0
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -560,14 +560,16 @@ class XPlane(XPlaneBase, Surface):
         return self.print_surface()
 
 class YPlane(YPlaneBase, Surface):
-    """A plane defined by y - y0 = 0.
+    __doc__ = """A plane defined by y - y0 = 0.
     """
+    __doc__ += YPlaneBase().__doc__
 
     def _init(self, name, y0:float, boundary_type='VACUUM', comment=None):
         self.name = name
         self.y0 = y0
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -597,14 +599,16 @@ class YPlane(YPlaneBase, Surface):
         return self.print_surface()
 
 class ZPlane(ZPlaneBase, Surface):
-    """A plane defined by z - z0 = 0.
+    __doc__ = """A plane defined by z - z0 = 0.
     """
+    __doc__ += ZPlaneBase().__doc__
 
     def _init(self, name, z0:float, boundary_type='VACUUM', comment=None):
         self.name = name
         self.z0 = z0
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -634,8 +638,9 @@ class ZPlane(ZPlaneBase, Surface):
         return self.print_surface()
 
 class XCylinder(XCylinderBase, Surface):
-    """A cylinder parallel to the x-axis.
+    __doc__ = """A cylinder parallel to the x-axis.
     """
+    __doc__ += XCylinderBase().__doc__
 
     def _init(self, name, y0, z0, r, boundary_type='VACUUM', comment=None):
         self.name = name
@@ -643,7 +648,8 @@ class XCylinder(XCylinderBase, Surface):
         self.z0 = z0
         self.r = r
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -675,8 +681,9 @@ class XCylinder(XCylinderBase, Surface):
         return self.print_surface()
 
 class YCylinder(YCylinderBase, Surface):
-    """A cylinder parallel to the y-axis.
+    __doc__ = """A cylinder parallel to the y-axis.
     """
+    __doc__ += YCylinderBase().__doc__
 
     def _init(self, name, x0, z0, r, boundary_type='VACUUM', comment=None):
         self.name = name
@@ -684,7 +691,8 @@ class YCylinder(YCylinderBase, Surface):
         self.z0 = z0
         self.r = r
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -716,8 +724,9 @@ class YCylinder(YCylinderBase, Surface):
         return self.print_surface()
 
 class ZCylinder(ZCylinderBase, Surface):
-    """A cylinder parallel to the z-axis.
+    __doc__ = """A cylinder parallel to the z-axis.
     """
+    __doc__ += ZCylinderBase().__doc__
 
     def _init(self, name, x0, y0, r, boundary_type='VACUUM', comment=None):
         self.name = name
@@ -725,7 +734,8 @@ class ZCylinder(ZCylinderBase, Surface):
         self.y0 = y0
         self.r = r
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -757,8 +767,9 @@ class ZCylinder(ZCylinderBase, Surface):
         return self.print_surface()
 
 class XCone(XConeBase, Surface):
-    """A cone parallel to the x-axis. `sheet` can be `+/-1`.
+    __doc__ = """A cone parallel to the x-axis. `sheet` can be `+/-1`.
     """
+    __doc__ += XConeBase().__doc__
 
     def _init(self, name, x0, y0, z0, r2, sheet=None, boundary_type='VACUUM', 
               comment=None):
@@ -768,7 +779,8 @@ class XCone(XConeBase, Surface):
         self.z0 = z0
         self.r2 = r2
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
         if sheet is not None:
             _sheet = SheetBase()
             _sheet.value = 1
@@ -815,8 +827,9 @@ class XCone(XConeBase, Surface):
         return self.print_surface()
 
 class YCone(YConeBase, Surface):
-    """A cone parallel to the y-axis. `sheet` can be `+/-1`.
+    __doc__ = """A cone parallel to the y-axis. `sheet` can be `+/-1`.
     """
+    __doc__ += YConeBase().__doc__
 
     def _init(self, name, x0, y0, z0, r2, sheet=None, boundary_type='VACUUM', 
               comment=None):
@@ -826,7 +839,8 @@ class YCone(YConeBase, Surface):
         self.z0 = z0
         self.r2 = r2
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
         if sheet is not None:
             _sheet = SheetBase()
             _sheet.value = 1
@@ -873,8 +887,9 @@ class YCone(YConeBase, Surface):
         return self.print_surface()
 
 class ZCone(ZConeBase, Surface):
-    """A cone parallel to the z-axis. `sheet` can be `+/-1`.
+    __doc__ = """A cone parallel to the z-axis. `sheet` can be `+/-1`.
     """
+    __doc__ += ZConeBase().__doc__
 
     def _init(self, name, x0, y0, z0, r2, sheet=None, boundary_type='VACUUM', 
               comment=None):
@@ -884,7 +899,8 @@ class ZCone(ZConeBase, Surface):
         self.z0 = z0
         self.r2 = r2
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
         if sheet is not None:
             _sheet = SheetBase()
             _sheet.value = 1
@@ -931,8 +947,9 @@ class ZCone(ZConeBase, Surface):
         return self.print_surface()
 
 class Quadric(QuadricBase, Surface):
-    """Quadric (GQ) with axes not parallel to x-, y-, or z-axis.
+    __doc__ = """Quadric (GQ) with axes not parallel to x-, y-, or z-axis.
     """
+    __doc__ += QuadricBase().__doc__
 
     def _init(self, name, a=1, b=0, c=0, d=0, e=0, f=0, g=0, h=0, j=0, k=1, 
               boundary_type='VACUUM', comment=None):
@@ -948,7 +965,8 @@ class Quadric(QuadricBase, Surface):
         self.j = j
         self.k = k
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -976,8 +994,9 @@ class Quadric(QuadricBase, Surface):
         return self.print_surface()
 
 class XYZQuadric(XYZQuadricBase, Surface):
-    """Quadric (SQ) with axes parallel to x-, y-, or z-axis.
+    __doc__ = """Quadric (SQ) with axes parallel to x-, y-, or z-axis.
     """
+    __doc__ += XYZQuadricBase().__doc__
 
     def _init(self, name, a=1, b=0, c=0, d=0, e=0, f=0, g=0, x=0, y=0, z=1, 
               boundary_type='VACUUM', comment=None):
@@ -993,7 +1012,8 @@ class XYZQuadric(XYZQuadricBase, Surface):
         self.y = y
         self.z = z
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -1034,8 +1054,10 @@ class XYZQuadric(XYZQuadricBase, Surface):
         return self.print_surface()
 
 class XTorus(XTorusBase, Surface):
-    """Torus parallel to x-axis.
+    __doc__ = """Torus parallel to x-axis.
     """
+    __doc__ += XTorusBase().__doc__
+
     def _init(self, name, x0:float, y0:float, z0:float, a:float, b:float, 
               c:float, boundary_type='VACUUM', comment=None):
         self.name = name
@@ -1046,7 +1068,8 @@ class XTorus(XTorusBase, Surface):
         self.b = b
         self.c = c
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -1063,8 +1086,10 @@ class XTorus(XTorusBase, Surface):
         return self.print_surface()
 
 class YTorus(YTorusBase, Surface):
-    """Torus parallel to y-axis.
+    __doc__ = """Torus parallel to y-axis.
     """
+    __doc__ += YTorusBase().__doc__
+
     def _init(self, name, x0:float, y0:float, z0:float, a:float, b:float, 
               c:float, boundary_type='VACUUM', comment=None):
         self.name = name
@@ -1075,7 +1100,8 @@ class YTorus(YTorusBase, Surface):
         self.b = b
         self.c = c
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -1092,8 +1118,10 @@ class YTorus(YTorusBase, Surface):
         return self.print_surface()
 
 class ZTorus(ZTorusBase, Surface):
-    """Torus parallel to z-axis.
+    __doc__ = """Torus parallel to z-axis.
     """
+    __doc__ += ZTorusBase().__doc__
+
     def _init(self, name, x0:float, y0:float, z0:float, a:float, b:float, 
               c:float, boundary_type='VACUUM', comment=None):
         self.name = name
@@ -1104,7 +1132,8 @@ class ZTorus(ZTorusBase, Surface):
         self.b = b
         self.c = c
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -1121,13 +1150,16 @@ class ZTorus(ZTorusBase, Surface):
         return self.print_surface()
 
 class PPoints(PPointsBase, Surface):
-    """Plane defined by 3 points
+    __doc__ = """Plane defined by 3 points
     """
+    __doc__ += PPointsBase().__doc__
+
     def _init(self, name, points:list, boundary_type='VACUUM', comment=None):
         self.name = name
         self.points = points
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -1166,13 +1198,16 @@ class PPoints(PPointsBase, Surface):
         return self.print_surface()
 
 class XPoints(XPointsBase, Surface):
-    """X symmetric surface defined by points
+    __doc__ = """X symmetric surface defined by points
     """
+    __doc__ += XPointsBase().__doc__
+
     def _init(self, name, points:list, boundary_type='VACUUM', comment=None):
         self.name = name
         self.points = points
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -1184,13 +1219,16 @@ class XPoints(XPointsBase, Surface):
         return self.print_surface()
 
 class YPoints(YPointsBase, Surface):
-    """Y symmetric surface defined by points
+    __doc__ = """Y symmetric surface defined by points
     """
+    __doc__ += YPointsBase().__doc__
+
     def _init(self, name, points:list, boundary_type='VACUUM', comment=None):
         self.name = name
         self.points = points
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -1202,13 +1240,16 @@ class YPoints(YPointsBase, Surface):
         return self.print_surface()
 
 class ZPoints(ZPointsBase, Surface):
-    """Z symmetric surface defined by points
+    __doc__ = """Z symmetric surface defined by points
     """
+    __doc__ += ZPointsBase().__doc__
+
     def _init(self, name, points:list, boundary_type='VACUUM', comment=None):
         self.name = name
         self.points = points
         self.boundary_type = boundary_type
-        self.comment = comment
+        if comment is not None:
+            self.comment = comment
 
     def get_coefficients(self):
         coef = OrderedDict()

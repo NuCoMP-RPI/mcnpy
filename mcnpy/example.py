@@ -1,4 +1,30 @@
 class RCF():
+    """A full core model of RPI's Reactor Critical Facility. A very critical reactor that will live on in the virtual world no matter what Shirley and the RPI administration does. This example will generate a new MCNP deck, build the RCF, and write the model to file.`water` sets the height of the water in the reactor in inches (default is `68.0in`). `bank` sets the control rod bank height in inches (default is rods fully bottomed at `0.0in`). `sporty` when set to `True` removes the center fuel pin which puts the RCF in sport mode. `filename` specifies the name of the new MCNP input (default is `./mcnp_inps/rcf_full_api.mcnp`). The model can be accessed with the `model` attribute.
+
+    Parameters
+    ----------
+    filename : str, optional
+        Name of file to be written.
+    water : float, optional
+        RCF water height in inches.
+    bank : float, optional
+        RCF control rod bank height in inches.
+    sporty: boolean, optional
+        Whether or not sport mode is engaged.
+
+    Attributes
+    ----------
+    filename : str
+        Name of file to be written.
+    water : float
+        RCF water height in inches.
+    bank : float
+        RCF control rod bank height in inches.
+    sporty: boolean
+        Whether or not sport mode is engaged.
+    deck : mcnp.InputDeck
+        The MCNP model object.
+    """
     def __init__(self, filename='rcf_full_api.mcnp', 
                  water=68.0, bank=0.0, sporty=False):
         """A full core model of RPI's Reactor Critical Facility. A very 
@@ -14,14 +40,14 @@ class RCF():
         `model` attribute.
         """
         import numpy as np
-        from mcnpy import Cell, InputDeck, Lattice, Point, UniverseList
+        from mcnpy import Cell, Deck, Lattice, Point, UniverseList
         from mcnpy import MaterialNuclide as Nuclide
-        from mcnpy.geometry import Transform, Transformation
-        from mcnpy.materials import Material, Sab
-        from mcnpy.source import CriticalitySource, CriticalitySourcePoints
-        from mcnpy.surfaces import CircularCylinder as RCC
-        from mcnpy.surfaces import RectangularPrism as RPP
-        from mcnpy.surfaces import Plane, PPoints
+        from mcnpy import Transform, Transformation
+        from mcnpy import Material, Sab
+        from mcnpy import CriticalitySource, CriticalitySourcePoints
+        from mcnpy import CircularCylinder as RCC
+        from mcnpy import RectangularPrism as RPP
+        from mcnpy import Plane, PPoints
 
         """
         A. Pin Anatomy (bottom to top):
@@ -129,7 +155,7 @@ class RCF():
         channel_width = 3.75
 
         # Create a new deck object.
-        inp = InputDeck()
+        inp = Deck()
         self.deck = inp
 
         # Boundary surfaces
@@ -478,7 +504,7 @@ class RCF():
         inp.add_all([m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m13, m14])
 
         # Add SaB to m1, m2, and m9.
-        sab_m1 = Sab(m1, [('lwtr', '10t')])
+        sab_m1 = Sab(m1, ['lwtr'])
         sab_m2 = Sab(m2, ['o_in_uo2', 'u238_in_uo2'])
         sab_m9 = Sab(m9, ['lwtr'])
         inp.add_all([sab_m1, sab_m2, sab_m9])
@@ -851,9 +877,9 @@ class RCF():
         imp = [{1.0 : par}, {0 : par}]
         for k in inp.cells:
             if inp.cells[k] == c_out_of_bounds:
-                inp.cells[k].set_importances(imp[1])
+                inp.cells[k].importances = imp[1]
             else:
-                inp.cells[k].set_importances(imp[0])
+                inp.cells[k].importances = imp[0]
 
         # Add kcode.
         kcode = CriticalitySource(histories=1e5, keff_guess=1.0, 
@@ -877,10 +903,7 @@ class RCF():
         
         return string
 
-    def write(self, filename=None):
-        if filename is None:
-            with open(self.filename, 'w') as f:
-                f.write(self.deck.export(title=self.title))
-        else:
-            with open(filename, 'w') as f:
-                f.write(self.deck.export(title=self.title))
+    def write(self):
+        """Write the RCF model to file.
+        """
+        self.deck.write(self.filename, self.title)

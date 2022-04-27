@@ -12,8 +12,10 @@ class Tally(ABC):
     """
 
 class TallySurfaceCurrent(TallySurfaceCurrentBase, Tally):
-    """F1
+    __doc__ = """F1
     """
+    __doc__ += TallySurfaceCurrentBase().__doc__
+
     def _init(self, **kwargs):
         """
         """
@@ -21,8 +23,10 @@ class TallySurfaceCurrent(TallySurfaceCurrentBase, Tally):
             setattr(self, k.lower(), kwargs[k])
 
 class TallySurfaceFlux(TallySurfaceFluxBase, Tally):
-    """F2
+    __doc__ = """F2
     """
+    __doc__ += TallySurfaceFluxBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -30,8 +34,10 @@ class TallySurfaceFlux(TallySurfaceFluxBase, Tally):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyCellFlux(TallyCellFluxBase, Tally):
-    """F4
+    __doc__ = """F4
     """
+    __doc__ += TallyCellFluxBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -39,8 +45,10 @@ class TallyCellFlux(TallyCellFluxBase, Tally):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyEnergyDeposition(TallyEnergyDepositionBase, Tally):
-    """F6
+    __doc__ = """F6
     """
+    __doc__ += TallyEnergyDepositionBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -48,8 +56,10 @@ class TallyEnergyDeposition(TallyEnergyDepositionBase, Tally):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyCollisionHeating(TallyCollisionHeatingBase, Tally):
-    """+F6
+    __doc__ = """+F6
     """
+    __doc__ += TallyCollisionHeatingBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -57,8 +67,10 @@ class TallyCollisionHeating(TallyCollisionHeatingBase, Tally):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyFissionHeating(TallyFissionHeatingBase, Tally):
-    """F7
+    __doc__ = """F7
     """
+    __doc__ += TallyFissionHeatingBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -66,8 +78,10 @@ class TallyFissionHeating(TallyFissionHeatingBase, Tally):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyPulseHeight(TallyPulseHeightBase, Tally):
-    """F8
+    __doc__ = """F8
     """
+    __doc__ += TallyPulseHeightBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -75,8 +89,10 @@ class TallyPulseHeight(TallyPulseHeightBase, Tally):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyChargeDeposition(TallyChargeDepositionBase, Tally):
-    """+F8
+    __doc__ = """+F8
     """
+    __doc__ += TallyChargeDepositionBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -88,8 +104,10 @@ class TallyDetector(ABC):
     """
 
 class TallyPointFlux(TallyPointFluxBase, Tally, TallyDetector):
-    """F5
+    __doc__ = """F5
     """
+    __doc__ += TallyPointFluxBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -97,8 +115,10 @@ class TallyPointFlux(TallyPointFluxBase, Tally, TallyDetector):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyRingFlux(TallyRingFluxBase, Tally, TallyDetector):
-    """F5
+    __doc__ = """F5
     """
+    __doc__ += TallyRingFluxBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -110,8 +130,10 @@ class TallyRadiographyFlux(ABC):
     """
 
 class TallyPinholeImageFlux(TallyPinholeImageFluxBase, Tally, TallyRadiographyFlux, TallyDetector):
-    """FIP
+    __doc__ = """FIP
     """
+    __doc__ += TallyPinholeImageFluxBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -119,8 +141,10 @@ class TallyPinholeImageFlux(TallyPinholeImageFluxBase, Tally, TallyRadiographyFl
             setattr(self, k.lower(), kwargs[k])
 
 class TallyPlanarImageFlux(TallyPlanarImageFluxBase, Tally, TallyRadiographyFlux, TallyDetector):
-    """FIR
+    __doc__ = """FIR
     """
+    __doc__ += TallyPlanarImageFluxBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -128,8 +152,10 @@ class TallyPlanarImageFlux(TallyPlanarImageFluxBase, Tally, TallyRadiographyFlux
             setattr(self, k.lower(), kwargs[k])
 
 class TallyCylindricalImageFlux(TallyCylindricalImageFluxBase, Tally, TallyRadiographyFlux, TallyDetector):
-    """FIC
+    __doc__ = """FIC
     """
+    __doc__ += TallyCylindricalImageFluxBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -141,8 +167,10 @@ class MeshTally(ABC):
     """
 
 class TallyMesh(TallyMeshBase, Tally, MeshTally):
-    """FMESH
+    __doc__ = """FMESH
     """
+    __doc__ += TallyMeshBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -150,8 +178,10 @@ class TallyMesh(TallyMeshBase, Tally, MeshTally):
             setattr(self, k.lower(), kwargs[k])
 
 class SuperimposedTallyMesh(SuperimposedTallyMeshBase, Tally, MeshTally):
-    """TMESH
+    __doc__ = """TMESH
     """
+    __doc__ += SuperimposedTallyMeshBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -159,8 +189,10 @@ class SuperimposedTallyMesh(SuperimposedTallyMeshBase, Tally, MeshTally):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyComment(TallyCommentBase, TallySetting):
-    """TC
+    __doc__ = """TC
     """
+    __doc__ += TallyCommentBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -168,8 +200,10 @@ class TallyComment(TallyCommentBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyEnergies(TallyEnergiesBase, TallySetting):
-    """E
+    __doc__ = """E
     """
+    __doc__ += TallyEnergiesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -177,8 +211,10 @@ class TallyEnergies(TallyEnergiesBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyTimes(TallyTimesBase, TallySetting):
-    """T
+    __doc__ = """T
     """
+    __doc__ += TallyTimesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -186,8 +222,10 @@ class TallyTimes(TallyTimesBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyTimesCyclic(TallyTimesCyclicBase, TallySetting):
-    """T
+    __doc__ = """T
     """
+    __doc__ += TallyTimesCyclicBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -195,8 +233,10 @@ class TallyTimesCyclic(TallyTimesCyclicBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyAngles(TallyAnglesBase, TallySetting):
-    """C
+    __doc__ = """C
     """
+    __doc__ += TallyAnglesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -204,8 +244,10 @@ class TallyAngles(TallyAnglesBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyPrint(TallyPrintBase, TallySetting):
-    """FQ
+    __doc__ = """FQ
     """
+    __doc__ += TallyPrintBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -213,8 +255,10 @@ class TallyPrint(TallyPrintBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyMultiplier(TallyMultiplierBase, TallySetting):
-    """FM
+    __doc__ = """FM
     """
+    __doc__ += TallyMultiplierBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -222,8 +266,10 @@ class TallyMultiplier(TallyMultiplierBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class DoseEnergy(DoseEnergyBase, TallySetting):
-    """DE
+    __doc__ = """DE
     """
+    __doc__ += DoseEnergyBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -231,8 +277,10 @@ class DoseEnergy(DoseEnergyBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class DoseTable(DoseTableBase, TallySetting):
-    """DF
+    __doc__ = """DF
     """
+    __doc__ += DoseTableBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -240,8 +288,10 @@ class DoseTable(DoseTableBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class DoseFunction(DoseFunctionBase, TallySetting):
-    """DF
+    __doc__ = """DF
     """
+    __doc__ += DoseFunctionBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -249,8 +299,10 @@ class DoseFunction(DoseFunctionBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TimeMultiplier(TimeMultiplierBase, TallySetting):
-    """TM
+    __doc__ = """TM
     """
+    __doc__ += TimeMultiplierBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -258,8 +310,10 @@ class TimeMultiplier(TimeMultiplierBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class EnergyMultiplier(EnergyMultiplierBase, TallySetting):
-    """EM
+    __doc__ = """EM
     """
+    __doc__ += EnergyMultiplierBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -267,8 +321,10 @@ class EnergyMultiplier(EnergyMultiplierBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class FlagSurfaces(FlagSurfacesBase, TallySetting):
-    """SF
+    __doc__ = """SF
     """
+    __doc__ += FlagSurfacesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -276,8 +332,10 @@ class FlagSurfaces(FlagSurfacesBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TallySegments(TallySegmentsBase, TallySetting):
-    """FS
+    __doc__ = """FS
     """
+    __doc__ += TallySegmentsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -285,8 +343,10 @@ class TallySegments(TallySegmentsBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TallySegmentDivisors(TallySegmentDivisorsBase, TallySetting):
-    """SD
+    __doc__ = """SD
     """
+    __doc__ += TallySegmentDivisorsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -294,8 +354,10 @@ class TallySegmentDivisors(TallySegmentDivisorsBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyUser(TallyUserBase, TallySetting):
-    """FU
+    __doc__ = """FU
     """
+    __doc__ += TallyUserBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -303,8 +365,10 @@ class TallyUser(TallyUserBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyFluctuation(TallyFluctuationBase, TallySetting):
-    """FT
+    __doc__ = """FT
     """
+    __doc__ += TallyFluctuationBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -312,8 +376,10 @@ class TallyFluctuation(TallyFluctuationBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TallyFluctuationROC(TallyFluctuationROCBase, TallySetting):
-    """FT
+    __doc__ = """FT
     """
+    __doc__ += TallyFluctuationROCBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -323,6 +389,7 @@ class TallyFluctuationROC(TallyFluctuationROCBase, TallySetting):
 class NoTransport(NoTransportBase, TallySetting):
     """NOTRN
     """
+    
     def _init(self, **kwargs):
         """
         """
@@ -330,8 +397,10 @@ class NoTransport(NoTransportBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class Perturbation(PerturbationBase, TallySetting):
-    """PERT
+    __doc__ = """PERT
     """
+    __doc__ += PerturbationBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -339,8 +408,10 @@ class Perturbation(PerturbationBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class ReactivityPerturbation(ReactivityPerturbationBase, TallySetting):
-    """KPERT
+    __doc__ = """KPERT
     """
+    __doc__ += ReactivityPerturbationBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -348,8 +419,10 @@ class ReactivityPerturbation(ReactivityPerturbationBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class CriticalitySensitivity(CriticalitySensitivityBase, TallySetting):
-    """KSEN
+    __doc__ = """KSEN
     """
+    __doc__ += CriticalitySensitivityBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -357,8 +430,10 @@ class CriticalitySensitivity(CriticalitySensitivityBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class LatticeSpeedTallyEnhancement(LatticeSpeedTallyEnhancementBase, TallySetting):
-    """SPDTL
+    __doc__ = """SPDTL
     """
+    __doc__ += LatticeSpeedTallyEnhancementBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -366,8 +441,10 @@ class LatticeSpeedTallyEnhancement(LatticeSpeedTallyEnhancementBase, TallySettin
             setattr(self, k.lower(), kwargs[k])
 
 class TallyTreatments(TallyTreatmentsBase, TallySetting):
-    """FT
+    __doc__ = """FT
     """
+    __doc__ += TallyTreatmentsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -375,8 +452,10 @@ class TallyTreatments(TallyTreatmentsBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class AngleMultiplier(AngleMultiplierBase, TallySetting):
-    """CM
+    __doc__ = """CM
     """
+    __doc__ += AngleMultiplierBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -384,13 +463,51 @@ class AngleMultiplier(AngleMultiplierBase, TallySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class FlagCells(FlagCellsBase, TallySetting):
-    """CF
+    __doc__ = """CF
     """
+    __doc__ += FlagCellsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
+
+class TallyDivisor(TallyDivisorBase):
+    __doc__ = TallyDivisorBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class DoseNormalization(DoseNormalizationBase):
+    __doc__ = DoseNormalizationBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class TallyRingFluxDetector(TallyRingFluxDetectorBase):
+    __doc__ = TallyRingFluxDetectorBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class TallyPointFluxDetector(TallyPointFluxDetectorBase):
+    __doc__ = TallyPointFluxDetectorBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)

@@ -94,7 +94,8 @@ def preprocessor(filename):
     """
     #pos_hs = compile(' \+[0-9]')
     sl_comment = compile('[$]')
-    ml_comment = compile('^[C ].*', IGNORECASE)
+    #ml_comment = compile('^[C ].*', IGNORECASE)
+    ml_comment = compile('^C ', IGNORECASE)
     
     with open(filename, 'r') as input, open('modified_'+filename, 'w') as output:
         deck = input.read().splitlines()
@@ -103,18 +104,25 @@ def preprocessor(filename):
         for line in deck:
             if search(ml_comment, line):
                 line = ''
-            elif search(sl_comment, line):
-                index = search(sl_comment, line).span()[0]
-                if index != 0:
-                    line = line[:index]
-            """if search(pos_hs, line) and end is False:
-                line = line.replace(' +', ' ')
-            if line in ['\n', '\r\n']:
-                end = True"""
-            string = string + line + '\n'
+            else:
+                if search(sl_comment, line):
+                    index = search(sl_comment, line).span()[0]
+                    if index != 0:
+                        line = line[:index]
+                string = string + line + '\n'
         output.write(string)
         
     return 'modified_'+filename
+
+
+"""8800 60  2.00000E-15      ((-8835  +8602  -8625)                 
+                   :(-8817  +8604  +8625  -8630)          
+c                   :(-8817  +8630  -8845  +8622  +8624)   
+                   :(-8810  +8845  -8846  +8622  +8624)   
+                   :(-8803  +8846  -8901  +8622  +8624))  
+                   #(8604 -86254 86252 -86253)                     imp:n=1                              
+cmesh
+c4 """
 
 def formatter(deck, title=None):
     """Used to serialize the deck as a string. There are currently some spacing issues when making new deck objects.

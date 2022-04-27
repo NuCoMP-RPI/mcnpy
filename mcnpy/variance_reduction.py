@@ -8,8 +8,10 @@ class VarianceReductionSetting(ABC):
     """
 
 class CellImportances(CellImportancesBase, VarianceReductionSetting):
-    """IMP
+    __doc__ = """IMP
     """
+    __doc__ += CellImportancesBase().__doc__
+
     def _init(self, **kwargs):
         """
         """
@@ -17,8 +19,10 @@ class CellImportances(CellImportancesBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class RussianRoulette(RussianRouletteBase, VarianceReductionSetting):
-    """VAR RR
+    __doc__ = """VAR RR
     """
+    __doc__ += RussianRouletteBase().__doc__
+
     def _init(self, **kwargs):
         """
         """
@@ -26,8 +30,10 @@ class RussianRoulette(RussianRouletteBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class WeightWindowEnergies(WeightWindowEnergiesBase, VarianceReductionSetting):
-    """WWE
+    __doc__ = """WWE
     """
+    __doc__ += WeightWindowEnergiesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -35,8 +41,10 @@ class WeightWindowEnergies(WeightWindowEnergiesBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class WeightWindowTimes(WeightWindowTimesBase, VarianceReductionSetting):
-    """WWT
+    __doc__ = """WWT
     """
+    __doc__ += WeightWindowTimesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -44,8 +52,10 @@ class WeightWindowTimes(WeightWindowTimesBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class WeightWindowBounds(WeightWindowBoundsBase, VarianceReductionSetting):
-    """WWN
+    __doc__ = """WWN
     """
+    __doc__ += WeightWindowBoundsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -53,8 +63,10 @@ class WeightWindowBounds(WeightWindowBoundsBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class WeightWindowParameters(WeightWindowParametersBase, VarianceReductionSetting):
-    """WWP
+    __doc__ = """WWP
     """
+    __doc__ += WeightWindowParametersBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -62,8 +74,10 @@ class WeightWindowParameters(WeightWindowParametersBase, VarianceReductionSettin
             setattr(self, k.lower(), kwargs[k])
 
 class WeightWindowGenerator(WeightWindowGeneratorBase, VarianceReductionSetting):
-    """WWG
+    __doc__ = """WWG
     """
+    __doc__ += WeightWindowGeneratorBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -71,8 +85,10 @@ class WeightWindowGenerator(WeightWindowGeneratorBase, VarianceReductionSetting)
             setattr(self, k.lower(), kwargs[k])
 
 class WeightWindowGeneratorEnergies(WeightWindowGeneratorEnergiesBase, VarianceReductionSetting):
-    """WWGE
+    __doc__ = """WWGE
     """
+    __doc__ += WeightWindowGeneratorEnergiesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -80,8 +96,10 @@ class WeightWindowGeneratorEnergies(WeightWindowGeneratorEnergiesBase, VarianceR
             setattr(self, k.lower(), kwargs[k])
 
 class WeightWindowGeneratorTimes(WeightWindowGeneratorTimesBase, VarianceReductionSetting):
-    """WWGT
+    __doc__ = """WWGT
     """
+    __doc__ += WeightWindowGeneratorTimesBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -89,8 +107,10 @@ class WeightWindowGeneratorTimes(WeightWindowGeneratorTimesBase, VarianceReducti
             setattr(self, k.lower(), kwargs[k])
 
 class Mesh(MeshBase, VarianceReductionSetting):
-    """MESH
+    __doc__ = """MESH
     """
+    __doc__ += MeshBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -98,8 +118,10 @@ class Mesh(MeshBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class EnergySplitting(EnergySplittingBase, VarianceReductionSetting):
-    """ESPLT
+    __doc__ = """ESPLT
     """
+    __doc__ += EnergySplittingBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -107,8 +129,10 @@ class EnergySplitting(EnergySplittingBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TimeSplitting(TimeSplittingBase, VarianceReductionSetting):
-    """TSPLT
+    __doc__ = """TSPLT
     """
+    __doc__ += TimeSplittingBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -116,8 +140,10 @@ class TimeSplitting(TimeSplittingBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class CellExponentialTransforms(CellExponentialTransformsBase, VarianceReductionSetting):
-    """EXT
+    __doc__ = """EXT
     """
+    __doc__ += CellExponentialTransformsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -125,8 +151,10 @@ class CellExponentialTransforms(CellExponentialTransformsBase, VarianceReduction
             setattr(self, k.lower(), kwargs[k])
 
 class Vectors(VectorsBase, VarianceReductionSetting):
-    """VECT
+    __doc__ = """VECT
     """
+    __doc__ += VectorsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -134,8 +162,10 @@ class Vectors(VectorsBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class CellForcedCollisions(CellForcedCollisionsBase, VarianceReductionSetting):
-    """FCL
+    __doc__ = """FCL
     """
+    __doc__ += CellForcedCollisionsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -143,8 +173,10 @@ class CellForcedCollisions(CellForcedCollisionsBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class DeterministicTransport(DeterministicTransportBase, VarianceReductionSetting):
-    """DXT
+    __doc__ = """DXT
     """
+    __doc__ += DeterministicTransportBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -152,8 +184,10 @@ class DeterministicTransport(DeterministicTransportBase, VarianceReductionSettin
             setattr(self, k.lower(), kwargs[k])
 
 class DetectorDiagnostics(DetectorDiagnosticsBase, VarianceReductionSetting):
-    """DD
+    __doc__ = """DD
     """
+    __doc__ += DetectorDiagnosticsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -161,8 +195,10 @@ class DetectorDiagnostics(DetectorDiagnosticsBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class CellDetectorContributions(CellDetectorContributionsBase, VarianceReductionSetting):
-    """PD
+    __doc__ = """PD
     """
+    __doc__ += CellDetectorContributionsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -170,8 +206,10 @@ class CellDetectorContributions(CellDetectorContributionsBase, VarianceReduction
             setattr(self, k.lower(), kwargs[k])
 
 class CellDeterministicContributions(CellDeterministicContributionsBase, VarianceReductionSetting):
-    """DXC
+    __doc__ = """DXC
     """
+    __doc__ += CellDeterministicContributionsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -179,8 +217,10 @@ class CellDeterministicContributions(CellDeterministicContributionsBase, Varianc
             setattr(self, k.lower(), kwargs[k])
 
 class BremsstrahlungBiasing(BremsstrahlungBiasingBase, VarianceReductionSetting):
-    """BBREM
+    __doc__ = """BBREM
     """
+    __doc__ += BremsstrahlungBiasingBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -188,8 +228,10 @@ class BremsstrahlungBiasing(BremsstrahlungBiasingBase, VarianceReductionSetting)
             setattr(self, k.lower(), kwargs[k])
 
 class SecondaryParticleBiasing(SecondaryParticleBiasingBase, VarianceReductionSetting):
-    """SPABI
+    __doc__ = """SPABI
     """
+    __doc__ += SecondaryParticleBiasingBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -197,8 +239,10 @@ class SecondaryParticleBiasing(SecondaryParticleBiasingBase, VarianceReductionSe
             setattr(self, k.lower(), kwargs[k])
 
 class CellPhotonWeights(CellPhotonWeightsBase, VarianceReductionSetting):
-    """PWT
+    __doc__ = """PWT
     """
+    __doc__ += CellPhotonWeightsBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
@@ -206,13 +250,60 @@ class CellPhotonWeights(CellPhotonWeightsBase, VarianceReductionSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class PhotonBias(PhotonBiasBase, VarianceReductionSetting):
-    """PIKMT
+    __doc__ = """PIKMT
     """
+    __doc__ += PhotonBiasBase().__doc__
+    
     def _init(self, **kwargs):
         """
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
+
+class CutoffParams(CutoffParamsBase):
+    __doc__ = CutoffParamsBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class DeterministicTransportSphere(DeterministicTransportSphereBase):
+    __doc__ = DeterministicTransportSphereBase().__doc__
+    
+    def _init(self, x, y, z, ri, ro):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.ri = ri
+        self.ro = ro
+
+    def __str__(self):
+        string = ('(' + str(self.x) + ', ' + str(self.y) + ', ' + str(self.z) 
+                  + str(self.ri) + ', ' + str(self.ro) + ')')
+        return string
+
+    def __repr__(self):
+        return str(self)
+
+class DXTSpheres(DXTSpheresBase):
+    __doc__ = DXTSpheresBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+
+class ExponentialTransform(ExponentialTransformBase):
+    __doc__ = ExponentialTransformBase().__doc__
+
+    def _init(self, **kwargs):
+        """
+        """
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)
