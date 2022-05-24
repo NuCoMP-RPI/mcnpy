@@ -46,6 +46,7 @@ from mcnpy.deck import *
 from mcnpy.example import *
 from mcnpy.lattice import *
 from mcnpy.mbody_decomp import *
+from mcnpy.mcnp import *
 from mcnpy.universe import UniverseList
 
 #from mcnpy import material_helper
