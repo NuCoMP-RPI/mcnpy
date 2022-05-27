@@ -12,7 +12,7 @@ from mcnpy.misc_data import MiscSetting
 from mcnpy.source import SourceSetting
 from mcnpy.physics import PhysicsSetting
 from mcnpy.variance_reduction import VarianceReductionSetting
-from mcnpy.tally import Tally, TallySetting
+from mcnpy.tally import Tally, TallySetting, SuperimposedTallyMesh
 from mcnpy._deck import Deck as _Deck
 from mcnpy.gateway import gateway
 from mcnpy.deck_formatter import formatter, preprocessor
@@ -103,71 +103,78 @@ class Deck():
         except:
             raise Exception('Error importing MCNP Deck from file "' + filename 
                             + '"')
-        cells = inp.cells.cells
-        surfaces = inp.surfaces.surfaces
-        settings = inp.data.settings
-        materials = inp.data.materials
-        for i in range(len(cells)):
-            #self.cells.append(cells[i])
-            if renumber is True:
-                cells[i].name = str(i+1)
-            self.cells[cells[i].name] = cells[i]
-            self.get_universe(cells[i])
-        id = 0
-        for i in range(len(surfaces)):
-            id = id + 1
-            if renumber is True:
-                surfaces[i].name = str(id)
-                # Leave room for adding macrobodies.
-                if (isinstance(surfaces[i], RectangularPrism) 
-                    or isinstance(surfaces[i], Box) 
-                    or isinstance(surfaces[i], Polyhedron)):
-                    #print('HERE')
-                    id = id+6
-                elif (isinstance(surfaces[i], CircularCylinder) 
-                      or isinstance(surfaces[i], EllipticalCylinder) 
-                      or isinstance(surfaces[i], TruncatedCone)):
-                    id = id+3
-                elif isinstance(surfaces[i], Wedge):
-                    id = id+5
-                elif isinstance(surfaces[i], HexagonalPrism):
-                    id = id+8
-                elif isinstance(surfaces[i], Ellipsoid):
-                    id = id+1
-            #self.surfaces.append(surfaces[i])
-            self.surfaces[surfaces[i].name] = surfaces[i]
-        for i in range(len(settings)):
-            if isinstance(settings[i], Transformation):
+        try: 
+            cells = inp.cells.cells
+            surfaces = inp.surfaces.surfaces
+            settings = inp.data.settings
+            materials = inp.data.materials
+            for i in range(len(cells)):
+                #self.cells.append(cells[i])
                 if renumber is True:
-                    settings[i].name = str(i+1)
-                self.transformations[settings[i].name] = settings[i]
-            elif isinstance(settings[i], Tally):
-                self.tallies[settings[i].name] = settings[i]
-            elif isinstance(settings[i], GeometrySetting):
-                self.geom_settings.append(settings[i])
-            elif isinstance(settings[i], OutputSetting):
-                self.out_settings.append(settings[i])
-            elif isinstance(settings[i], MiscSetting):
-                self.misc_settings.append(settings[i])
-            elif isinstance(settings[i], SourceSetting):
-                self.src_settings.append(settings[i])
-            elif isinstance(settings[i], VarianceReductionSetting):
-                self.vr_settings.append(settings[i])
-            elif isinstance(settings[i], TallySetting):
-                self.tally_settings.append(settings[i])
-            elif isinstance(settings[i], MaterialSetting):
-                self.mat_settings.append(settings[i])
-            elif isinstance(settings[i], TerminationSetting):
-                self.term_settings.append(settings[i])
-            elif isinstance(settings[i], PhysicsSetting):
-                self.phys_settings.append(settings[i])
-            else:
-                self.settings.append(settings[i])
-        for i in range(len(materials)):
-            if renumber is True:
-                materials[i].name = str(i+1)
-            #self.materials.append(materials[i])
-            self.materials[materials[i].name] = materials[i]
+                    cells[i].name = str(i+1)
+                self.cells[cells[i].name] = cells[i]
+                self.get_universe(cells[i])
+            id = 0
+            for i in range(len(surfaces)):
+                id = id + 1
+                if renumber is True:
+                    surfaces[i].name = str(id)
+                    # Leave room for adding macrobodies.
+                    if (isinstance(surfaces[i], RectangularPrism) 
+                        or isinstance(surfaces[i], Box) 
+                        or isinstance(surfaces[i], Polyhedron)):
+                        #print('HERE')
+                        id = id+6
+                    elif (isinstance(surfaces[i], CircularCylinder) 
+                        or isinstance(surfaces[i], EllipticalCylinder) 
+                        or isinstance(surfaces[i], TruncatedCone)):
+                        id = id+3
+                    elif isinstance(surfaces[i], Wedge):
+                        id = id+5
+                    elif isinstance(surfaces[i], HexagonalPrism):
+                        id = id+8
+                    elif isinstance(surfaces[i], Ellipsoid):
+                        id = id+1
+                #self.surfaces.append(surfaces[i])
+                self.surfaces[surfaces[i].name] = surfaces[i]
+            for i in range(len(settings)):
+                if isinstance(settings[i], Transformation):
+                    if renumber is True:
+                        settings[i].name = str(i+1)
+                    self.transformations[settings[i].name] = settings[i]
+                elif isinstance(settings[i], Tally):
+                    if isinstance(settings[i], SuperimposedTallyMesh):
+                        self.settings.append(settings[i])
+                    else:
+                        self.tallies[settings[i].name] = settings[i]
+                elif isinstance(settings[i], GeometrySetting):
+                    self.geom_settings.append(settings[i])
+                elif isinstance(settings[i], OutputSetting):
+                    self.out_settings.append(settings[i])
+                elif isinstance(settings[i], MiscSetting):
+                    self.misc_settings.append(settings[i])
+                elif isinstance(settings[i], SourceSetting):
+                    self.src_settings.append(settings[i])
+                elif isinstance(settings[i], VarianceReductionSetting):
+                    self.vr_settings.append(settings[i])
+                elif isinstance(settings[i], TallySetting):
+                    self.tally_settings.append(settings[i])
+                elif isinstance(settings[i], MaterialSetting):
+                    self.mat_settings.append(settings[i])
+                elif isinstance(settings[i], TerminationSetting):
+                    self.term_settings.append(settings[i])
+                elif isinstance(settings[i], PhysicsSetting):
+                    self.phys_settings.append(settings[i])
+                else:
+                    self.settings.append(settings[i])
+            for i in range(len(materials)):
+                if renumber is True:
+                    materials[i].name = str(i+1)
+                #self.materials.append(materials[i])
+                self.materials[materials[i].name] = materials[i]
+        except:
+            # For CONTINUE decks
+            pass
 
     def _direct_export(self):
         """For serializing the original deck. Will preserve comments and most 
