@@ -1,4 +1,4 @@
-from re import search, compile, finditer, IGNORECASE
+from re import search, compile, finditer, findall, IGNORECASE
 
 def line_wrap(before_comment, comment, line_limit):
     if (len(before_comment) > line_limit):
@@ -123,6 +123,87 @@ c                   :(-8817  +8630  -8845  +8622  +8624)
                    #(8604 -86254 86252 -86253)                     imp:n=1                              
 cmesh
 c4 """
+
+def deck_cleanup(inp):
+    p_cell = compile('\s*\d+\s+\d+')
+    p_cont = compile('\s*continue', IGNORECASE)
+    p_exp = compile('\d[-\+]\d')
+    p_dexp = compile('\dd[-\+]?\d', IGNORECASE)
+    new_text = ''
+    # Open the file and start the cleanup.
+    with open(inp, 'r') as f:
+        lines = f.readlines()
+        start = False
+        # Need to add the $ title.
+        if lines[0].startswith('$') is False:
+            if lines[0].lower().startswith('continue'):
+                new_text += '$ \n' + lines[0]
+            else:
+                new_text += '$ ' + lines[0]
+        else:
+            new_text += lines[0]
+        
+        # A lot of files have extra text after the end of the input.
+        # MCNP doesn't care, but the parser sure does.
+        # So we delete extraneous blank lines and other 'end' 
+        # statements. Comments should be left alone.
+        for i in range(len(lines)-1, 1, -1):
+            line = lines[i].strip()
+            if line == '' or line == 'end of input' or line == 'end':
+                lines.pop(i)
+            elif line.lower().startswith('c '):
+                pass
+            else:
+                break
+        
+        # Exponents must have the 'E'.
+        for i in range(1, len(lines)):
+            exp = findall(p_exp, lines[i])
+            dexp = findall(p_dexp, lines[i])
+            if (lines[i].lower().startswith('c ') is False 
+                and lines[i].startswith('$') is False):
+                # Fixes exponents without the 'E'.
+                for e in exp:
+                    sign = 'E' + e[1]
+                    lines[i] = lines[i].replace(e, e[:1]+sign+e[-1])
+                # Fixes exponents using 'D' instead of 'E'.
+                for d in dexp:
+                    lines[i] = lines[i].replace(d, d[0]+'E' +d[2:])
+            
+            # Some files have title sections that can't be validated.
+            # Comment out everything before a cell or continue card.
+            # Should fix most files.
+            if start is False:
+                cell = search(p_cell, lines[i])
+                cont = search(p_cont, lines[i])
+                if cell is not None or cont is not None:
+                    start = True
+                    new_text += lines[i]
+                elif lines[i].lower().startswith('c '):
+                    new_text += lines[i]
+                else:
+                    new_text += 'C ' + lines[i]
+            elif (lines[i].lower().strip().startswith('#ifdef') 
+                    or lines[i].lower().strip().startswith('#else')
+                    or lines[i].lower().strip().startswith('#endif')):
+                    new_text += 'C ' + lines[i]
+            else:
+                new_text += lines[i]
+        
+        # Make sure there's at least one blank line at the end.
+        if new_text.endswith('\n') is False:
+            new_text += '\n'
+                
+    # Rename with '.mcnp' extension.
+    if inp.endswith('.mcnp') is False:
+        new_name = 'cleaned_' + inp + '.mcnp'
+    else:
+        new_name = 'cleaned_' + inp
+    
+    with open(new_name, 'w') as f:
+        f.write(new_text)
+
+    return new_name
 
 def formatter(deck, title=None):
     """Used to serialize the deck as a string. There are currently some spacing issues when making new deck objects.

@@ -15,7 +15,7 @@ from mcnpy.variance_reduction import VarianceReductionSetting
 from mcnpy.tally import Tally, TallySetting, SuperimposedTallyMesh
 from mcnpy._deck import Deck as _Deck
 from mcnpy.gateway import gateway
-from mcnpy.deck_formatter import formatter, preprocessor
+from mcnpy.deck_formatter import formatter, preprocessor, deck_cleanup
 
 class Deck():
     """An object containing dicts for cells, surfaces, and materials. Most other 
@@ -101,7 +101,15 @@ class Deck():
             inp = gateway.loadFile(filename)
             self._deck = inp
         except:
-            raise Exception('Error importing MCNP Deck from file "' + filename 
+            #print('Parsing failed. Cleaning up the deck and trying again.')
+            try:
+                filename = deck_cleanup(filename)
+                inp = gateway.loadFile(filename)
+                #print('Parsing successful! New file: ' + filename)
+                self._deck = inp
+
+            except:
+                raise Exception('Error importing MCNP Deck from file "' + filename 
                             + '"')
         try: 
             cells = inp.cells.cells
