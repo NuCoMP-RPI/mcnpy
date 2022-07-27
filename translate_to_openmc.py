@@ -6,8 +6,6 @@ from openmc.model.surface_composite import XConeOneSided, YConeOneSided, ZConeOn
 import mcnpy as mp
 import numpy as np
 import re
-from mcnpy import InputDeck
-from mcnpy.universe import UniverseBase
 from mcnpy.surfaces import Sphere
 from mcnpy.surfaces import Plane, XPlane, YPlane, ZPlane
 from mcnpy.surfaces import XCylinder, YCylinder, ZCylinder 
@@ -109,7 +107,7 @@ def boundary(surf):
     elif bound == '+' or bound.upper() == 'WHITE':
         return 'white'
     else:
-        return 'transmission'
+        return 'vacuum'
     
 def make_plane(surf:Plane):
     """
@@ -123,13 +121,13 @@ def make_xplane(surf:XPlane):
     openmc_surf = openmc.Plane(a=1, b=0, c=0, d=surf.x0, boundary_type=boundary(surf), name=surf.name)
     return openmc_surf
 
-def make_yplane(surf:XPlane):
+def make_yplane(surf:YPlane):
     """
     """
     openmc_surf = openmc.Plane(a=0, b=1, c=0, d=surf.y0, boundary_type=boundary(surf), name=surf.name)
     return openmc_surf
 
-def make_zplane(surf:XPlane):
+def make_zplane(surf:ZPlane):
     """
     """
     openmc_surf = openmc.Plane(a=0, b=0, c=1, d=surf.z0, boundary_type=boundary(surf), name=surf.name)
@@ -291,7 +289,7 @@ def make_material(material, id:str):
             openmc_material.add_nuclide(isotope, fraction, unit)
     return openmc_material
 
-def mcnp_to_openmc(deck:InputDeck):
+def mcnp_to_openmc(deck:mp.Deck):
     """Generate an OpenMC file from MCNP deck.
     """
     openmc_materials = {}
@@ -439,7 +437,7 @@ def mcnp_to_openmc(deck:InputDeck):
                             fill = openmc_materials[m_id]
                             mats.append(fill)
             # Cell with FILL card.
-            elif isinstance(cell.fill.fill, UniverseBase):
+            elif isinstance(cell.fill, mp.Lattice) is False:
                 u_id = int(cell.fill.fill.name)
                 if u_id not in openmc_universes.keys():
                     openmc_universes[u_id] = openmc.Universe(universe_id=u_id)
@@ -457,7 +455,7 @@ def mcnp_to_openmc(deck:InputDeck):
                         for y in range(dim[1]):
                             for x in range(dim[2]):
                                 #print(lattice.lattice[z,y,x])
-                                u_id = int(lattice.lattice[z,y,x].name)
+                                u_id = int(lattice.lattice[z,y,x].fill.name)
                                 if u_id not in openmc_universes.keys():
                                     openmc_universes[u_id] = openmc.Universe(universe_id=u_id)
                                 openmc_lattice[z,y,x] = openmc_universes[u_id]
@@ -681,13 +679,14 @@ def mcnp_to_openmc(deck:InputDeck):
     return(geom, mats)
 
 if __name__ == '__main__':
-    deck = mp.InputDeck()
-    deck.import_from_file(filename=sys.argv[1], renumber=True)
+    deck = mp.Deck()
+    deck.read(filename=sys.argv[1], renumber=True)
     decompose(deck)
     #print(deck.export())
     deck.remove_redundant_surfaces()
     deck.remove_unused_surfaces()
     #print(deck.export(renumber=False))
+    #deck.write()
     print('MCNP Geometry Decomposed\nStarting Translation\n')
 
     # Tuple with geometry and materials.

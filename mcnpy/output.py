@@ -1,5 +1,5 @@
 from abc import ABC
-from mcnpy.wrap import wrappers, overrides
+from mcnpy.wrap import wrappers, overrides, subclass_overrides
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -42,6 +42,15 @@ class ParticleTrack(ParticleTrackBase, OutputSetting):
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
+
+    class Values(ValuesBase):
+        __doc__ = ValuesBase().__doc__
+
+        def _init(self, **kwargs):
+            """
+            """
+            for k in kwargs:
+                setattr(self, k, kwargs[k])
 
 class CreateLahet(CreateLahetBase, OutputSetting):
     __doc__ = CreateLahetBase().__doc__
@@ -92,3 +101,5 @@ for name, wrapper in overrides.items():
     override = globals().get(name, None)
     if override is not None:
         overrides[name] = override
+
+subclass_overrides(ParticleTrack)

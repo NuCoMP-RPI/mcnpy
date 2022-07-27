@@ -1,6 +1,6 @@
 from abc import ABC
 from mcnpy.wrap import wrappers, overrides
-from mcnpy.structures import Point
+from .points import Point
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -23,15 +23,6 @@ class Mode(ModeBase, PhysicsSetting):
 
     def __repr__(self):
         return str(self)
-
-class VerticalMode(VerticalModeBase, PhysicsSetting):
-    """
-    """
-    def _init(self, **kwargs):
-        """
-        """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
 
 class NeutronPhysics(NeutronPhysicsBase, PhysicsSetting, ParticlePhysics):
     """Neutron physics options.

@@ -7,6 +7,21 @@ from .util import camel_to_snake_case
 
 
 overrides = {}
+
+# Apply overrides to nested subclasses.
+# Can provide a custom naming prefix and classes to ignore.
+def subclass_overrides(klass, prefix=None, ignore=[]):
+    for method in klass.__dict__.values():
+        if str(method).startswith('<class') and method not in ignore:
+            overrides[method.__qualname__] = method
+            if prefix is None:
+                base_name = method.__bases__[0].__name__ + 'Base'
+            else:
+                base_name = prefix + method.__name__ + 'Base'
+            globals().update({base_name: method})
+            # For multiple levels of nesting.
+            subclass_overrides(method, prefix, ignore)
+
 # Used as a function in the output converter.
 def wrap_e_object(target_id, gateway_client, wrappers=overrides):
     object = JavaObject(target_id, gateway_client)
@@ -21,7 +36,7 @@ def wrap_e_object(target_id, gateway_client, wrappers=overrides):
 
 class WrapperConverter(object):
     def can_convert(self, object):
-        return type(object).__name__ in overrides
+        return type(object).__qualname__ in overrides
 
     def convert(self, object, gateway_client):
         return object._e_object
@@ -169,9 +184,11 @@ def set_e_list(setter, feature, value):
     for i in range(len(value)):
         # Special treatment for universes on lattices.
         # TODO: see if there are other special cases like this.
-        if type(value[i]).__name__ == 'Universe':
+        # Removed due to grammar change. 
+        """if type(value[i]).__name__ == 'Universe':
             e_list.addUnique(value[i]._e_object)
-        elif type(value[i]).__name__ in overrides:
+        el"""
+        if type(value[i]).__qualname__ in overrides:
             value_copy = gateway.copier.copy(value[i]._e_object)
             gateway.copier.copyReferences()
             e_list.addUnique(value_copy._e_object)
@@ -343,11 +360,15 @@ def wrap_e_class(e_class, e_factory):
             return equals(self._e_object, other)
         except Py4JError:
             return False
+    def __copy__(self):
+        copy = gateway.copier.copy(self._e_object)
+        gateway.copier.copyReferences()
+        return copy
     #class Java:
     #    implements = ['gov.lanl.mcnp.mcnp.'+e_class.getName(),
     #                  'org.eclipse.emf.ecore.InternalEObject']
     body = {attr.__name__: attr for attr in 
-            (__init__, _init, __str__, __hash__, __eq__)}
+            (__init__, _init, __str__, __hash__, __eq__, __copy__)}
     # Convert javadoc metamodel annotations to docstrings.
     body['__doc__'] = javadoc_to_docstring(e_class)
 
@@ -365,7 +386,7 @@ def wrap_e_class(e_class, e_factory):
                 #@set_wrapped_reference(feature)
                 @string_or_int_to_enum(feature)
                 def setter(self, value):
-                    if type(value).__name__ in overrides:
+                    if type(value).__qualname__ in overrides:
                         EReference = gateway.jvm.org.eclipse.emf.ecore.EReference
                         if is_instance_of(feature, EReference):
                             # This makes intersections with 3+ nodes work.

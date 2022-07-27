@@ -2,10 +2,8 @@ from collections import OrderedDict
 from collections.abc import MutableSequence
 from abc import ABC
 
-from mcnpy.wrap import wrappers, overrides
+from .wrap import wrappers, overrides
 import mcnpy
-#from mcnpy.surfaces import Halfspace
-#from mcnpy.cells import Cell
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 

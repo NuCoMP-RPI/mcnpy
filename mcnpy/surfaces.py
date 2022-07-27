@@ -2,9 +2,9 @@ from collections import OrderedDict
 from abc import ABC
 import numpy as np
 
-from mcnpy.wrap import wrappers, overrides
-from mcnpy.region import *
-from mcnpy.structures import Point
+from .wrap import wrappers, overrides
+from .region import *
+from .points import Point
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -103,7 +103,7 @@ class Surface(SurfaceBase):
 
     def print_surface(self):
         string = 'Surface\n'
-        string += '{0: <16}{1}{2}\n'.format('\tID', '=\t', self.name)
+        string += '{0: <16}{1}{2}\n'.format('\tID', '=\t', str(self.name))
         string += '{0: <16}{1}{2}\n'.format('\tComment', '=\t', self.comment)
         string += '{0: <16}{1}{2}\n'.format('\tType', '=\t', 
                                             type(self).__name__)
@@ -121,9 +121,20 @@ class Surface(SurfaceBase):
                                                 'None')
         else:
             string += '{0: <16}{1}{2}\n'.format('\tTransformation', '=\t', 'TR' 
-                                                + self.transformation.name)
+                                                + str(self.transformation.name))
 
         return string
+
+    @property
+    def name(self):
+        if self._e_object.getName() is None:
+            return None
+        else:
+            return int(self._e_object.getName())
+
+    @name.setter
+    def name(self, name):
+        self._e_object.setName(str(name))
 
 class Macrobody(ABC):
     """All macrobodies with facets. Excludes Sphere and Ellipsoid.

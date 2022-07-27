@@ -73,16 +73,16 @@ def rcc(mbody:RCC):
     b = []
     c = []
     a.append(base[2]-p[2])
-    a.append(p[1]-base[1])
-    a.append(base[1]*p[2] - base[2]*p[1])
+    a.append(p[1]-base[1]) #axis[1]
+    a.append(base[1]*p[2] - base[2]*p[1]) #axis[1]
 
     b.append(p[2]-base[2])
-    b.append(base[0]-p[0])
-    b.append(base[2]*p[1] - base[0]*p[2])
+    b.append(base[0]-p[0]) #axis[0]
+    b.append(base[2]*p[1] - base[0]*p[2]) #base[2]*p[1]
 
-    c.append(base[1]-p[1])
-    c.append(p[0]-base[0])
-    c.append(base[0]*p[1] - base[1]*p[0])
+    c.append(base[1]-p[1]) #-axis[1]
+    c.append(p[0]-base[0]) #axis[0]
+    c.append(base[0]*p[1] - base[1]*p[0]) #axis[0]
 
     _a = b[0]**2 + c[0]**2
     _b = a[0]**2 + c[1]**2
@@ -95,6 +95,23 @@ def rcc(mbody:RCC):
     _j = 2*a[1]*a[2]*b[1]*b[2]
     _k = a[2]**2 + b[2]**2 + c[2]**2 - (mbody.r**2 * h**2)
 
+    r = (axis[0]**2 + axis[1]**2 + axis[2]**2)**0.5
+    sc8 = axis[0] / r
+    sc9 = axis[1] / r
+    sc10 = axis[2] / r
+    r = base[0]**2 + base[1]**2 + base[2]**2
+    scf1 = 1 - sc8**2
+    scf2 = 1 - sc9**2
+    scf3 = 1 - sc10**2
+    scf4 = -2*sc8*sc9
+    scf5 = -2*sc9*sc10
+    scf6 = -2*sc8*sc10
+    scf7 = -base[1]*scf4-base[2]*scf6-2*base[0]*scf1
+    scf8 = -base[0]*scf4-base[2]*scf5-2*base[1]*scf2
+    scf9 = -base[0]*scf6-base[1]*scf5-2*base[2]*scf3
+    scf10 = base[0]*base[1]*scf4+base[1]*base[2]*scf5+base[0]*base[2]*scf6+base[0]**2*scf1+base[1]**2*scf2+base[2]**2*scf3-mbody.r**2
+    
+
     # Normalize
     norm = max(abs(_a), abs(_b), abs(_c), abs(_d), abs(_e), abs(_f), abs(_g), abs(_h), abs(_j), abs(_k))
     plane_norm = max([abs(axis[0]), abs(axis[1]), abs(axis[2])])
@@ -104,8 +121,10 @@ def rcc(mbody:RCC):
     # Top plane
     d_top = ((axis[0]*p[0]) + (axis[1]*p[1]) + (axis[2]*p[2]))
 
-    surfs.append(Quadric(name=id+1, boundary_type=bound, a=_a/norm, b=_b/norm, c=_c/norm, d=_d/norm, 
-        e=_e/norm, f=_f/norm, g=_g/norm, h=_h/norm, j=_j/norm, k=_k/norm))
+    #surfs.append(Quadric(name=id+1, boundary_type=bound, a=_a/norm, b=_b/norm, c=_c/norm, d=_d/norm, 
+    #    e=_e/norm, f=_f/norm, g=_g/norm, h=_h/norm, j=_j/norm, k=_k/norm))
+    surfs.append(Quadric(name=id+1, boundary_type=bound, a=scf1, b=scf2, c=scf3, d=scf4, 
+        e=scf5, f=scf6, g=scf7, h=scf8, j=scf9, k=scf10))
     surfs.append(Plane(name=id+2, boundary_type=bound, a=axis[0]/plane_norm, b=axis[1]/plane_norm, 
         c=axis[2]/plane_norm, d=d_base/plane_norm))
     surfs.append(Plane(name=id+3, boundary_type=bound, a=axis[0]/plane_norm, b=axis[1]/plane_norm, 

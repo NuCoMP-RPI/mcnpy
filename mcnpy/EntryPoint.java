@@ -62,6 +62,7 @@ public class EntryPoint {
     public String printDeck(Deck DECK)
     {
         //String serializedDeck = this.serializer.serialize(DECK);
+        this.validator.assertNoErrors(DECK);
         String serializedDeck = this.serializer.serialize(DECK, SaveOptions.newBuilder().format().getOptions());
 
         return(serializedDeck);

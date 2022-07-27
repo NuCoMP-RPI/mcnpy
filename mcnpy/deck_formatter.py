@@ -195,10 +195,11 @@ def deck_cleanup(inp):
             new_text += '\n'
                 
     # Rename with '.mcnp' extension.
-    if inp.endswith('.mcnp') is False:
+    """if inp.endswith('.mcnp') is False:
         new_name = 'cleaned_' + inp + '.mcnp'
     else:
-        new_name = 'cleaned_' + inp
+        new_name = 'cleaned_' + inp"""
+    new_name = inp + '_cleaned.mcnp'
     
     with open(new_name, 'w') as f:
         f.write(new_text)

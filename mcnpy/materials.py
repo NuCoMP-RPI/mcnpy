@@ -11,35 +11,126 @@ class MaterialSetting(ABC):
 class Material(MaterialBase):
     __doc__ = MaterialBase().__doc__
 
-    def _init(self, name, nuclides, comment=None, **kwargs):
+    def _init(self, name, nuclides=[], unit=None, comment=None, **kwargs):
         self.name = name
         self.nuclides = nuclides
         if comment is not None:
             self.comment = comment
+        self.unit = unit
 
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
 
-    def fraction_unit(self, unit):
-        for nuclide in self.nuclides:
-            nuclide.unit = unit
+    def __add__(self, nuclide):
+        #new = Material(self)
+        self += nuclide
+        return self
 
-class MaterialNuclide(MaterialNuclideBase):
-    __doc__ = MaterialNuclideBase().__doc__
+    def __iadd__(self, nuclide):
+        #if self.unit is None:
+        if isinstance(nuclide, list):
+            self.nuclides.extend(nuclide)
+        elif isinstance(nuclide, Material):
+            self.nuclides.extend(nuclide.nuclides)
+        else:
+            self.nuclides.addUnique(nuclide._e_object)
+        """else:
+            if isinstance(nuclide, list):
+                for i in nuclide:
+                    i.unit = self.unit
+                    self.nuclides.addUnique(i._e_object)
+                self.nuclides.extend(nuclide)
+            elif isinstance(nuclide, Material):
+                for i in nuclide.nuclides:
+                    i.unit = self.unit
+                    self.nuclides.addUnique(i._e_object)
+            else:
+                nuclide.unit = self.unit
+                self.nuclides.addUnique(nuclide._e_object)"""
+        return self
+
+    def __sub__(self, nuclide):
+        new = Material(self)
+        new -= nuclide
+        return new
+
+    def __isub__(self, nuclide):
+        if isinstance(nuclide, list):
+            for i in nuclide:
+                self.nuclides.remove(i)
+        else:
+            self.nuclides.remove(nuclide)
+        return self
+
+    @property
+    def name(self):
+        if self._e_object.getName() is None:
+            return None
+        else:
+            return int(self._e_object.getName())
+
+    @name.setter
+    def name(self, name):
+        self._e_object.setName(str(name))
+
+    @property
+    def unit(self):
+        if self.nuclides is not None:
+            if len(self.nuclides) > 0:
+                return self.nuclides[0].unit
+        else:
+            return self.unit
+
+    @unit.setter
+    def unit(self, unit):
+        #self.unit = unit
+        if self.unit is not None:
+            for nuclide in self.nuclides:
+                nuclide.unit = unit
+
+class Nuclide(NuclideBase):
+    __doc__ = NuclideBase().__doc__
     
     def _init(self, name, fraction, unit='ATOM', library=None):
-        self.name = element_to_zaid(name)
-        self.fraction = abs(fraction)
-        if fraction < 0:
-            self.unit = 'WEIGHT'
-        else:
-            self.unit = unit
+        self.name = name
+        self.unit = unit
+        self.fraction = fraction
         if library is not None:
             self.library = library
+
+    def __add__(self, other):
+        if isinstance(other, list):
+            new = Material()
+            new.nuclides = [self] + other
+        elif isinstance(other, Material):
+            other.nuclides.addUnique(self._e_object)
+            return other
+        else:
+            new = Material()
+            new.nuclides = [self, other]
+        return new
+
+    @property
+    def name(self):
+        return zaid_to_element(self._e_object.getName())
+
+    @name.setter
+    def name(self, name):
+        self._e_object.setName(element_to_zaid(name))
 
     @property
     def library(self):
         return self._e_object.getLibrary()
+
+    @property
+    def fraction(self):
+        return self._e_object.getFraction()
+
+    @fraction.setter
+    def fraction(self, fraction):
+        if fraction < 0:
+            self.unit = 'WEIGHT'
+        self._e_object.setFraction(abs(fraction))
 
     @library.setter
     def library(self, lib):
@@ -56,7 +147,7 @@ class MaterialNuclide(MaterialNuclideBase):
 
     def __str__(self):
         #string = 'ZAID = ' + self.name + ', Fraction = ' + str(self.unit) + str(self.fraction)
-        string = 'MaterialNuclide ' + zaid_to_element(self.name)
+        string = 'Nuclide ' + str(self.name)
 
         return string
 

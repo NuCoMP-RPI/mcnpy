@@ -26,30 +26,26 @@ while running is False:
 # TODO: Remove when we're confident about stable startup.
 print('I slept for: ' + str(sleep_time) + ' seconds!')
 
-"""try:
-    from mcnpy.gateway import gateway
-    running = True
-except:
-    server.kill()
-    running = False
-if running is False:
-    raise Exception('Error reaching Java Gateway.\n Try increasing the startup '
-                    + 'delay by editing ".../mcnpy/server_delay".')"""
-
 # All of the automatic wrappers.
 from mcnpy.wrap import *
 # All of the custom wrappers.
-from mcnpy.override import *
+from ._deck import *
+from .points import *
+from .source import *
+from .physics import *
+from .materials import *
+from .data import *
+from .output import *
+from .region import *
+from .surfaces import *
+from .tally import *
+from .variance_reduction import *
+from .geometry import *
 
 # Custom classes that deviate from the parse tree.
 from mcnpy.deck import *
 from mcnpy.example import *
-from mcnpy.lattice import *
 from mcnpy.mbody_decomp import *
-from mcnpy.mcnp import *
-from mcnpy.universe import UniverseList
-
-#from mcnpy import material_helper
 
 def _kill_gateway():
     """Kills the Py4j gateway and the MCNP Gateway Server. Automatically called upon exit after importing module.

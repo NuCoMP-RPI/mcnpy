@@ -41,9 +41,8 @@ class RCF():
         """
         import numpy as np
         from mcnpy import Cell, Deck, Lattice, Point, UniverseList
-        from mcnpy import MaterialNuclide as Nuclide
         from mcnpy import Transform, Transformation
-        from mcnpy import Material, Sab
+        from mcnpy import Material, Nuclide, Sab
         from mcnpy import CriticalitySource, CriticalitySourcePoints
         from mcnpy import CircularCylinder as RCC
         from mcnpy import RectangularPrism as RPP
@@ -317,9 +316,9 @@ class RCF():
                       y0=-2*tank_ir, y1=2*tank_ir,
                       z0=-1, z1=tank_h+1) 
 
-        inp.add_all([rod_clad_inner, rod_clad_outer, abs1_inner, abs1_outer,   
-                     abs2_inner, abs2_outer, brake, follower, channel1, 
-                     channel2, channel3, channel4, channel])
+        inp += [rod_clad_inner, rod_clad_outer, abs1_inner, abs1_outer,   
+                abs2_inner, abs2_outer, brake, follower, channel1, 
+                channel2, channel3, channel4, channel]
 
         # Lattice element surfaces
         sup_plate = RPP(name=50, comment='No Pin - Lower Sup. Plate',
@@ -400,26 +399,26 @@ class RCF():
                                    r=clad_or)
 
         # Add surfaces to deck.
-        inp.add_all([outside, tank, tank_bottom, tank_outside, fill_height, 
-                    bottom_plate, pin_fill, tank_top, lat_container,
-                    lat_element, pin_fill, sup_plate, sup_plate2, pin_bottom,
-                    pin_bottom_hole, bottom_plug, bottom_spacer, spring, 
-                    top_plug, pin_top, clad_inner, clad_outer, gap, top_plate, 
-                    top_plate_hole, pin_top_water, top_plate_hole_water, fuel, 
-                    insulator, top_spacer, plate_plane1, plate_plane2, 
-                    plate_plane3, plate_plane4, top_sup_plate1, top_sup_plate2,
-                    top_sup_plate3, top_sup_plate4, mid_sup_plate1,
-                    mid_sup_plate2, post1, post2, post3, post4])
+        inp += [outside, tank, tank_bottom, tank_outside, fill_height, 
+                bottom_plate, pin_fill, tank_top, lat_container,
+                lat_element, sup_plate, sup_plate2, pin_bottom,
+                pin_bottom_hole, bottom_plug, bottom_spacer, spring, 
+                top_plug, pin_top, clad_inner, clad_outer, gap, top_plate, 
+                top_plate_hole, pin_top_water, top_plate_hole_water, fuel, 
+                insulator, top_spacer, plate_plane1, plate_plane2, 
+                plate_plane3, plate_plane4, top_sup_plate1, top_sup_plate2,
+                top_sup_plate3, top_sup_plate4, mid_sup_plate1,
+                mid_sup_plate2, post1, post2, post3, post4]
 
         # Create materials.
         lwtr_mod = [Nuclide(name='h1', fraction=0.666667), 
                     Nuclide(name='o16', fraction=0.333333)]
-        uo2 = [Nuclide(name='u233', fraction=0.0000035168,  unit='-'), 
-               Nuclide(name='u234', fraction=0.000222438,  unit='-'),
-               Nuclide(name='u235', fraction=0.042263144, unit='-'),
-               Nuclide(name='u236', fraction=0.000411466, unit='-'),
-               Nuclide(name='u238', fraction=0.836299436, unit='-'),
-               Nuclide(name='o16', fraction=0.1208, unit='-')]
+        """uo2 = [Nuclide(name='u233', fraction=0.0000035168), 
+               Nuclide(name='u234', fraction=0.000222438),
+               Nuclide(name='u235', fraction=0.042263144),
+               Nuclide(name='u236', fraction=0.000411466),
+               Nuclide(name='u238', fraction=0.836299436),
+               Nuclide(name='o16', fraction=0.1208)]"""
         ss = [Nuclide(name='fe56', fraction=0.69500), 
               Nuclide(name='cr52', fraction=0.19000),
               Nuclide(name='ni58', fraction=0.09500),
@@ -485,7 +484,17 @@ class RCF():
 
         m1 = Material(name=1, nuclides=lwtr_mod, 
                       comment='Light Water Moderator')
-        m2 = Material(name=2, nuclides=uo2, comment='UO2 Fuel')
+        #m2 = Material(name=2, comment='UO2 Fuel')
+        m2 = (Nuclide('u233', 0.0000035168) 
+             + Nuclide('u234', 0.000222438)
+             + Nuclide('u235', 0.042263144)
+             + Nuclide('u236', 0.000411466)
+             + Nuclide('u238', 0.836299436)
+             + Nuclide('o16', 0.1208))
+        m2.unit = 'WEIGHT'
+        #print(m2._e_object.toString())
+        #m2.name = 2
+
         m3 = Material(name=3, nuclides=ss, comment='Stainless Steel')
         m4 = Material(name=4, nuclides=al203, comment='Al203 Spacers')
         m5 = Material(name=5, nuclides=gas, comment='Gas Plenum')
@@ -501,13 +510,12 @@ class RCF():
         m13 = Material(name=13, nuclides=m_air, comment='Air')
         m14 = Material(name=14, nuclides=m_cladding, 
                        comment='Cladding Composition from RCF SAR')
-        inp.add_all([m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m13, m14])
+        inp += [m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m13, m14]
 
         # Add SaB to m1, m2, and m9.
-        sab_m1 = Sab(m1, ['lwtr'])
-        sab_m2 = Sab(m2, ['o_in_uo2', 'u238_in_uo2'])
-        sab_m9 = Sab(m9, ['lwtr'])
-        inp.add_all([sab_m1, sab_m2, sab_m9])
+        inp += Sab(m1, ['lwtr'])
+        inp += Sab(m2, ['o_in_uo2', 'u238_in_uo2'])
+        inp += Sab(m9, ['lwtr'])
 
         # Create cells.
         c_tank = Cell(name=100, material=m3, density=8.0, comment='Tank',
@@ -577,26 +585,25 @@ class RCF():
         c_out_of_bounds = Cell(name=110, comment='Termination Region', 
                                region=+outside)
         if water_height > 0.0:
-            c_outside_lat = Cell(name=111, material=m1, density=density_mod, 
-                                 comment='Water Outside Lattice',
-                                 region=-tank & +lat_container & -fill_height 
-                                        & ~c_sup_plate_outside & +channel1 
-                                        & +channel2 & +channel3 & +channel4 
-                                        & ~c_bottom_plate & ~c_sup_posts
-                                        & ~c_top_plate_outside 
-                                        & ~c_top_sup_plate & ~c_mid_sup_plate 
-                                        & ~c_sup_plate_outside2, 
-                                 density_unit = '-')
-            inp.add(c_outside_lat)
+            inp += Cell(name=111, material=m1, density=density_mod, 
+                        comment='Water Outside Lattice',
+                        region=-tank & +lat_container & -fill_height 
+                            & ~c_sup_plate_outside & +channel1 
+                            & +channel2 & +channel3 & +channel4 
+                            & ~c_bottom_plate & ~c_sup_posts
+                            & ~c_top_plate_outside 
+                            & ~c_top_sup_plate & ~c_mid_sup_plate 
+                            & ~c_sup_plate_outside2, 
+                        density_unit = '-')
 
-        inp.add_all([c_tank, c_tank_air, c_outside_air, c_sup_plate_outside, 
-                     c_bottom_plate, c_out_of_bounds, c_top_plate_outside, 
-                     c_top_sup_plate, c_mid_sup_plate, c_sup_plate_outside2, 
-                     c_sup_posts])
+        inp += [c_tank, c_tank_air, c_outside_air, c_sup_plate_outside, 
+                c_bottom_plate, c_out_of_bounds, c_top_plate_outside, 
+                c_top_sup_plate, c_mid_sup_plate, c_sup_plate_outside2, 
+                c_sup_posts]
 
         # Control Rods.
         tr1 = Transformation(name=1, transformation=[[22.38,0,0]])
-        inp.add(tr1)
+        inp += tr1
 
         #TODO: Need to update brake desnity for when rod isn't fully submerged.
         c_brake = Cell(name=200, material=m9, density=5.84, 
@@ -646,22 +653,21 @@ class RCF():
 
         # Define Universe for a Control Rod.
         u_control_rod = UniverseList(name=66, cells=control_rod)
-        inp.add_all(control_rod)
+        inp += control_rod
 
         # Fill channels with Control Rod Universe.
         # Rods are numbered 3, 4, 5, 7 like at the real RCF.
-        c_rod1 = Cell(name=207, comment='Control Rod 7', region=-channel1, 
+        inp += Cell(name=207, comment='Control Rod 7', region=-channel1, 
                       fill=u_control_rod)
-        c_rod2 = Cell(name=208, comment='Control Rod 4', region=-channel1, 
+        inp += Cell(name=208, comment='Control Rod 4', region=-channel1, 
                       fill=u_control_rod,
                       transform=Transform([-2*22.38, 0, 0]))
-        c_rod3 = Cell(name=209, comment='Control Rod 5', region=-channel1, 
+        inp += Cell(name=209, comment='Control Rod 5', region=-channel1, 
                       fill=u_control_rod,
                       transform=Transform([-22.38, 22.38, 0]))
-        c_rod4 = Cell(name=210, comment='Control Rod 3', region=-channel1, 
+        inp += Cell(name=210, comment='Control Rod 3', region=-channel1, 
                       fill=u_control_rod,
                       transform=Transform([-22.38, -22.38, 0]))
-        inp.add_all([c_rod1, c_rod2, c_rod3, c_rod4])
 
         # Cells for element without a pin.
         c_sup_plate = Cell(name=300, material=m10, density=7.0, 
@@ -700,7 +706,7 @@ class RCF():
         u1 = UniverseList(name=1, cells=cells_no_pin)
         # Add the cells to the input deck.
         # Each cell will have the U=1 keyword.
-        inp.add_all(cells_no_pin)
+        inp += cells_no_pin
 
         # Cells for element with a pin.
         c_sup_plate_pin = Cell(name=400, material=m10, density=7.0, 
@@ -801,7 +807,7 @@ class RCF():
                                     density_unit = '-')
             cells_pin.append(c_air_around_pin)
 
-        inp.add_all(cells_pin)
+        inp += cells_pin
         # Define Universe for element with pin.
         u4 = UniverseList(name=4, cells=cells_pin)
 
@@ -870,24 +876,21 @@ class RCF():
         el_universe = UniverseList(name=10, cells=c_element)
         c_inside_lat = Cell(name=112, comment='Lattice Container',
                             region=-lat_container, fill=el_universe)
-        inp.add_all([c_element, c_inside_lat])
+        inp += [c_element, c_inside_lat]
 
         # Set cell importances.
-        par = ['n']
-        imp = [{1.0 : par}, {0 : par}]
-        for k in inp.cells:
-            if inp.cells[k] == c_out_of_bounds:
-                inp.cells[k].importances = imp[1]
+        for cell in inp.cells.values():
+            if cell.material == c_out_of_bounds:
+                cell.importances = {'n' : 0.0}
             else:
-                inp.cells[k].importances = imp[0]
+                cell.importances = {'n' : 1.0}
 
         # Add kcode.
-        kcode = CriticalitySource(histories=1e5, keff_guess=1.0, 
-                                  skip_cycles=200, cycles=1200)
+        inp += CriticalitySource(histories=1e5, keff_guess=1.0, 
+                                 skip_cycles=200, cycles=1200)
         src_points = [(1.6526,0,90), (-1.6526,0,90), (0,1.62526,90), 
                       (0,-1.62526,90)]
-        ksrc = CriticalitySourcePoints(src_points)
-        inp.add_all([kcode,ksrc])
+        inp += CriticalitySourcePoints(src_points)
 
     def __repr__(self):
         string = 'RCF model written to ' + self.filename

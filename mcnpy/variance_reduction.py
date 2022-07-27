@@ -1,5 +1,5 @@
 from abc import ABC
-from mcnpy.wrap import wrappers, overrides
+from .wrap import wrappers, overrides, subclass_overrides
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -260,6 +260,15 @@ class PhotonBias(PhotonBiasBase, VarianceReductionSetting):
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
 
+    class ReacPairs(ReacPairsBase):
+        __doc__ = ReacPairsBase().__doc__
+
+        def _init(self, **kwargs):
+            """
+            """
+            for k in kwargs:
+                setattr(self, k, kwargs[k])
+
 class CutoffParams(CutoffParamsBase):
     __doc__ = CutoffParamsBase().__doc__
 
@@ -309,3 +318,5 @@ for name, wrapper in overrides.items():
     override = globals().get(name, None)
     if override is not None:
         overrides[name] = override
+
+subclass_overrides(PhotonBias)
