@@ -4,6 +4,7 @@ from py4j.java_collections import JavaList
 from re import compile, sub, search
 from .gateway import gateway, is_instance_of, get_documentation
 from .util import camel_to_snake_case
+from .mixin import IDManagerMixin
 
 
 overrides = {}
@@ -345,6 +346,9 @@ def wrap_e_class(e_class, e_factory):
             gateway_client: wrap_e_object(target_id, gateway_client)))
         if args or kwargs:
             self._init(*args, **kwargs)
+        # To invoke automated naming.
+        elif isinstance(self, IDManagerMixin):
+            self._init(name=None)
     def _init(self):
         raise NotImplementedError  # this should be unreachable
     def __str__(self):

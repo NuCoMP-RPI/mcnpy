@@ -492,7 +492,6 @@ class RCF():
              + Nuclide('u238', 0.836299436)
              + Nuclide('o16', 0.1208))
         m2.unit = 'WEIGHT'
-        #print(m2._e_object.toString())
         #m2.name = 2
 
         m3 = Material(name=3, nuclides=ss, comment='Stainless Steel')
@@ -633,6 +632,7 @@ class RCF():
                           density_unit = '-',
                           transformation=tr1)
         control_rod = [c_brake, c_abs1, c_abs2, c_rod_clad, c_follower]
+        #u_control_rod = c_brake ** c_abs1 ** c_abs2 ** c_rod_clad ** c_follower
 
         if water_height > 0.0:
             c_rod_water = Cell(name=205, material=m1, density=density_mod,  
@@ -643,6 +643,7 @@ class RCF():
                                density_unit = '-',
                                transformation=tr1)
             control_rod.append(c_rod_water)
+            #u_control_rod **= c_rod_water
         c_rod_air = Cell(name=206, material=m13, density=0.001205, 
                          comment='Control Rod - Channel Air',
                          region=-channel & +fill_height & ~c_brake & ~c_abs1 
@@ -650,9 +651,11 @@ class RCF():
                          density_unit = '-',
                          transformation=tr1)
         control_rod.append(c_rod_air)
+        #u_control_rod **= c_rod_air
 
         # Define Universe for a Control Rod.
         u_control_rod = UniverseList(name=66, cells=control_rod)
+        u_control_rod
         inp += control_rod
 
         # Fill channels with Control Rod Universe.

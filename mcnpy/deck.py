@@ -13,7 +13,7 @@ from .data import MiscSetting, TerminationSetting
 from .source import SourceSetting
 from .physics import PhysicsSetting
 from .variance_reduction import VarianceReductionSetting
-from .tally import Tally, TallySetting
+from .tally import TallyABC, TallySettingABC
 from ._deck import Deck as _Deck
 from .gateway import gateway
 from .deck_formatter import formatter, preprocessor, deck_cleanup
@@ -248,7 +248,7 @@ class Deck():
                     if renumber is True:
                         settings[i].name = i+1
                     self.transformations[int(settings[i].name)] = settings[i]
-                elif isinstance(settings[i], Tally.Tally):
+                elif isinstance(settings[i], TallyABC):
                     self.tallies[int(settings[i].name)] = settings[i]
                 elif isinstance(settings[i], GeometrySetting):
                     self.geom_settings.append(settings[i])
@@ -632,7 +632,7 @@ class Deck():
             if self.serialized is False:
                 self._deck.data.settings.addUnique(self.settings
                                                   [card.name]._e_object)
-        elif isinstance(card, Tally.Tally):
+        elif isinstance(card, TallyABC):
             self.set_id(card, self.tallies)
             if self.serialized is False:
                 self._deck.data.settings.addUnique(self.settings
@@ -713,7 +713,7 @@ class Deck():
             del self.transformations[card.name]
             if self.serialized is False:
                 self._deck.data.settings.remove(card)
-        elif isinstance(card, Tally.Tally):
+        elif isinstance(card, TallyABC):
             del self.tallies[card.name]
             if self.serialized is False:
                 self._deck.data.settings.remove(card)
@@ -770,6 +770,7 @@ class Deck():
         for i in range(len(cards)):
             self.remove(cards[i])
 
+    # Should be redundant with the IDManagerMixin class.
     def set_id(self, card, dict:dict):
         """To ensure every card is numbered.
         """

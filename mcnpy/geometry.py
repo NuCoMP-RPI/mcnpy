@@ -4,6 +4,7 @@ from random import random
 from .tally import Tally
 from .region import Complement
 from .points import Vector
+from .mixin import IDManagerMixin
 from .variance_reduction import DeterministicTransportSphere as DTS
 from .wrap import wrappers, overrides, subclass_overrides
 
@@ -13,13 +14,19 @@ class GeometrySetting(ABC):
     """
     """
 
-class Cell(CellBase):
+class Cell(IDManagerMixin, CellBase):
     __doc__ = CellBase().__doc__
 
-    def _init(self, name, region, density=0.0, material=None, universe=None, 
+    next_id = 1
+    used_ids = set()
+
+    def _init(self, name=None, region=None, density=0.0, material=None, universe=None, 
               comment=None, **kwargs):
         """Define a `Cell`."""
-        self.name = name
+        if name is None:
+            self.__setattr__('name', None)
+        else:
+            self.name = name
         self.universe = universe
         self.material = material
         self.region = region
@@ -36,12 +43,12 @@ class Cell(CellBase):
     def region(self):
         return self._e_object.getRegion()
 
-    @property
+    """@property
     def name(self):
         if self._e_object.getName() is None:
             return None
         else:
-            return int(self._e_object.getName())
+            return int(self._e_object.getName())"""
 
     @property
     def density(self):
@@ -107,15 +114,16 @@ class Cell(CellBase):
     
     @region.setter
     def region(self, region):
-        # Should let us reuse regions on different cells.
-        self._e_object.setRegion(region.__copy__())
+        if region is not None:
+            # Should let us reuse regions on different cells.
+            self._e_object.setRegion(region.__copy__())
 
-    @name.setter
+    """@name.setter
     def name(self, name):
-        """name : str
-        Unique numeric identifier for the cell."""
+        name : str
+        Unique numeric identifier for the cell.
         if name is not None:
-            self._e_object.setName(str(name))
+            self._e_object.setName(str(name))"""
 
     @density.setter
     def density(self, density):
@@ -190,36 +198,36 @@ class Cell(CellBase):
         return Complement(self)
 
     def __or__(self, other):
-        if isinstance(other, Tally.Bins.CellUnion):
-            return Tally.Bins.CellUnion([Tally.Bins.UnaryCellBin(self)] 
-                                         + [Tally.Bins.UnaryCellBin(other[:])])
+        if isinstance(other, Tally.Bin.CellUnion):
+            return Tally.Bin.CellUnion([Tally.Bin.UnaryCellBin(self)] 
+                                         + [Tally.Bin.UnaryCellBin(other[:])])
         else:
-            return Tally.Bins.CellUnion([Tally.Bins.UnaryCellBin(self)] 
-                                         + [Tally.Bins.UnaryCellBin(other)])
+            return Tally.Bin.CellUnion([Tally.Bin.UnaryCellBin(self)] 
+                                         + [Tally.Bin.UnaryCellBin(other)])
 
     def __and__(self, other):
-        if isinstance(other, Tally.Bins.CellLevel):
-            return Tally.Bins.CellLevel([Tally.Bins.UnaryCellBin(self)] 
-                                         + Tally.Bins.UnaryCellBin(other[:]))
+        if isinstance(other, Tally.Bin.CellLevel):
+            return Tally.Bin.CellLevel([Tally.Bin.UnaryCellBin(self)] 
+                                         + Tally.Bin.UnaryCellBin(other[:]))
         else:
-            return Tally.Bins.CellLevel([Tally.Bins.UnaryCellBin(self)] 
-                                         + [Tally.Bins.UnaryCellBin(other)])
+            return Tally.Bin.CellLevel([Tally.Bin.UnaryCellBin(self)] 
+                                         + [Tally.Bin.UnaryCellBin(other)])
 
     def __getitem__(self, index):
         _index = Lattice.Index(index=index)
-        unary = Tally.Bins.UnaryCellBin(self)
+        unary = Tally.Bin.UnaryCellBin(self)
         unary.index = _index
         return unary
 
     def __lshift__(self, other):
-        if isinstance(other, Tally.Bins.CellLevel):
-            return Tally.Bins.CellLevels([Tally.Bins.CellLevel(
-                                          Tally.Bins.UnaryCellBin(self))] 
-                                          + Tally.Bins.CellLevel(other[:]))
+        if isinstance(other, Tally.Bin.CellLevel):
+            return Tally.Bin.CellLevels([Tally.Bin.CellLevel(
+                                          Tally.Bin.UnaryCellBin(self))] 
+                                          + Tally.Bin.CellLevel(other[:]))
         else:#elif isinstance(other, (Cell, Universe)):
-            return Tally.Bins.CellLevels([Tally.Bins.CellLevel(
-                                          Tally.Bins.UnaryCellBin(self))] 
-                                          + [Tally.Bins.CellLevel(other)])
+            return Tally.Bin.CellLevels([Tally.Bin.CellLevel(
+                                          Tally.Bin.UnaryCellBin(self))] 
+                                          + [Tally.Bin.CellLevel(other)])
 
     def __str__(self):
             string = 'Cell\n'
@@ -397,7 +405,7 @@ class Cell(CellBase):
             self.particles = particles
             self.uncollided = uncollided
 
-class Transformation(TransformationBase, GeometrySetting):
+class Transformation(IDManagerMixin, TransformationBase, GeometrySetting):
     """TR Card
     
     Parameters
@@ -407,6 +415,9 @@ class Transformation(TransformationBase, GeometrySetting):
     transformation : mcnpy.geometry.Transform or nested list
         The transformation itself descriped as a Transform or a list. The list may contain up to 3 items. First a list of displacements, second a 3x3 array describing the rotation matrix, and third the 'm' value specifiying the rotation reference frame.
     """
+    next_id = 1
+    used_ids = set()
+
     def _init(self, name, transformation, unit=None):
         """`transformation` must be a `Transform` or a list containing at least a displacement.
         """

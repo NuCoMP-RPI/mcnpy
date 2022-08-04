@@ -1,5 +1,6 @@
 from abc import ABC
 from .wrap import wrappers, overrides
+from .mixin import IDManagerMixin
 from .zaid_helper import element_to_zaid, zaid_to_element, library_check
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
@@ -8,10 +9,13 @@ class MaterialSetting(ABC):
     """
     """
 
-class Material(MaterialBase):
+class Material(IDManagerMixin, MaterialBase):
     __doc__ = MaterialBase().__doc__
 
-    def _init(self, name, nuclides=[], unit=None, comment=None, **kwargs):
+    next_id = 1
+    used_ids = set()
+
+    def _init(self, name=None, nuclides=[], unit=None, comment=None, **kwargs):
         self.name = name
         self.nuclides = nuclides
         if comment is not None:
@@ -62,7 +66,7 @@ class Material(MaterialBase):
             self.nuclides.remove(nuclide)
         return self
 
-    @property
+    """@property
     def name(self):
         if self._e_object.getName() is None:
             return None
@@ -71,7 +75,7 @@ class Material(MaterialBase):
 
     @name.setter
     def name(self, name):
-        self._e_object.setName(str(name))
+        self._e_object.setName(str(name))"""
 
     @property
     def unit(self):

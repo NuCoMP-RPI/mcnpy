@@ -5,6 +5,7 @@ import numpy as np
 from .wrap import wrappers, overrides
 from .region import *
 from .points import Point
+from .mixin import IDManagerMixin
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -82,8 +83,11 @@ class Halfspace(HalfspaceBase):
             self.surface = surf
 
 
-class Surface(SurfaceBase):
+class Surface(IDManagerMixin, SurfaceBase):
     __doc__ = SurfaceBase().__doc__
+
+    next_id = 1
+    used_ids = set()
 
     def _init(self, name=None, boundary_type='vacuum', comment=None):
         self.name = name
@@ -124,17 +128,6 @@ class Surface(SurfaceBase):
                                                 + str(self.transformation.name))
 
         return string
-
-    @property
-    def name(self):
-        if self._e_object.getName() is None:
-            return None
-        else:
-            return int(self._e_object.getName())
-
-    @name.setter
-    def name(self, name):
-        self._e_object.setName(str(name))
 
 class Macrobody(ABC):
     """All macrobodies with facets. Excludes Sphere and Ellipsoid.

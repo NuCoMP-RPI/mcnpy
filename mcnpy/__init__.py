@@ -26,6 +26,7 @@ while running is False:
 # TODO: Remove when we're confident about stable startup.
 print('I slept for: ' + str(sleep_time) + ' seconds!')
 
+import mcnpy.mixin
 # All of the automatic wrappers.
 from mcnpy.wrap import *
 # All of the custom wrappers.
@@ -38,7 +39,7 @@ from .data import *
 from .output import *
 from .region import *
 from .surfaces import *
-from .tally import *
+from .tally import Tally
 from .variance_reduction import *
 from .geometry import *
 

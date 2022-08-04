@@ -10,7 +10,7 @@ NAME = 'mcnpy'
 def copy_files (target_path):
     source_path = join(HERE, 'mcnpy')
     for fn in ['EntryPoint.jar', 'EntryPoint.class', 'EntryPoint.java', 
-               'manifest.mf', 'server_delay']:
+               'manifest.mf']:
         copyfile(join(source_path, fn), join(target_path,fn))
     
     """lib_path = os.path.join(source_path, 'lib')

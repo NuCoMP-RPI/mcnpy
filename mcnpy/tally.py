@@ -1,217 +1,171 @@
 import mcnpy as mp
 from abc import ABC
 from collections.abc import MutableSequence
+from .mixin import IDManagerMixin, NoIDMixin
 from .wrap import wrappers, overrides, subclass_overrides
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
-class Tally(ABC):
+class TallyABC(IDManagerMixin, ABC):
     """
     """
-    class Tally(ABC):
+    used_ids = set()
+
+    @property
+    def bins(self):
+        return self._e_object.getBins()
+
+    @bins.setter
+    def bins(self, bins):
+        if bins is None:
+            pass
+        else:
+            try:
+                self._e_object.setBins(Tally.Bins.CellBins(bins))
+            except:
+                self._e_object.setBins(Tally.Bins.SurfaceBins(bins))
+
+    @property
+    def particles(self):
+        return self._e_object.getParticles()
+
+    @particles.setter
+    def particles(self, particles):
+        _par = self._e_object.getParticles()
+        del _par[:]
+        if particles is not None:
+            if isinstance(particles, list) is False:
+                particles = [particles]
+            for p in particles:
+                _par.append(p)
+                
+class FTallyABC(TallyABC):
+    """General class for F1, F2, F4, F6, F7, and F8 tallies.
+    """
+    def _init(self, name=None, particles=None, bins=None, unit=None, total=None):
         """
         """
-    class SurfaceCurrent(TallySurfaceCurrentBase, Tally):
+        self.name = name
+        self.bins = bins
+        self.particles = particles
+        self.unit = unit
+        self.total = total
+
+class DetTallyABC(TallyABC):
+    """F5 point and ring flux tallies.
+    """
+    def _init(self, name=None, particles=None, detectors=None, unit=None, no_direct=None):
+        """
+        """
+        self.name = name
+        self.detectors = detectors
+        self.particles = particles
+        self.unit = unit
+        self.no_direct = no_direct
+
+class RadTallyABC(TallyABC):
+    """F5 radiography image tallies.
+    """
+    def _init(self, name=None, particles=None, center=None, r0=None, reference=None, unit=None, no_direct=None):
+        """
+        """
+        self.name = name
+        self.center = center
+        self.r0 = r0
+        self.reference = reference
+        self.particles = particles
+        self.unit = unit
+        self.no_direct = no_direct
+
+class TallySettingABC(ABC):
+    pass
+
+class TallyRef(TallySettingABC):
+    @property
+    def tally(self):
+        return self._e_object.getTally()
+
+    @tally.setter
+    def tally(self, tally):
+        if tally == 0:
+            self._e_object.setTally(None)
+        else:
+            self._e_object.setTally(tally)
+
+class Tally():
+    """
+    """
+    class SurfaceCurrent(FTallyABC, TallySurfaceCurrentBase):
+        next_id = 1
+        increment = 10
+
         __doc__ = """F1
         """
         __doc__ += TallySurfaceCurrentBase().__doc__
 
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-        
-        @property
-        def name(self):
-            if self._e_object.getName() is None:
-                return None
-            else:
-                return int(self._e_object.getName())
-        @name.setter
-        def name(self, name):
-            if name is not None:
-                self._e_object.setName(str(name))
+    class SurfaceFlux(FTallyABC, TallySurfaceFluxBase):
+        next_id = 2
+        increment = 10
 
-    class SurfaceFlux(TallySurfaceFluxBase, Tally):
         __doc__ = """F2
         """
         __doc__ += TallySurfaceFluxBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-        
-        @property
-        def name(self):
-            if self._e_object.getName() is None:
-                return None
-            else:
-                return int(self._e_object.getName())
-        @name.setter
-        def name(self, name):
-            if name is not None:
-                self._e_object.setName(str(name))
 
-    class CellFlux(TallyCellFluxBase, Tally):
+    class CellFlux(FTallyABC, TallyCellFluxBase):
+        next_id = 4
+        increment = 10
+
         __doc__ = """F4
         """
         __doc__ += TallyCellFluxBase().__doc__
-        
-        def _init(self, name, particles, bins, unit=None, total=None):
-            """
-            """
-            self.name = name
-            self.bins = bins
-            self.particles = particles
-            self.unit = unit
-            self.total = total
 
-        @property
-        def bins(self):
-            return self._e_object.getBins()
+    class EnergyDeposition(FTallyABC, TallyEnergyDepositionBase):
+        next_id = 6
+        increment = 10
 
-        @bins.setter
-        def bins(self, bins):
-            self._e_object.setBins(Tally.Bins.CellBins(bins))
-
-    class EnergyDeposition(TallyEnergyDepositionBase, Tally):
         __doc__ = """F6
         """
         __doc__ += TallyEnergyDepositionBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-        
-        @property
-        def name(self):
-            if self._e_object.getName() is None:
-                return None
-            else:
-                return int(self._e_object.getName())
-        @name.setter
-        def name(self, name):
-            if name is not None:
-                self._e_object.setName(str(name))
 
-    class CollisionHeating(TallyCollisionHeatingBase, Tally):
+    class CollisionHeating(FTallyABC, TallyCollisionHeatingBase):
+        next_id = 6
+        increment = 10
+        
         __doc__ = """+F6
         """
         __doc__ += TallyCollisionHeatingBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-        
-        @property
-        def name(self):
-            if self._e_object.getName() is None:
-                return None
-            else:
-                return int(self._e_object.getName())
-        @name.setter
-        def name(self, name):
-            if name is not None:
-                self._e_object.setName(str(name))
 
-    class FissionHeating(TallyFissionHeatingBase, Tally):
+    class FissionHeating(FTallyABC, TallyFissionHeatingBase):
+        next_id = 7
+        increment = 10
+
         __doc__ = """F7
         """
         __doc__ += TallyFissionHeatingBase().__doc__
         
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-        
-        @property
-        def name(self):
-            if self._e_object.getName() is None:
-                return None
-            else:
-                return int(self._e_object.getName())
-        @name.setter
-        def name(self, name):
-            if name is not None:
-                self._e_object.setName(str(name))
+    class PulseHeight(FTallyABC, TallyPulseHeightBase):
+        next_id = 8
+        increment = 10
 
-    class PulseHeight(TallyPulseHeightBase, Tally):
         __doc__ = """F8
         """
         __doc__ += TallyPulseHeightBase().__doc__
         
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-        
-        @property
-        def name(self):
-            if self._e_object.getName() is None:
-                return None
-            else:
-                return int(self._e_object.getName())
-        @name.setter
-        def name(self, name):
-            if name is not None:
-                self._e_object.setName(str(name))
+    class ChargeDeposition(FTallyABC, TallyChargeDepositionBase):
+        next_id = 8
+        increment = 10
 
-    class ChargeDeposition(TallyChargeDepositionBase, Tally):
         __doc__ = """+F8
         """
         __doc__ += TallyChargeDepositionBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-        
-        @property
-        def name(self):
-            if self._e_object.getName() is None:
-                return None
-            else:
-                return int(self._e_object.getName())
-        @name.setter
-        def name(self, name):
-            if name is not None:
-                self._e_object.setName(str(name))
 
-    class Detector(ABC):
-        """
-        """
+    class PointFlux(DetTallyABC, TallyPointFluxBase):
+        next_id = 5
+        increment = 10
 
-    class PointFlux(TallyPointFluxBase, Tally, Detector):
         __doc__ = """F5
         """
         __doc__ += TallyPointFluxBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-            
-            @property
-            def name(self):
-                if self._e_object.getName() is None:
-                    return None
-                else:
-                    return int(self._e_object.getName())
-            @name.setter
-            def name(self, name):
-                if name is not None:
-                    self._e_object.setName(str(name))
 
         class Detector(TallyPointFluxDetectorBase):
             __doc__ = TallyPointFluxDetectorBase().__doc__
@@ -222,27 +176,13 @@ class Tally(ABC):
                 for k in kwargs:
                     setattr(self, k, kwargs[k])
 
-    class RingFlux(TallyRingFluxBase, Detector):
+    class RingFlux(DetTallyABC, TallyRingFluxBase):
+        next_id = 5
+        increment = 10
+
         __doc__ = """F5
         """
         __doc__ += TallyRingFluxBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-            
-            @property
-            def name(self):
-                if self._e_object.getName() is None:
-                    return None
-                else:
-                    return int(self._e_object.getName())
-            @name.setter
-            def name(self, name):
-                if name is not None:
-                    self._e_object.setName(str(name))
 
         class Detector(TallyRingFluxDetectorBase):
             __doc__ = TallyRingFluxDetectorBase().__doc__
@@ -253,11 +193,10 @@ class Tally(ABC):
                 for k in kwargs:
                     setattr(self, k, kwargs[k])
 
-    class RadiographyFlux(ABC):
-        """
-        """
+    class PinholeImageFlux(RadTallyABC, TallyPinholeImageFluxBase):
+        next_id = 5
+        increment = 10
 
-    class PinholeImageFlux(TallyPinholeImageFluxBase, Tally, RadiographyFlux, Detector):
         __doc__ = """FIP
         """
         __doc__ += TallyPinholeImageFluxBase().__doc__
@@ -267,19 +206,11 @@ class Tally(ABC):
             """
             for k in kwargs:
                 setattr(self, k.lower(), kwargs[k])
-            
-            @property
-            def name(self):
-                if self._e_object.getName() is None:
-                    return None
-                else:
-                    return int(self._e_object.getName())
-            @name.setter
-            def name(self, name):
-                if name is not None:
-                    self._e_object.setName(str(name))
 
-    class PlanarImageFlux(TallyPlanarImageFluxBase, Tally, RadiographyFlux, Detector):
+    class PlanarImageFlux(RadTallyABC, TallyPlanarImageFluxBase):
+        next_id = 5
+        increment = 10
+
         __doc__ = """FIR
         """
         __doc__ += TallyPlanarImageFluxBase().__doc__
@@ -289,19 +220,11 @@ class Tally(ABC):
             """
             for k in kwargs:
                 setattr(self, k.lower(), kwargs[k])
-            
-            @property
-            def name(self):
-                if self._e_object.getName() is None:
-                    return None
-                else:
-                    return int(self._e_object.getName())
-            @name.setter
-            def name(self, name):
-                if name is not None:
-                    self._e_object.setName(str(name))
 
-    class CylindricalImageFlux(TallyCylindricalImageFluxBase, Tally, RadiographyFlux, Detector):
+    class CylindricalImageFlux(RadTallyABC, TallyCylindricalImageFluxBase):
+        next_id = 5
+        increment = 10
+
         __doc__ = """FIC
         """
         __doc__ += TallyCylindricalImageFluxBase().__doc__
@@ -311,20 +234,11 @@ class Tally(ABC):
             """
             for k in kwargs:
                 setattr(self, k.lower(), kwargs[k])
-            
-            @property
-            def name(self):
-                if self._e_object.getName() is None:
-                    return None
-                else:
-                    return int(self._e_object.getName())
-            @name.setter
-            def name(self, name):
-                if name is not None:
-                    self._e_object.setName(str(name))
 
+    class FMESH(TallyABC, TallyMeshBase):
+        next_id = 4
+        increment = 10
 
-    class FMESH(TallyMeshBase, Tally):
         __doc__ = """FMESH
         """
         __doc__ += TallyMeshBase().__doc__
@@ -334,17 +248,6 @@ class Tally(ABC):
             """
             for k in kwargs:
                 setattr(self, k.lower(), kwargs[k])
-            
-            @property
-            def name(self):
-                if self._e_object.getName() is None:
-                    return None
-                else:
-                    return int(self._e_object.getName())
-            @name.setter
-            def name(self, name):
-                if name is not None:
-                    self._e_object.setName(str(name))
 
     # This is really just the container around a TMESH block.
     # All of the numbered meshes are their own set of cards/classes.
@@ -504,18 +407,18 @@ class Tally(ABC):
                 for k in kwargs:
                     setattr(self, k, kwargs[k])
 
-    class Bins(ABC):
+    class Bin(ABC):
         """
         """
         class Level(ABC):
             def __and__(self, other):
-                return Tally.Bins.CellLevel((self, other))
+                return Tally.Bin.CellLevel((self, other))
 
             def __or__(self, other):
-                return Tally.Bins.CellUnion((self, other))
+                return Tally.Bin.CellUnion((self, other))
 
             def __lshift__(self, other):
-                return Tally.Bins.CellLevels([self] + [other])
+                return Tally.Bin.CellLevels([self] + [other])
 
         class CellBins(CellBinsBase):
             __doc__ = CellBinsBase().__doc__
@@ -534,14 +437,14 @@ class Tally(ABC):
                 _bins = self._e_object.getBins()
                 del _bins[:]
                 if (isinstance(bins, (MutableSequence, tuple)) is False 
-                    or isinstance(bins, Tally.Bins.Level)): 
+                    or isinstance(bins, Tally.Bin.Level)): 
                     bins = [bins]
-                if isinstance(bins, Tally.Bins.CellLevels):
+                if isinstance(bins, Tally.Bin.CellLevels):
                     _bins.append(bins)
                 else:
                     for i in bins:
                         if isinstance(i, (mp.Cell, mp.Universe)):
-                            _bins.append(Tally.Bins.UnaryCellBin(i))
+                            _bins.append(Tally.Bin.UnaryCellBin(i))
                         else:
                             print(type(i))
                             if i is not None:
@@ -564,21 +467,21 @@ class Tally(ABC):
                 _level = self._e_object.getLevel()
                 del _level[:]
                 if (isinstance(level, (MutableSequence, tuple)) is False 
-                    or isinstance(level, Tally.Bins.Level)):
+                    or isinstance(level, Tally.Bin.Level)):
                     level = [level]
                 for i in level:
                     if isinstance(i, (mp.Cell, mp.Universe)):
-                        _level.append(Tally.Bins.UnaryCellBin(i))
+                        _level.append(Tally.Bin.UnaryCellBin(i))
                     else:
                         _level.append(i)
 
             def __and__(self, other):
-                new = Tally.Bins.CellLevel(self)
+                new = Tally.Bin.CellLevel(self)
                 new &= other
                 return new
 
             def __iand__(self, other):
-                if isinstance(other, Tally.Bins.CellLevel):
+                if isinstance(other, Tally.Bin.CellLevel):
                     self.extend(other)
                 else:
                     self.level.addUnique(other._e_object)
@@ -620,32 +523,32 @@ class Tally(ABC):
                 _levels = self._e_object.getLevels()
                 del _levels[:]
                 if (isinstance(levels, (MutableSequence, tuple)) is False 
-                    or isinstance(levels, Tally.Bins.Level)):
+                    or isinstance(levels, Tally.Bin.Level)):
                     levels = [levels]
-                elif isinstance(levels, Tally.Bins.CellLevels):
+                elif isinstance(levels, Tally.Bin.CellLevels):
                     self.extend(levels)
                 for i in levels:
-                    if isinstance(i, (Tally.Bins.UnaryCellBin, Tally.Bins.CellUnion)):
-                        _levels.append(Tally.Bins.CellLevel(i))
+                    if isinstance(i, (Tally.Bin.UnaryCellBin, Tally.Bin.CellUnion)):
+                        _levels.append(Tally.Bin.CellLevel(i))
                     elif isinstance(i, (mp.Cell, mp.Universe)):
-                        _levels.append(Tally.Bins.CellLevel(Tally.Bins.UnaryCellBin(i)))
+                        _levels.append(Tally.Bin.CellLevel(Tally.Bin.UnaryCellBin(i)))
                     else:
                         _levels.append(i)
 
 
             def __lshift__(self, other):
-                new = Tally.Bins.CellLevels(self)
+                new = Tally.Bin.CellLevels(self)
                 new <<= other
                 return new
 
             def __ilshift__(self, other):
-                if isinstance(other, Tally.Bins.CellLevels):
+                if isinstance(other, Tally.Bin.CellLevels):
                     self.extend(other)
                 else:
-                    if isinstance(other, (Tally.Bins.CellUnion, Tally.Bins.UnaryCellBin)):
-                        self.levels.addUnique(Tally.Bins.CellLevel([other])._e_object)
+                    if isinstance(other, (Tally.Bin.CellUnion, Tally.Bin.UnaryCellBin)):
+                        self.levels.addUnique(Tally.Bin.CellLevel([other])._e_object)
                     elif isinstance(other, (mp.Cell, mp.Universe)):
-                        self.levels.addUnique(Tally.Bins.CellLevel([Tally.Bins.UnaryCellBin(other)])._e_object)
+                        self.levels.addUnique(Tally.Bin.CellLevel([Tally.Bin.UnaryCellBin(other)])._e_object)
                     else:
                         self.levels.addUnique(other._e_object)
                 return self
@@ -677,12 +580,12 @@ class Tally(ABC):
                 self.union = union
 
             def __or__(self, other):
-                new = Tally.Bins.CellUnion(self)
+                new = Tally.Bin.CellUnion(self)
                 new |= other
                 return new
 
             def __ior__(self, other):
-                if isinstance(other, Tally.Bins.CellUnion):
+                if isinstance(other, Tally.Bin.CellUnion):
                     self.extend(other)
                 else:
                     self.union.addUnique(other._e_object)
@@ -802,20 +705,20 @@ class Tally(ABC):
                 return string
 
             def __or__(self, other):
-                if isinstance(other, Tally.Bins.CellUnion):
-                    return Tally.Bins.CellUnion([self] + other[:])
+                if isinstance(other, Tally.Bin.CellUnion):
+                    return Tally.Bin.CellUnion([self] + other[:])
                 elif isinstance(other, (mp.Cell, mp.Universe)):
-                    return Tally.Bins.CellUnion([self] + [Tally.Bins.UnaryCellBin(other)])
+                    return Tally.Bin.CellUnion([self] + [Tally.Bin.UnaryCellBin(other)])
                 else:
-                    return Tally.Bins.CellUnion((self, other))
+                    return Tally.Bin.CellUnion((self, other))
 
             def __and__(self, other):
-                if isinstance(other, Tally.Bins.CellLevel):
-                    return Tally.Bins.CellLevel([self] + other[:])
+                if isinstance(other, Tally.Bin.CellLevel):
+                    return Tally.Bin.CellLevel([self] + other[:])
                 elif isinstance(other, (mp.Cell, mp.Universe)):
-                    return Tally.Bins.CellLevel([self] + [Tally.Bins.UnaryCellBin(other)])
+                    return Tally.Bin.CellLevel([self] + [Tally.Bin.UnaryCellBin(other)])
                 else:
-                    return Tally.Bins.CellLevel((self, other))
+                    return Tally.Bin.CellLevel((self, other))
 
             def __getitem__(self, index):
                 _index = mp.Lattice.Index(index)
@@ -831,203 +734,13 @@ class Tally(ABC):
                 for k in kwargs:
                     setattr(self, k, kwargs[k])
 
-
-class TallySetting(ABC):
-    """
-    """
-    class Setting(ABC):
+    class Bins(ABC):
         """
         """
-
-    class Comment(TallyCommentBase, Setting):
-        __doc__ = """TC
-        """
-        __doc__ += TallyCommentBase().__doc__
-        
-        def _init(self, **kwargs):
+        class Energies(TallyRef, TallyEnergiesBase):
+            __doc__ = """E
             """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-
-    class Energies(TallyEnergiesBase, Setting):
-        __doc__ = """E
-        """
-        __doc__ += TallyEnergiesBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-
-    class Times(TallyTimesBase, Setting):
-        __doc__ = """T
-        """
-        __doc__ += TallyTimesBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-
-    class TimesCyclic(TallyTimesCyclicBase, Setting):
-        __doc__ = """T
-        """
-        __doc__ += TallyTimesCyclicBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-
-    class Angles(TallyAnglesBase, Setting):
-        __doc__ = """C
-        """
-        __doc__ += TallyAnglesBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-
-    class Print(TallyPrintBase, Setting):
-        __doc__ = """FQ
-        """
-        __doc__ += TallyPrintBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-
-    class Multiplier(TallyMultiplierBase, Setting):
-        __doc__ = """FM
-        """
-        __doc__ += TallyMultiplierBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-
-        class AttnMatSet(AttnMatSetBase):
-            __doc__ = AttnMatSetBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class AttnSet(AttnSetBase):
-            __doc__ = AttnSetBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class MultBin(MultBinBase):
-            __doc__ = MultBinBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class MultBinSet(MultBinSetBase):
-            __doc__ = MultBinSetBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class MultBinSets(MultBinSetsBase):
-            __doc__ = MultBinSetsBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class MultSet(MultSetBase):
-            __doc__ = MultSetBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class MultSetSpecial(MultSetSpecialBase):
-            __doc__ = MultSetSpecialBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class RxnLists(RxnListsBase):
-            __doc__ = RxnListsBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class RxnMult(RxnMultBase):
-            __doc__ = RxnMultBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class RxnNum(RxnNumBase):
-            __doc__ = RxnNumBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class Rxns(RxnsBase):
-            __doc__ = RxnsBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class RxnSum(RxnSumBase):
-            __doc__ = RxnSumBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-    class Segments(TallySegmentsBase, Setting):
-            __doc__ = """FS
-            """
-            __doc__ += TallySegmentsBase().__doc__
+            __doc__ += TallyEnergiesBase().__doc__
             
             def _init(self, **kwargs):
                 """
@@ -1035,63 +748,217 @@ class TallySetting(ABC):
                 for k in kwargs:
                     setattr(self, k.lower(), kwargs[k])
 
-    class SegmentDivisors(TallySegmentDivisorsBase, Setting):
-        __doc__ = """SD
-        """
-        __doc__ += TallySegmentDivisorsBase().__doc__
-        
-        def _init(self, **kwargs):
+        class Times(TallyRef, TallyTimesBase):
+            __doc__ = """T
             """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-
-        class Divisor(TallyDivisorBase):
-            __doc__ = TallyDivisorBase().__doc__
-
+            __doc__ += TallyTimesBase().__doc__
+            
             def _init(self, **kwargs):
                 """
                 """
                 for k in kwargs:
-                    setattr(self, k, kwargs[k])
+                    setattr(self, k.lower(), kwargs[k])
 
-    class User(TallyUserBase, Setting):
-        __doc__ = """FU
-        """
-        __doc__ += TallyUserBase().__doc__
+        class TimesCyclic(TallyRef, TallyTimesCyclicBase):
+            __doc__ = """T
+            """
+            __doc__ += TallyTimesCyclicBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
+
+        class Angles(TallyRef, TallyAnglesBase):
+            __doc__ = """C
+            """
+            __doc__ += TallyAnglesBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
+
+        class User(TallyRef, TallyUserBase):
+            __doc__ = """FU
+            """
+            __doc__ += TallyUserBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
         
-        def _init(self, **kwargs):
+        class Multiplier(TallyRef, TallyMultiplierBase):
+            __doc__ = """FM
             """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+            __doc__ += TallyMultiplierBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
 
-    class Fluctuation(TallyFluctuationBase, Setting):
-        __doc__ = """FT
-        """
-        __doc__ += TallyFluctuationBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+            class AttnMatSet(AttnMatSetBase):
+                __doc__ = AttnMatSetBase().__doc__
 
-    class FluctuationROC(TallyFluctuationROCBase, Setting):
-        __doc__ = """FT
-        """
-        __doc__ += TallyFluctuationROCBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
 
-    class Treatments(TallyTreatmentsBase, Setting):
+            class AttnSet(AttnSetBase):
+                __doc__ = AttnSetBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+            class MultBin(MultBinBase):
+                __doc__ = MultBinBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+            class MultBinSet(MultBinSetBase):
+                __doc__ = MultBinSetBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+            class MultBinSets(MultBinSetsBase):
+                __doc__ = MultBinSetsBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+            class MultSet(MultSetBase):
+                __doc__ = MultSetBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+            class MultSetSpecial(MultSetSpecialBase):
+                __doc__ = MultSetSpecialBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+            class RxnLists(RxnListsBase):
+                __doc__ = RxnListsBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+            class RxnMult(RxnMultBase):
+                __doc__ = RxnMultBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+            class RxnNum(RxnNumBase):
+                __doc__ = RxnNumBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+            class Rxns(RxnsBase):
+                __doc__ = RxnsBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+            class RxnSum(RxnSumBase):
+                __doc__ = RxnSumBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+        class Segments(TallyRef, TallySegmentsBase):
+                __doc__ = """FS
+                """
+                __doc__ += TallySegmentsBase().__doc__
+                
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k.lower(), kwargs[k])
+
+        class AngleMultiplier(TallyRef, AngleMultiplierBase):
+            __doc__ = """CM
+            """
+            __doc__ += AngleMultiplierBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
+
+        class FlagCells(TallyRef, FlagCellsBase):
+            __doc__ = """CF
+            """
+            __doc__ += FlagCellsBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
+
+        class Fluctuation(TallyRef, TallyFluctuationBase):
+            __doc__ = """TF
+            """
+            __doc__ += TallyFluctuationBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
+
+        class FluctuationROC(TallyRef, TallyFluctuationROCBase):
             __doc__ = """FT
             """
-            __doc__ += TallyTreatmentsBase().__doc__
+            __doc__ += TallyFluctuationROCBase().__doc__
             
             def _init(self, **kwargs):
                 """
@@ -1099,165 +966,204 @@ class TallySetting(ABC):
                 for k in kwargs:
                     setattr(self, k.lower(), kwargs[k])
 
+        class Treatments(TallyRef, TallyTreatmentsBase):
+                __doc__ = """FT
+                """
+                __doc__ += TallyTreatmentsBase().__doc__
+                
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k.lower(), kwargs[k])
 
-
-    class DoseEnergy(DoseEnergyBase, Setting):
-        __doc__ = """DE
-        """
-        __doc__ += DoseEnergyBase().__doc__
-        
-        def _init(self, **kwargs):
+        class DoseEnergy(TallyRef, DoseEnergyBase):
+            __doc__ = """DE
             """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-
-    class DoseTable(DoseTableBase, Setting):
-        __doc__ = """DF
-        """
-        __doc__ += DoseTableBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-
-    class DoseFunction(DoseFunctionBase, Setting):
-        __doc__ = """DF
-        """
-        __doc__ += DoseFunctionBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
-
-        class Normalization(DoseNormalizationBase):
-            __doc__ = DoseNormalizationBase().__doc__
-
+            __doc__ += DoseEnergyBase().__doc__
+            
             def _init(self, **kwargs):
                 """
                 """
                 for k in kwargs:
-                    setattr(self, k, kwargs[k])
+                    setattr(self, k.lower(), kwargs[k])
 
-    class TimeMultiplier(TimeMultiplierBase, Setting):
-        __doc__ = """TM
-        """
-        __doc__ += TimeMultiplierBase().__doc__
-        
-        def _init(self, **kwargs):
+        class DoseTable(TallyRef, DoseTableBase):
+            __doc__ = """DF
             """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+            __doc__ += DoseTableBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
 
-    class EnergyMultiplier(EnergyMultiplierBase, Setting):
-        __doc__ = """EM
-        """
-        __doc__ += EnergyMultiplierBase().__doc__
-        
-        def _init(self, **kwargs):
+        class DoseFunction(TallyRef, DoseFunctionBase):
+            __doc__ = """DF
             """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+            __doc__ += DoseFunctionBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
 
-    class FlagSurfaces(FlagSurfacesBase, Setting):
-        __doc__ = """SF
-        """
-        __doc__ += FlagSurfacesBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+            class Normalization(DoseNormalizationBase):
+                __doc__ = DoseNormalizationBase().__doc__
 
-    class NoTransport(NoTransportBase, Setting):
-        """NOTRN
-        """
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
 
-    class Perturbation(PerturbationBase, Setting):
-        __doc__ = """PERT
-        """
-        __doc__ += PerturbationBase().__doc__
-        
-        def _init(self, **kwargs):
+        class TimeMultiplier(TallyRef, TimeMultiplierBase):
+            __doc__ = """TM
             """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+            __doc__ += TimeMultiplierBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
 
-    class ReactivityPerturbation(ReactivityPerturbationBase, Setting):
-        __doc__ = """KPERT
-        """
-        __doc__ += ReactivityPerturbationBase().__doc__
-        
-        def _init(self, **kwargs):
+        class EnergyMultiplier(TallyRef, EnergyMultiplierBase):
+            __doc__ = """EM
             """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+            __doc__ += EnergyMultiplierBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
 
-    class CriticalitySensitivity(CriticalitySensitivityBase, Setting):
-        __doc__ = """KSEN
-        """
-        __doc__ += CriticalitySensitivityBase().__doc__
+        class FlagSurfaces(TallyRef, FlagSurfacesBase):
+            __doc__ = """SF
+            """
+            __doc__ += FlagSurfacesBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
         
-        def _init(self, **kwargs):
+        class SegmentDivisors(TallyRef, TallySegmentDivisorsBase):
+            __doc__ = """SD
             """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+            __doc__ += TallySegmentDivisorsBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
 
-    class LatticeSpeedTallyEnhancement(LatticeSpeedTallyEnhancementBase, Setting):
-        __doc__ = """SPDTL
-        """
-        __doc__ += LatticeSpeedTallyEnhancementBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+            class Divisor(TallyDivisorBase):
+                __doc__ = TallyDivisorBase().__doc__
 
-    class AngleMultiplier(AngleMultiplierBase, Setting):
-        __doc__ = """CM
-        """
-        __doc__ += AngleMultiplierBase().__doc__
-        
-        def _init(self, **kwargs):
-            """
-            """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
 
-    class FlagCells(FlagCellsBase, Setting):
-        __doc__ = """CF
-        """
-        __doc__ += FlagCellsBase().__doc__
-        
-        def _init(self, **kwargs):
+    class Setting(ABC):
+        class Comment(TallyRef, TallySettingABC, TallyCommentBase):
+            __doc__ = """TC
             """
+            __doc__ += TallyCommentBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
+
+        class Print(TallyRef, TallySettingABC, TallyPrintBase):
+            __doc__ = """FQ
             """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+            __doc__ += TallyPrintBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
+
+        class NoTransport(NoIDMixin, TallySettingABC, NoTransportBase):
+            """NOTRN
+            """
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
+
+        class Perturbation(IDManagerMixin, TallySettingABC, PerturbationBase):
+            next_id = 1
+            used_ids = set()
+
+            __doc__ = """PERT
+            """
+            __doc__ += PerturbationBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
+
+        class ReactivityPerturbation(IDManagerMixin, TallySettingABC, ReactivityPerturbationBase):
+            next_id = 1
+            used_ids = set()
+
+            __doc__ = """KPERT
+            """
+            __doc__ += ReactivityPerturbationBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
+
+        class CriticalitySensitivity(IDManagerMixin, TallySettingABC, CriticalitySensitivityBase):
+            next_id = 1
+            used_ids = set()
+
+            __doc__ = """KSEN
+            """
+            __doc__ += CriticalitySensitivityBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
+
+        class LatticeSpeedTallyEnhancement(NoIDMixin, TallySettingABC, LatticeSpeedTallyEnhancementBase):
+            __doc__ = """SPDTL
+            """
+            __doc__ += LatticeSpeedTallyEnhancementBase().__doc__
+            
+            def _init(self, **kwargs):
+                """
+                """
+                for k in kwargs:
+                    setattr(self, k.lower(), kwargs[k])
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)
     if override is not None:
         overrides[name] = override
 
-subclass_overrides(Tally, ignore=[Tally.Tally, Tally.Detector, 
-                                  Tally.RadiographyFlux, Tally.Bins])
-subclass_overrides(Tally.Bins, ignore=[Tally.Bins.Level])
-subclass_overrides(TallySetting, ignore=[TallySetting.Setting])
+subclass_overrides(Tally, ignore=[Tally.Bin, Tally.Bins, Tally.Setting])
+subclass_overrides(Tally.Bin, ignore=[Tally.Bin.Level])
+subclass_overrides(Tally.Bins)
+subclass_overrides(Tally.Setting)
