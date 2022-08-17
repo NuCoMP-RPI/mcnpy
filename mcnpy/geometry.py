@@ -20,35 +20,27 @@ class Cell(IDManagerMixin, CellBase):
     next_id = 1
     used_ids = set()
 
-    def _init(self, name=None, region=None, density=0.0, material=None, universe=None, 
+    def _init(self, name=None, region=None, material=None, density=0.0, universe=None, 
               comment=None, **kwargs):
         """Define a `Cell`."""
-        if name is None:
-            self.__setattr__('name', None)
-        else:
-            self.name = name
+        self.name = name
+        self.region = region
         self.universe = universe
         self.material = material
-        self.region = region
-        self.density = abs(density)
-        if density < 0:
-            self.density_unit = '-'
-        #self.density_unit = density_unit
+        if self.material is not None:
+            if material.density is None:
+                self.density = abs(density)
+                if density < 0:
+                    self.density_unit = 'G_CM3'
         if comment is not None:
             self.comment = comment
+
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
 
     @property
     def region(self):
         return self._e_object.getRegion()
-
-    """@property
-    def name(self):
-        if self._e_object.getName() is None:
-            return None
-        else:
-            return int(self._e_object.getName())"""
 
     @property
     def density(self):
@@ -73,8 +65,6 @@ class Cell(IDManagerMixin, CellBase):
             #_importances[i.importance] = i.particles
         return _importances
 
-
-
     @property
     def temperature(self):
         return (self._e_object.getTemperature(), self.tmp_id)
@@ -97,39 +87,34 @@ class Cell(IDManagerMixin, CellBase):
         else:
             return _fill
 
-    """@property
+    @property
     def material(self):
         return self._e_object.getMaterial()
 
     @material.setter
     def material(self, material):
-        if isinstance(material, Material):
-            self._e_object.setMaterial(material.__copy__())
-        elif material is None:
-            self._e_object.setMaterial(None)
+        if material is not None:
+            self._e_object.setMaterial(material._e_object)
+            if material.density is not None:
+                self.density = material.density
+                self.density_unit = material.density_unit
         else:
-            _material = Material()
-            _material.nuclides = [material]
-            self._e_object.setMaterial(_material)"""
+            self._e_object.setMaterial(material)
     
     @region.setter
     def region(self, region):
         if region is not None:
             # Should let us reuse regions on different cells.
             self._e_object.setRegion(region.__copy__())
-
-    """@name.setter
-    def name(self, name):
-        name : str
-        Unique numeric identifier for the cell.
-        if name is not None:
-            self._e_object.setName(str(name))"""
+            #self._e_object.setRegion(region)
 
     @density.setter
     def density(self, density):
+        if density is None:
+            density = 0
         if density < 0:
-            self.density_unit = '-'
-        self._e_object.setDensity(abs(density))
+            self.density_unit = 'G_CM3'
+        self._e_object.setDensity(abs(float(density)))
 
     @no_fission.setter
     def no_fission(self, nonu):
@@ -192,6 +177,12 @@ class Cell(IDManagerMixin, CellBase):
         for i in _imps:
             imp.append(Cell.Importance(i, _imps[i]))
             
+    """@property
+    def universe(self):
+        return self._e_object.getUniverse()
+
+    @universe.setter
+    def universe(self, universe):"""
 
 
     def __invert__(self):
@@ -418,24 +409,13 @@ class Transformation(IDManagerMixin, TransformationBase, GeometrySetting):
     next_id = 1
     used_ids = set()
 
-    def _init(self, name, transformation, unit=None):
+    def _init(self, name=None, transformation=None, unit=None):
         """`transformation` must be a `Transform` or a list containing at least a displacement.
         """
         self.name = name
         self.transformation = transformation
         if unit is not None:
             self.unit = unit
-
-    @property
-    def name(self):
-        if self._e_object.getName() is None:
-            return None
-        else:
-            return int(self._e_object.getName())
-
-    @name.setter
-    def name(self, name):
-        self._e_object.setName(str(name))
 
     @property
     def transformation(self):
@@ -1206,7 +1186,7 @@ class UniverseList():
 
     Parameters
     ----------
-    name : str
+    name : int
         The universe ID number.
     cells : iterable of mcnpy.Cell, optional
         List of cells.
@@ -1215,7 +1195,7 @@ class UniverseList():
     
     Attributes
     ----------
-    name : str
+    name : int
         The universe ID number.
     cells : dict
         Dictionary storing all cells in the universe by their IDs.

@@ -16,11 +16,18 @@ class Material(IDManagerMixin, MaterialBase):
     used_ids = set()
 
     def _init(self, name=None, nuclides=[], unit=None, comment=None, **kwargs):
-        self.name = name
-        self.nuclides = nuclides
+        try:
+            self.name = name
+            self.nuclides = nuclides
+        except:
+            self.name = None
+            self.nuclides = name.nuclides()
         if comment is not None:
             self.comment = comment
-        self.unit = unit
+        self._unit = unit
+        self._density = None
+        self._density_unit = None
+        self._s_alpha_beta = None
 
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
@@ -66,6 +73,16 @@ class Material(IDManagerMixin, MaterialBase):
             self.nuclides.remove(nuclide)
         return self
 
+    def __mul__(self, density):
+        self.density = density
+        self.density_unit = 'G_CM3'
+        return self
+
+    def __matmul__(self, desnity):
+        self.density = desnity
+        self.density_unit = 'A_BCM'
+        return self
+
     """@property
     def name(self):
         if self._e_object.getName() is None:
@@ -76,6 +93,17 @@ class Material(IDManagerMixin, MaterialBase):
     @name.setter
     def name(self, name):
         self._e_object.setName(str(name))"""
+    
+    @property
+    def s_alpha_beta(self):
+        return self._s_alpha_beta
+
+    @s_alpha_beta.setter
+    def s_alpha_beta(self, libraries):
+        try:
+            self._s_alpha_beta = Sab(self, libraries)
+        except:
+            self._s_alpha_beta = Sab(self, [libraries])
 
     @property
     def unit(self):
@@ -83,7 +111,7 @@ class Material(IDManagerMixin, MaterialBase):
             if len(self.nuclides) > 0:
                 return self.nuclides[0].unit
         else:
-            return self.unit
+            return self._unit
 
     @unit.setter
     def unit(self, unit):
@@ -91,6 +119,49 @@ class Material(IDManagerMixin, MaterialBase):
         if self.unit is not None:
             for nuclide in self.nuclides:
                 nuclide.unit = unit
+
+    @property
+    def density(self):
+        """
+        """
+        return self._density
+
+    @density.setter
+    def density(self, density):
+        if density is not None:
+            self._density = abs(density)
+            if density < 0:
+                self.density_unit = 'G_CM3'
+            else:
+                self.density_unit = 'A_BCM'
+
+    @property
+    def density_unit(self):
+        """
+        """
+        return self._density_unit
+
+    @density_unit.setter
+    def density_unit(self, unit):
+        self._density_unit = unit
+
+    @property
+    def nuclides(self):
+        return self._e_object.getNuclides()
+
+    @nuclides.setter
+    def nuclides(self, nuclides):
+        _nucides = self._e_object.getNuclides()
+        del _nucides[:]
+        if isinstance(nuclides, (list, tuple)):
+            for i in nuclides:
+                _nucides.addUnique(i)
+        else:
+            try:
+                for i in nuclides.nuclides():
+                    _nucides.addUnique(i)
+            except:
+                _nucides.addUnique(nuclides)
 
 class Nuclide(NuclideBase):
     __doc__ = NuclideBase().__doc__
@@ -134,7 +205,7 @@ class Nuclide(NuclideBase):
     def fraction(self, fraction):
         if fraction < 0:
             self.unit = 'WEIGHT'
-        self._e_object.setFraction(abs(fraction))
+        self._e_object.setFraction(abs(float(fraction)))
 
     @library.setter
     def library(self, lib):
@@ -215,6 +286,15 @@ class Sab(SabBase, MaterialSetting):
                 libraries.append(SabLibrary(lib[0], lib[1]))
             else:
                 libraries.append(SabLibrary(lib))
+
+    @property
+    def material(self):
+        return self._e_object.getMaterial()
+
+    @material.setter
+    def material(self, material):
+        self._e_object.setMaterial(material._e_object)
+        material._s_alpha_beta = self
 
 class SabLibrary(SabLibraryBase):
     __doc__ = SabLibraryBase().__doc__

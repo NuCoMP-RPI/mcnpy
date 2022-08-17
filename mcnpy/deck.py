@@ -15,7 +15,7 @@ from .physics import PhysicsSetting
 from .variance_reduction import VarianceReductionSetting
 from .tally import TallyABC, TallySettingABC
 from ._deck import Deck as _Deck
-from .gateway import gateway
+from .gateway import load_file, deck_resource, print_deck
 from .deck_formatter import formatter, preprocessor, deck_cleanup
 
 def run_mcnp(input, exe='mcnp6', exe_op='IXR', inp=True, mcnp_path=None, 
@@ -95,7 +95,6 @@ def run_mcnp(input, exe='mcnp6', exe_op='IXR', inp=True, mcnp_path=None,
     else:
         cmd.append('N=' + input)
 
-    #print(cmd)
     with Popen(cmd, stdin=PIPE, stdout=PIPE, bufsize=1, 
                 universal_newlines=True) as p:
         for line in p.stdout:
@@ -103,8 +102,6 @@ def run_mcnp(input, exe='mcnp6', exe_op='IXR', inp=True, mcnp_path=None,
         #print(p.returncode)
         """if p.returncode != 0:
             raise CalledProcessError(p.returncode, p.args)"""
-    
-    #proc = Popen(cmd)
 
 def run_script(script, exe, *args, **kwargs):
     cmd = [exe, script, args]
@@ -150,8 +147,8 @@ class Deck():
         self.materials = materials
         self.universes = universes
         self.continue_run = continue_run
-        self._deck = None
-        self.serialized = True
+        self._deck = _Deck()
+        self._deck.initialize()
 
         if self.cells is None:
             self.cells = {}
@@ -188,15 +185,21 @@ class Deck():
         if self.mat_settings is None:
             self.mat_settings = []
     
-    def read(self, filename='inp.mcnp', renumber=False, 
+    @classmethod
+    def read(cls, filename='inp.mcnp', renumber=False, 
+                         preprocess=False):
+            _deck = Deck()
+            _deck._read(filename, renumber, preprocess)
+            return _deck
+
+    def _read(self, filename='inp.mcnp', renumber=False, 
                          preprocess=False):
         """For reading a deck from a file.
         """
-        self.serialized = False
         try:
             if preprocess is True:
                 filename = preprocessor(filename)
-            inp = gateway.loadFile(filename)
+            inp = load_file(filename)
             self._deck = inp
         except:
             #print('Parsing failed. Cleaning up the deck and trying again.')
@@ -229,7 +232,6 @@ class Deck():
                     if (isinstance(surfaces[i], RectangularPrism) 
                         or isinstance(surfaces[i], Box) 
                         or isinstance(surfaces[i], Polyhedron)):
-                        #print('HERE')
                         id = id+6
                     elif (isinstance(surfaces[i], CircularCylinder) 
                         or isinstance(surfaces[i], EllipticalCylinder) 
@@ -241,7 +243,6 @@ class Deck():
                         id = id+8
                     elif isinstance(surfaces[i], Ellipsoid):
                         id = id+1
-                #self.surfaces.append(surfaces[i])
                 self.surfaces[int(surfaces[i].name)] = surfaces[i]
             for i in range(len(settings)):
                 if isinstance(settings[i], Transformation):
@@ -260,7 +261,7 @@ class Deck():
                     self.src_settings.append(settings[i])
                 elif isinstance(settings[i], VarianceReductionSetting):
                     self.vr_settings.append(settings[i])
-                elif isinstance(settings[i], TallySetting.Setting):
+                elif isinstance(settings[i], TallySettingABC):
                     self.tally_settings.append(settings[i])
                 elif isinstance(settings[i], MaterialSetting):
                     self.mat_settings.append(settings[i])
@@ -273,7 +274,6 @@ class Deck():
             for i in range(len(materials)):
                 if renumber is True:
                     materials[i].name = i+1
-                #self.materials.append(materials[i])
                 self.materials[int(materials[i].name)] = materials[i]
         except:
             # For CONTINUE decks
@@ -287,14 +287,7 @@ class Deck():
         user formatting. Line comments may conflict with additions to an 
         existing card. Only call this when your modifications are complete.
         """
-        if self.serialized is False:
-            self.serialized = True
-            deck_string = gateway.printDeck(self._deck)
-            return deck_string 
-        else:
-            message = ('The original deck has already been serialized. Use ' 
-                       + '`.write()` instead or restart your script.')
-            return message
+        return print_deck(self._deck)
 
     def write(self, filename='deck.mcnp', title=None, renumber=False, direct=False):
         """Write the deck to file.
@@ -332,106 +325,32 @@ class Deck():
             A textual representation of the MCNP deck.
         """
 
-        inp = _Deck()
-        if self.continue_run is not None:
-            data_settings = inp.cont_data
-        else:
-            inp.initialize()
-            data_settings = inp.data.settings
-        if renumber is False:
-            # CELLS
-            for k in self.cells:
-                inp.cells.cells.addUnique(self.cells[k]._e_object)
-            # SURFACES
-            for k in self.surfaces:
-                inp.surfaces.surfaces.addUnique(self.surfaces[k]._e_object)
-
-            # DATA
-            for k in self.geom_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.transformations:
-                data_settings.addUnique(self.transformations[k]._e_object)
-            for k in self.phys_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.src_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.vr_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.tallies:
-                data_settings.addUnique(self.tallies[k]._e_object)
-            for k in self.tally_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.out_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.term_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.misc_settings:
-                data_settings.addUnique(k._e_object)
-            
-            # Materials
-            for k in self.materials:
-                inp.data.materials.addUnique(self.materials[k]._e_object)
-            # Material Settings
-            for k in self.mat_settings:
-                data_settings.addUnique(k._e_object)
-
-            # Other DATA
-            for k in self.settings:
-                data_settings.addUnique(k._e_object)
-
-        else:
+        if renumber is True:
             # CELLS
             i = 0
             for k in self.cells:
                 i = i+1
-                self.cells[k].name = str(i)
-                inp.cells.cells.addUnique(self.cells[k]._e_object)
+                self.cells[k].name = i
             # SURFACES
             i = 0
             for k in self.surfaces:
                 i = i+1
-                self.surfaces[k].name = str(i)
-                inp.surfaces.surfaces.addUnique(self.surfaces[k]._e_object)
+                self.surfaces[k].name = i
             # DATA
-            for k in self.geom_settings:
-                data_settings.addUnique(k._e_object)
             i = 0
             for k in self.transformations:
                 i = i+1
-                self.transformations[k].name = str(i)
-                data_settings.addUnique(self.transformations[k]._e_object)
-            for k in self.phys_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.src_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.vr_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.tallies:
-                data_settings.addUnique(self.tallies[k]._e_object)
-            for k in self.tally_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.out_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.term_settings:
-                data_settings.addUnique(k._e_object)
-            for k in self.misc_settings:
-                data_settings.addUnique(k._e_object)
-            
+                self.transformations[k].name = i 
             # Materials
             i = 0
             for k in self.materials:
                 i = i+1
-                self.materials[k].name = str(i)
-                inp.data.materials.addUnique(self.materials[k]._e_object)
-            # Material Settings
-            for k in self.mat_settings:
-                data_settings.addUnique(k._e_object)
+                self.materials[k].name = i
 
-            # Other DATA
-            for k in self.settings:
-                data_settings.addUnique(k._e_object)
-
-        deck_string = gateway.printDeck(gateway.deckResource(inp, 'deck.mcnp'))
+        # Calling the serializer essentially "dumps" the deck to a string which
+        # leaves the deck empty and useless. So instead, we serialize a copy of
+        # the deck which leaves the original in working order.
+        deck_string = print_deck(deck_resource(self._deck))
 
         return formatter(deck_string, title)
 
@@ -539,9 +458,8 @@ class Deck():
     def get_universe(self, cell):
         if cell.universe is not None:
             u_id = cell.universe.name
-            #cell_id = cell.name
             if u_id in self.universes:
-                _universe = self.universes[u_id] #.cells[cell_id].add(cell)
+                _universe = self.universes[u_id]
                 _universe.add_only(cell)
             else:
                 _universe = UniverseList(name=u_id, cells=None)
@@ -590,6 +508,7 @@ class Deck():
         """
         # Ensure there are no nulls before seriaization.
         # _defaults must be added to each class.
+        # This shouldn't be used anymore.
         defaults = getattr(card, '_defaults', None)
         if callable(defaults):
             card._defaults()
@@ -599,95 +518,59 @@ class Deck():
             if card.density < 0:
                 card.density = abs(card.density)
                 card.density_unit = '-'
-            if self.serialized is False:
-                self._deck.cells.cells.addUnique(self.cells[card.name]._e_object)
-            """if card.universe is not None:
-                u_id = card.universe.name
-                if u_id in self.universes is False:
-                    _universe = UniverseList(name=u_id)
-                    if card.universe.sign is not None:
-                        _universe.sign = card.universe.sign
-                    _universe.add(card)
-                    self.universes[u_id] = _universe"""
+            self._deck.cells.cells.addUnique(self.cells[card.name]._e_object)
             self.get_universe(card)
         elif isinstance(card, Surface):
             self.set_id(card, self.surfaces)
-            if self.serialized is False:
-                self._deck.surfaces.surfaces.addUnique(self.surfaces
+            self._deck.surfaces.surfaces.addUnique(self.surfaces
                                                       [card.name]._e_object)
         elif isinstance(card, Nuclide):
             _card = Material()
             _card += card
             self.set_id(_card, self.materials)
-            if self.serialized is False:
-                self._deck.data.materials.addUnique(self.materials
-                                                   [card.name]._e_object)
+            self._deck.data.materials.addUnique(self.materials
+                                                [card.name]._e_object)
         elif isinstance(card, Material):
             self.set_id(card, self.materials)
-            if self.serialized is False:
-                self._deck.data.materials.addUnique(self.materials
-                                                   [card.name]._e_object)
+            self._deck.data.materials.addUnique(self.materials
+                                                [card.name]._e_object)
+            if card.s_alpha_beta is not None:
+                self.mat_settings.append(card.s_alpha_beta)
+                self._deck.data.settings.addUnique(card.s_alpha_beta._e_object)
+        
         elif isinstance(card, Transformation):
-            self.set_id(card, self.transformations)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.settings
-                                                  [card.name]._e_object)
+            self._add_data(card, self.transformations)
         elif isinstance(card, TallyABC):
-            self.set_id(card, self.tallies)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.settings
-                                                  [card.name]._e_object)
-        
+            self._add_data(card, self.tallies)
         elif isinstance(card, GeometrySetting):
-            self.geom_settings.append(card)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.geom_settings
-                                                  [-1]._e_object)
+            self._add_data(card, self.geom_settings)
         elif isinstance(card, PhysicsSetting):
-            self.phys_settings.append(card)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.phys_settings
-                                                  [-1]._e_object)
+            self._add_data(card, self.phys_settings)
         elif isinstance(card, SourceSetting):
-            self.src_settings.append(card)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.src_settings
-                                                 [-1]._e_object)
+            self._add_data(card, self.src_settings)
         elif isinstance(card, VarianceReductionSetting):
-            self.vr_settings.append(card)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.vr_settings
-                                                  [-1]._e_object)
-        elif isinstance(card, TallySetting.Setting):
-            self.tally_settings.append(card)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.tally_settings
-                                                  [-1]._e_object)
+            self._add_data(card, self.vr_settings)
+        elif isinstance(card, TallySettingABC):
+            self._add_data(card, self.tally_settings)
         elif isinstance(card, OutputSetting):
-            self.out_settings.append(card)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.out_settings
-                                                  [-1]._e_object)
+            self._add_data(card, self.out_settings)
         elif isinstance(card, TerminationSetting):
-            self.term_settings.append(card)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.term_settings
-                                                  [-1]._e_object)
+            self._add_data(card, self.term_settings)
         elif isinstance(card, MiscSetting):
-            self.misc_settings.append(card)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.misc_settings
-                                                  [-1]._e_object)
+            self._add_data(card, self.misc_settings)
         elif isinstance(card, MaterialSetting):
-            self.mat_settings.append(card)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.mat_settings
-                                                  [-1]._e_object)
-        
+            self._add_data(card, self.mat_settings)
         else:
-            self.settings.append(card)
-            if self.serialized is False:
-                self._deck.data.settings.addUnique(self.settings[-1]._e_object)
+            self._add_data(card, self.settings)
+
+    def _add_data(self, card, storage):
+        name = getattr(card, 'name', None)
+        if callable(name):
+            self.set_id(card, storage)
+            self._deck.data.settings.addUnique(storage[card.name]._e_object)
+        else:
+            storage.append(card)
+            self._deck.data.settings.addUnique(storage[-1]._e_object)
 
     def remove(self, card):
         """Remove a card from the deck.
@@ -696,67 +579,52 @@ class Deck():
             if card.universe is not None:
                 self.universes[card.universe.name].remove(card)
             del self.cells[card.name]
-            if self.serialized is False:
-                self._deck.cells.cells.remove(card)
+            self._deck.cells.cells.remove(card)
         elif isinstance(card, Surface):
             del self.surfaces[card.name]
-            if self.serialized is False:
-                try:
-                    self._deck.surfaces.surfaces.remove(card)
-                except:
-                    pass
+            try:
+                self._deck.surfaces.surfaces.remove(card)
+            except:
+                pass
         elif isinstance(card, Material):
+            if card.s_alpha_beta is not None:
+                self.mat_settings.remove(card.s_alpha_beta)
+                self._deck.data.settings.remove(card.s_alpha_beta)
             del self.materials[card.name]
-            if self.serialized is False:
-                self._deck.data.materials.remove(card)
+            self._deck.data.materials.remove(card)
+
         elif isinstance(card, Transformation):
-            del self.transformations[card.name]
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
+            self._remove_data(card, self.transformations)
         elif isinstance(card, TallyABC):
-            del self.tallies[card.name]
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
+            self._remove_data(card, self.tallies)
         elif isinstance(card, GeometrySetting):
-            self.geom_settings.remove(card)
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
+            self._remove_data(card, self.geom_settings)
         elif isinstance(card, PhysicsSetting):
-            self.phys_settings.remove(card)
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
+            self._remove_data(card, self.phys_settings)
         elif isinstance(card, SourceSetting):
-            self.src_settings.remove(card)
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
+            self._remove_data(card, self.src_settings)
         elif isinstance(card, VarianceReductionSetting):
-            self.vr_settings.remove(card)
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
-        elif isinstance(card, TallySetting.Setting):
-            self.tally_settings.remove(card)
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
+            self._remove_data(card, self.vr_settings)
+        elif isinstance(card, TallySettingABC):
+            self._remove_data(card, self.tally_settings)
         elif isinstance(card, OutputSetting):
-            self.out_settings.remove(card)
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
+            self._remove_data(card, self.out_settings)
         elif isinstance(card, TerminationSetting):
-            self.term_settings.remove(card)
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
+            self._remove_data(card, self.term_settings)
         elif isinstance(card, MiscSetting):
-            self.misc_settings.remove(card)
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
+            self._remove_data(card, self.misc_settings)
         elif isinstance(card, MaterialSetting):
-            self.mat_settings.remove(card)
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
+            self._remove_data(card, self.mat_settings)
         else:
-            self.settings.remove(card)
-            if self.serialized is False:
-                self._deck.data.settings.remove(card)
+            self._remove_data(card, self.settings)
+
+    def _remove_data(self, card, storage):
+        name = getattr(card, 'name', None)
+        if callable(name):
+            del storage[card.name]
+        else:
+            storage.remove(card)
+        self._deck.data.settings.remove(card)
 
     def add_all(self, cards):
         """Add a list of cards to the deck.

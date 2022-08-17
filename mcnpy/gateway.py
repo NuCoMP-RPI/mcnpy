@@ -23,6 +23,18 @@ def get_documentation(e_class):
     """Retrieve metamodel annotations."""
     return gateway.getDocs(e_class)
 
+def print_deck(deck):
+    return gateway.printDeck(deck)
+
+def load_file(filename):
+    return gateway.load_file(filename)
+
+def deck_resource(deck):
+    return gateway.deckResource(deck.__copy__(), 'deck.mcnp')
+
+"""def add_adapter(object):
+    gateway.addAdapter(object._e_object)"""
+
 """def java_modified():
     mod_time = getmtime(join(MCNPY_PATH, 'lib', 'gov.lanl.mcnp-1.0.0-SNAPSHOT.jar'))
 

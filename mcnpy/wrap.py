@@ -340,6 +340,7 @@ def wrap_e_class(e_class, e_factory):
                 (lambda target_id, 
                 gateway_client: JavaObject(target_id, gateway_client)))
         self._e_object = e_factory.create(e_class)
+        #add_adapter(self)
         #print(self._e_object)
         register_output_converter(REFERENCE_TYPE, 
             (lambda target_id, 
@@ -348,7 +349,10 @@ def wrap_e_class(e_class, e_factory):
             self._init(*args, **kwargs)
         # To invoke automated naming.
         elif isinstance(self, IDManagerMixin):
-            self._init(name=None)
+            try:
+                self._init(name=None)
+            except:
+                pass
     def _init(self):
         raise NotImplementedError  # this should be unreachable
     def __str__(self):

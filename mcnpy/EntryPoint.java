@@ -19,10 +19,18 @@ import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.eclipse.emf.ecore.util.EcoreUtil.EqualityHelper;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.EClass;
+/*import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
+import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.common.notify.impl.AdapterImpl;
+import org.eclipse.emf.common.notify.Notification;*/
 //import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 
 import gov.lanl.mcnp.McnpStandaloneSetup;
+import gov.lanl.mcnp.mcnp.util.McnpAdapterFactory;
 import gov.lanl.mcnp.mcnp.*;
+
 
 @SuppressWarnings("all")
 public class EntryPoint {
@@ -52,15 +60,19 @@ public class EntryPoint {
 
 	public McnpFactory factory = McnpFactory.eINSTANCE;
 
-    public String getDocs(EClass e_class)
-    {
+    //public AdapterFactory adapterFactory = new TypedChangeCounterAdapterFactory();
+
+    /*public void addAdapter(EObject object) {
+        adapterFactory.adapt(object, ChangeCounterAdapter.class);
+    }*/
+
+    public String getDocs(EClass e_class) {
         String doc = EcoreUtil.getDocumentation(e_class);
 
         return(doc);
     }
 
-    public String printDeck(Deck DECK)
-    {
+    public String printDeck(Deck DECK) {
         //String serializedDeck = this.serializer.serialize(DECK);
         this.validator.assertNoErrors(DECK);
         String serializedDeck = this.serializer.serialize(DECK, SaveOptions.newBuilder().format().getOptions());
@@ -68,18 +80,15 @@ public class EntryPoint {
         return(serializedDeck);
     }
 
-    public String printCELLS(Cells CELLS)
-    {
+    public String printCELLS(Cells CELLS) {
         String serializedDeck = this.serializer.serialize(CELLS);
         
         return(serializedDeck);
     }
 
     // Reads a deck from a file
-	public Deck loadFile(String file)
-    {
-        try
-        {
+	public Deck loadFile(String file) {
+        try {
             Injector injector = new McnpStandaloneSetup().createInjectorAndDoEMFRegistration();
             injector.injectMembers(this);
             ResourceSet resourceSet = injector.<ResourceSet>getInstance(ResourceSet.class);
@@ -95,15 +104,13 @@ public class EntryPoint {
             
             return(DECK);
         }
-        catch (Throwable _e)
-        {
+        catch (Throwable _e) {
             throw Exceptions.sneakyThrow(_e);
         }
     }
 
     // 
-    public Deck deckResource(Deck deck, String filename)
-    {
+    public Deck deckResource(Deck deck, String filename) {
         McnpStandaloneSetup setup = new McnpStandaloneSetup();
         Injector injector = setup.createInjectorAndDoEMFRegistration();
         injector.injectMembers(this);
@@ -119,8 +126,7 @@ public class EntryPoint {
     }
 
     // Creates an empty deck object with empty cell, surface, material, and data ELists.
-    public Deck newDeck(String filename)
-    {
+    public Deck newDeck(String filename) {
         McnpStandaloneSetup setup = new McnpStandaloneSetup();
         Injector injector = setup.createInjectorAndDoEMFRegistration();
         injector.injectMembers(this);
@@ -167,3 +173,42 @@ public class EntryPoint {
 	    resourceSet = injector.<ResourceSet>getInstance(ResourceSet.class);
     }
 }
+
+/*public class ChangeCounterAdapterFactory extends AdapterFactoryImpl {
+    protected static final ChangeCounterAdapter ADAPTER = new ChangeCounterAdapter();
+    protected Adapter createAdapter(Notifier target) {
+        return ADAPTER;
+    }
+    public boolean isFactoryForType(Object type) {
+        return type == ChangeCounterAdapter.class;
+    }
+}*/
+
+/*class ChangeCounterAdapter extends AdapterImpl {
+    public static int universeCount;
+
+    public void notifyChanged(Notification notification) {
+        if (notification.getNotifier() instanceof Universe)
+            ++universeCount;
+    }
+    public boolean isAdapterForType(Object type) {
+        return type == ChangeCounterAdapter.class;
+    }
+}
+
+class TypedChangeCounterAdapterFactory extends McnpAdapterFactory {
+    protected static Adapter universeAdapter;
+    public Adapter createUiverseAdapter() {
+        if (universeAdapter == null) {
+            universeAdapter = new ChangeCounterAdapter() {
+                public void notifyChanged(Notification notification) {
+                    ++universeCount;
+                }
+            };
+        }
+        return universeAdapter;
+    }
+    public boolean isFactoryForType(Object type) {
+        return type == ChangeCounterAdapter.class;
+    }
+}*/

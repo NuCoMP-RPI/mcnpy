@@ -1,6 +1,8 @@
 import h5py as h5
 from inspect import getsourcefile
-import os
+from os.path import join, dirname
+
+#M_NEUTRON = 1.008664967 #amu
 
 """Functions for ZAID conversions.
 """
@@ -127,8 +129,6 @@ def z_to_elements():
 
     return e
 
-    #return e[int(z)]
-
 def elements_to_z():
     e = dict()
     e['H'] = 1
@@ -252,36 +252,49 @@ def elements_to_z():
 
     return e
 
-    #return str(e[z])
+def zaid_mass(zaid, meta=None):
+    path = dirname(getsourcefile(lambda:0))
+    masses = h5.File(join(path, 'masses.h5'), 'r')
+
+    if meta is None:
+        return float(masses['ZAID'][str(zaid)][()])
+    else:
+        zaid -= 300 - 100*meta
+        return float(masses['ZAID'][str(zaid)][()])
 
 def zaid_to_element(zaid):
-    path = os.path.dirname(getsourcefile(lambda:0))
+    path = dirname(getsourcefile(lambda:0))
     e = z_to_elements()
-    xsdir = h5.File(path+'//xslist.h5', 'r')
+    xsdir = h5.File(join(path, 'xslist.h5'), 'r')
     zaids_h5 = xsdir['ZAID']
 
     zaid_num = str(zaid)
-    if (zaid_num not in list(zaids_h5.keys())):
-        print('\nZAID WARNING! User input: ' + zaid_num + ' (interpretted as ' + str(zaid) + ') has no MCNP XS!')
-    L = len(zaid_num)
-    a = int(zaid_num[L-3 : L])
-    z = zaid_num[: L-3]
+    if zaid_num not in list(zaids_h5.keys()):
+        a = int(zaid_num[-3:])
+        if a >= 300:
+            # Metastable state.
+            pass
+        else:
+            print('\nZAID WARNING! User input: ' + zaid_num 
+                  + ' (interpretted as ' + str(zaid) + ') has no MCNP XS!')
 
     try:
-        zaid_num = e[int(z)] + str(a)
+        zaid_num = e[int(zaid_num[:-3])] + zaid_num[3:]
     except:
-        print('\nERROR! Element with atomic number ' + z + ' does not exist!')
+        print('\nERROR! Element with atomic number ' + zaid_num[:-3] 
+              + ' does not exist!')
     
     xsdir.close()
     return zaid_num
 
 def element_to_zaid(zaid):
     """Converts periodic table style element names into MCNP ZAIDs.
-    For example, 'U235' will become '92235' in the input deck. Returns a string of the MCNP ZAID.
+    For example, 'U235' will become '92235' in the input deck. Returns a string 
+    of the MCNP ZAID.
     """
-    path = os.path.dirname(getsourcefile(lambda:0))
+    path = dirname(getsourcefile(lambda:0))
     e = elements_to_z()
-    xsdir = h5.File(path+'//xslist.h5', 'r')
+    xsdir = h5.File(join(path, 'xslist.h5'), 'r')
     zaids_h5 = xsdir['ZAID']
     string = str(zaid)
     # Check if numerical ZAID was provided.
@@ -295,17 +308,22 @@ def element_to_zaid(zaid):
         except:
             print('\nERROR! Element ' + zaid + ' does not exist!')
         a = ''.join(c for c in string if c.isdigit())
-        if (len(a) == 0):
+        if len(a) == 0:
             a = '000'
-        elif (len(a) == 1):
+        elif len(a == 1):
             a = '00' + a
-        elif (len(a) == 2):
+        elif len(a == 2):
             a = '0' + a
         zaid_num = z + a
     # The converted ZAID can now be checked against the available XS.
-    if (zaid_num not in list(zaids_h5.keys())):
-        print('\nZAID WARNING! User input: ' + string + ' (interpretted as ' + zaid_num + ')' 
-        + 'not found!')
+    if zaid_num not in list(zaids_h5.keys()):
+        a = int(zaid_num[-3:])
+        if a >= 300:
+            # Metastable state.
+            pass
+        else:
+            print('\nZAID WARNING! User input: ' + string + ' (interpretted as '
+                   + zaid_num + ')' + 'not found!')
     xsdir.close()
     return zaid_num
 
@@ -313,8 +331,8 @@ def element_to_zaid(zaid):
 def library_check(zaid, library):
     """Checks XS libraries for a ZAID. 
     """
-    path = os.path.dirname(getsourcefile(lambda:0))
-    xsdir = h5.File(path+'//xslist.h5', 'r')
+    path = dirname(getsourcefile(lambda:0))
+    xsdir = h5.File(join(path, 'xslist.h5'), 'r')
     lib = str(library).lower()
     # Confirms that the ZAID exists.
     try:
@@ -327,11 +345,11 @@ def library_check(zaid, library):
     found = False
     for i in range(len(libs_h5)):
         num = libs_h5[i][:2]
-        if (bytes(lib, 'utf-8') == num or bytes(lib, 'utf-8') == libs_h5[i]):
+        if bytes(lib, 'utf-8') == num or bytes(lib, 'utf-8') == libs_h5[i]:
             found = True
             break
 
-    if (found == False):
+    if found == False:
         print('\nWARNING! XS file for ' + zaid + '.' + lib + ' not found!')
         print('Please check available XS libraries!')
         return library

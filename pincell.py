@@ -1,66 +1,67 @@
-from mcnpy import MaterialNuclide as Nuclide
 import mcnpy as mp
+from mcnpy.elements import *
 
 deck = mp.Deck()
 
 # Materials
-uo2 = [Nuclide('u235', 0.03), Nuclide('u238', 0.97), Nuclide('o16', 2.0)]
-h2o = [Nuclide('h1', 2.00), Nuclide('8016', 1.0)]
-zr = [Nuclide('zr0', 1.0)]
-gas = [Nuclide('h1', 0.5), Nuclide('he4', 0.5)]
+enr = 3
+u_enr = U[238]%(100-enr) + U[235]%enr
+fuel = mp.Material(u_enr + O@2)
+# Include S(a,B). Normally added as a separate card in MCNP.
+fuel.s_alpha_beta = ['o_in_uo2', 'u238_in_uo2']
 
-fuel = mp.Material('1', uo2)
-mod = mp.Material('2', h2o)
-clad = mp.Material('3', zr)
-gap  = mp.Material('4', gas)
-deck.add_all([fuel, mod, clad, gap])
+mod = mp.Material(H@2 + O)
+mod.s_alpha_beta = 'lwtr'
 
-# Surfaces
-fuel_outer_radius = mp.ZCylinder(name='1', x0=0, y0=0, r=0.39)
-clad_inner_radius = mp.ZCylinder(name='2', x0=0, y0=0, r=0.40)
-clad_outer_radius = mp.ZCylinder(name='3', x0=0, y0=0, r=0.46)
+solutes = {SN: 1.5, FE: 0.2, CR: 0.1}
+zirc4 = ZR%(100-sum(solutes.values()))
+for sol in solutes:
+    zirc4 += sol%solutes[sol]
+clad = mp.Material(zirc4)
+
+gap = mp.Material(H[1]@0.5 + HE[4]@0.5)
+
+deck += [fuel, mod, clad, gap]
+
+fuel_outer_radius = mp.ZCylinder(name=1, x0=0, y0=0, r=0.39)
+clad_inner_radius = mp.ZCylinder(name=2, x0=0, y0=0, r=0.40)
+clad_outer_radius = mp.ZCylinder(name=3, x0=0, y0=0, r=0.46)
 pitch = 1.26
 bounding_box = mp.RectangularPrism(x0=-pitch/2, x1=pitch/2, y0=-pitch/2, 
                                    y1=pitch/2, z0=-pitch/2, z1=pitch/2, 
-                                   boundary_type='reflective', name='4')
-deck.add_all([fuel_outer_radius, clad_inner_radius, clad_outer_radius, 
-              bounding_box])
+                                   boundary_type='reflective', name=4)
+deck += [fuel_outer_radius, clad_inner_radius, clad_outer_radius, 
+         bounding_box]
 
-# Regions
 fuel_region = -fuel_outer_radius & -bounding_box
 gap_region = +fuel_outer_radius & -clad_inner_radius & -bounding_box
 clad_region = +clad_inner_radius & -clad_outer_radius & -bounding_box
 mod_region = +clad_outer_radius & -bounding_box
 outside_region = +bounding_box
 
-# Cells
-fuel_cell = mp.Cell(name='1', region=fuel_region, density=10.0, material=fuel)
-fuel_cell.density_unit = 'g_cm3'
-clad_cell = mp.Cell(name='2', region=clad_region, density=-6.6, material=clad)
-mod_cell = mp.Cell(name='3', region=mod_region, density=-1.0, material=mod)
-gap_cell = mp.Cell(name='4', region=gap_region, density=-1.78e-4, material=gap)
-void_cell = mp.Cell(name='5', region=outside_region, material=None)
-deck.add_all([fuel_cell, clad_cell, mod_cell, gap_cell, void_cell])
+fuel_cell = mp.Cell(1, fuel_region, fuel*10.0)
+clad_cell = mp.Cell(2, clad_region, clad*6.6)
+mod_cell = mp.Cell(3, mod_region, mod*1.0)
+gap_cell = mp.Cell(4, gap_region, gap*1.78e-4)
+void_cell = mp.Cell(5, outside_region, None)
+deck += [fuel_cell, clad_cell, mod_cell, gap_cell, void_cell]
 
-# Cell Importances
-particles = ['n']
-for k in deck.cells:
-    if deck.cells[k] == void_cell:
-        deck.cells[k].importances = {0.0 : particles}
+for cell in deck.cells.values():
+    if cell.material is None:
+        cell.importances = {'n' : 0.0}
     else:
-        deck.cells[k].importances = {1.0 : particles}
+        cell.importances = {'n' : 1.0}
 
-# Define criticality source
-kcode = mp.CriticalitySource(histories=1e4, keff_guess=1.0, skip_cycles=200, 
+deck += mp.CriticalitySource(histories=1e4, keff_guess=1.0, skip_cycles=200, 
                              cycles=1200)
-src_points = [(0,0,0), (0,0,0.5), (0,0,-0.5)]
-ksrc = mp.CriticalitySourcePoints(src_points)
-deck.add_all([kcode, ksrc])
+deck += mp.CriticalitySourcePoints([(0,0,0), (0,0,0.5), (0,0,-0.5)])
 
 # Print MCTAL file
-deck.add(mp.PrintDump(print_mctal=1))
+deck += mp.PrintDump(print_mctal=1)
 
 print(deck)
 
 # Write to file
 deck.write('my_pincell.mcnp')
+
+#mp.Run('my_pincell.mcnp')
