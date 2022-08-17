@@ -27,7 +27,7 @@ def print_deck(deck):
     return gateway.printDeck(deck)
 
 def load_file(filename):
-    return gateway.load_file(filename)
+    return gateway.loadFile(filename)
 
 def deck_resource(deck):
     return gateway.deckResource(deck.__copy__(), 'deck.mcnp')

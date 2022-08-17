@@ -186,14 +186,12 @@ class Deck():
             self.mat_settings = []
     
     @classmethod
-    def read(cls, filename='inp.mcnp', renumber=False, 
-                         preprocess=False):
+    def read(cls, filename='inp.mcnp', renumber=False, preprocess=False):
             _deck = Deck()
             _deck._read(filename, renumber, preprocess)
             return _deck
 
-    def _read(self, filename='inp.mcnp', renumber=False, 
-                         preprocess=False):
+    def _read(self, filename='inp.mcnp', renumber=False, preprocess=False):
         """For reading a deck from a file.
         """
         try:
@@ -283,9 +281,7 @@ class Deck():
                 self.settings.append(settings[i])
 
     def _direct_export(self):
-        """For serializing the original deck. Will preserve comments and most 
-        user formatting. Line comments may conflict with additions to an 
-        existing card. Only call this when your modifications are complete.
+        """For serializing the deck without any Python post-processing.
         """
         return print_deck(self._deck)
 
@@ -301,7 +297,7 @@ class Deck():
         renumber : boolean, optional
             Use sequential numbering for named objects.
         direct : boolean, optional
-            Use to preserve comments and formatting when starting with an existing deck.
+            Serialize without extra formatting from Python.
         """
         with open(filename, 'w') as f:
             if direct is False:
@@ -350,6 +346,9 @@ class Deck():
         # Calling the serializer essentially "dumps" the deck to a string which
         # leaves the deck empty and useless. So instead, we serialize a copy of
         # the deck which leaves the original in working order.
+        # Copying also removes comments assigned to hidden regions, which solves
+        # some serialization oddities. Comments added directly with the API do
+        # still appear.
         deck_string = print_deck(deck_resource(self._deck))
 
         return formatter(deck_string, title)
@@ -564,11 +563,10 @@ class Deck():
             self._add_data(card, self.settings)
 
     def _add_data(self, card, storage):
-        name = getattr(card, 'name', None)
-        if callable(name):
+        try:
             self.set_id(card, storage)
             self._deck.data.settings.addUnique(storage[card.name]._e_object)
-        else:
+        except:
             storage.append(card)
             self._deck.data.settings.addUnique(storage[-1]._e_object)
 
