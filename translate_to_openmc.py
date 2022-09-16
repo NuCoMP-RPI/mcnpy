@@ -12,7 +12,7 @@ from mcnpy.surfaces import XCylinder, YCylinder, ZCylinder
 from mcnpy.surfaces import XCone, YCone, ZCone
 from mcnpy.surfaces import Quadric, XYZQuadric 
 from mcnpy.surfaces import PPoints, Sphere , XTorus, YTorus, ZTorus
-from mcnpy.surfaces import PPoints#, XPoints, YPoints, ZPoints
+from mcnpy.surfaces import PPoints, XPoints, YPoints, ZPoints
 from mcnpy.surfaces import XTorus, YTorus, ZTorus
 
 DEG_RAD = 180. / math.pi
@@ -112,26 +112,26 @@ def boundary(surf):
 def make_plane(surf:Plane):
     """
     """
-    openmc_surf = openmc.Plane(a=surf.a, b=surf.b, c=surf.c, d=surf.d, boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf
+    return openmc.Plane(a=surf.a, b=surf.b, c=surf.c, d=surf.d, 
+                        boundary_type=boundary(surf), name=surf.name)
 
 def make_xplane(surf:XPlane):
     """
     """
-    openmc_surf = openmc.Plane(a=1, b=0, c=0, d=surf.x0, boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf
+    return openmc.Plane(a=1, b=0, c=0, d=surf.x0, 
+                        boundary_type=boundary(surf), name=surf.name)
 
 def make_yplane(surf:YPlane):
     """
     """
-    openmc_surf = openmc.Plane(a=0, b=1, c=0, d=surf.y0, boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf
+    return openmc.Plane(a=0, b=1, c=0, d=surf.y0,
+                        boundary_type=boundary(surf), name=surf.name)
 
 def make_zplane(surf:ZPlane):
     """
     """
-    openmc_surf = openmc.Plane(a=0, b=0, c=1, d=surf.z0, boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf
+    return openmc.Plane(a=0, b=0, c=1, d=surf.z0, 
+                        boundary_type=boundary(surf), name=surf.name)
 
 def make_points_plane(surf:PPoints):
     """
@@ -145,111 +145,174 @@ def make_points_plane(surf:PPoints):
     cp = np.cross(v2, v1)
     a, b, c = cp
     d = np.dot(cp, p3)
-    openmc_surf = openmc.Plane(a=a/d, b=b/d, c=c/d, d=d/d, boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf
+    return openmc.Plane(a=a/d, b=b/d, c=c/d, d=d/d, 
+                        boundary_type=boundary(surf), name=surf.name)
 
 def make_sphere(surf:Sphere):
     """
     """
-    openmc_surf = openmc.Sphere(x0=surf.x0, y0=surf.y0, z0=surf.z0, r=surf.r, boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf
+    return openmc.Sphere(x0=surf.x0, y0=surf.y0, z0=surf.z0, r=surf.r, 
+                         boundary_type=boundary(surf), name=surf.name)
 
 def make_xcylinder(surf:XCylinder):
     """
     """
-    #openmc_surf = openmc.XCylinder(y0=surf.y0, z0=surf.z0, r=surf.r, boundary_type=boundary(surf), name=surf.name)
-    #openmc_surf = openmc.Cylinder(x0=0, y0=surf.y0, z0=surf.z0, r=surf.r, dx=1, dy=0, dz=0, boundary_type=boundary(surf), name=surf.name)
     coef = surf.get_base_coefficients()
-    openmc_surf = openmc.Quadric(a=coef['a'], b=coef['b'], c=coef['c'], d=coef['d'], e=coef['e'], f=coef['f'], g=coef['g'], h=coef['h'], j=coef['j'], k=coef['k'], boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf    
+    return openmc.Quadric(a=coef['a'], b=coef['b'], c=coef['c'], d=coef['d'], 
+                          e=coef['e'], f=coef['f'], g=coef['g'], h=coef['h'], 
+                          j=coef['j'], k=coef['k'], 
+                          boundary_type=boundary(surf), name=surf.name)
 
 def make_ycylinder(surf:YCylinder):
     """
     """
-    #openmc_surf = openmc.YCylinder(x0=surf.x0, z0=surf.z0, r=surf.r, boundary_type=boundary(surf), name=surf.name)
-    #openmc_surf = openmc.Cylinder(x0=surf.x0, y0=0, z0=surf.z0, r=surf.r, dx=0, dy=1, dz=0, boundary_type=boundary(surf), name=surf.name)
     coef = surf.get_base_coefficients()
-    openmc_surf = openmc.Quadric(a=coef['a'], b=coef['b'], c=coef['c'], d=coef['d'], e=coef['e'], f=coef['f'], g=coef['g'], h=coef['h'], j=coef['j'], k=coef['k'], boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf  
+    return openmc.Quadric(a=coef['a'], b=coef['b'], c=coef['c'], d=coef['d'], 
+                          e=coef['e'], f=coef['f'], g=coef['g'], h=coef['h'], 
+                          j=coef['j'], k=coef['k'], 
+                          boundary_type=boundary(surf), name=surf.name)
 
 def make_zcylinder(surf:ZCylinder):
     """
     """
-    #openmc_surf = openmc.ZCylinder(x0=surf.x0, y0=surf.y0, r=surf.r, boundary_type=boundary(surf), name=surf.name)
-    #openmc_surf = openmc.Cylinder(x0=surf.x0, y0=surf.y0, z0=0, r=surf.r, dx=0, dy=0, dz=1, boundary_type=boundary(surf), name=surf.name)
     coef = surf.get_base_coefficients()
-    openmc_surf = openmc.Quadric(a=coef['a'], b=coef['b'], c=coef['c'], d=coef['d'], e=coef['e'], f=coef['f'], g=coef['g'], h=coef['h'], j=coef['j'], k=coef['k'], boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf  
+    return openmc.Quadric(a=coef['a'], b=coef['b'], c=coef['c'], d=coef['d'], 
+                          e=coef['e'], f=coef['f'], g=coef['g'], h=coef['h'], 
+                          j=coef['j'], k=coef['k'], 
+                          boundary_type=boundary(surf), name=surf.name)
 
 def make_quadric(surf:Quadric):
     """
     """
-    openmc_surf = openmc.Quadric(a=surf.a, b=surf.b, c=surf.c, d=surf.d, e=surf.e, f=surf.f, g=surf.g, h=surf.h, j=surf.j, k=surf.k, boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf
+    return openmc.Quadric(a=surf.a, b=surf.b, c=surf.c, d=surf.d, e=surf.e, 
+                          f=surf.f, g=surf.g, h=surf.h, j=surf.j, k=surf.k, 
+                          boundary_type=boundary(surf), name=surf.name)
 
 def make_xyzquadric(surf:XYZQuadric):
     """
     """
     coef = surf.get_base_coefficients()
-    openmc_surf = openmc.Quadric(a=coef['a'], b=coef['b'], c=coef['c'], d=coef['d'], e=coef['e'], f=coef['f'], g=coef['g'], h=coef['h'], j=coef['j'], k=coef['k'], boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf
+    return openmc.Quadric(a=coef['a'], b=coef['b'], c=coef['c'], d=coef['d'], 
+                          e=coef['e'], f=coef['f'], g=coef['g'], h=coef['h'], 
+                          j=coef['j'], k=coef['k'], 
+                          boundary_type=boundary(surf), name=surf.name)
 
 def make_xcone(surf:XCone):
     """
     """
     if surf.sheet is None:
-        openmc_surf = openmc.XCone(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, boundary_type=boundary(surf), name=surf.name)
+        return openmc.XCone(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, 
+                            boundary_type=boundary(surf), name=surf.name)
     elif str(surf.sheet.side) == '+':
-        openmc_surf = XConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, up=True, boundary_type=boundary(surf), name=surf.name)
+        return XConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, 
+                             up=True, boundary_type=boundary(surf), 
+                             name=surf.name)
     elif str(surf.sheet.side) == '-':
-        openmc_surf = XConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, up=False, boundary_type=boundary(surf), name=surf.name)
+        return XConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, 
+                             up=False, boundary_type=boundary(surf), 
+                             name=surf.name)
     else:
         print('This XCone is up sheet creek!', str(surf.sheet.side))
-    return openmc_surf 
 
 def make_ycone(surf:YCone):
     """
     """
     if surf.sheet is None:
-        openmc_surf = openmc.YCone(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, boundary_type=boundary(surf), name=surf.name)
+        return openmc.YCone(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, 
+                            boundary_type=boundary(surf), name=surf.name)
     elif str(surf.sheet.side) == '+':
-        openmc_surf = YConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, up=True, boundary_type=boundary(surf), name=surf.name)
+        return YConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, 
+                             up=True, boundary_type=boundary(surf), 
+                             name=surf.name)
     elif str(surf.sheet.side) == '-':
-        openmc_surf = YConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, up=False, boundary_type=boundary(surf), name=surf.name)
+        return YConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, 
+                             up=False, boundary_type=boundary(surf), 
+                             name=surf.name)
     else:
         print('This YCone is up sheet creek!', str(surf.sheet.side))
-    return openmc_surf 
 
 def make_zcone(surf:ZCone):
     """
     """
     if surf.sheet is None:
-        openmc_surf = openmc.ZCone(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, boundary_type=boundary(surf), name=surf.name)
+        return openmc.ZCone(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, 
+                            boundary_type=boundary(surf), name=surf.name)
     elif str(surf.sheet.side) == '+':
-        openmc_surf = ZConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, up=True, boundary_type=boundary(surf), name=surf.name)
+        return ZConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, 
+                             up=True, boundary_type=boundary(surf), 
+                             name=surf.name)
     elif str(surf.sheet.side) == '-':
-        openmc_surf = ZConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, up=False, boundary_type=boundary(surf), name=surf.name)
+        return ZConeOneSided(x0=surf.x0, y0=surf.y0, z0=surf.z0, r2=surf.r2, 
+                             up=False, boundary_type=boundary(surf), 
+                             name=surf.name)
     else:
         print('This ZCone is up sheet creek!', str(surf.sheet.side))
-    return openmc_surf 
 
 def make_xtorus(surf:XTorus):
     """
     """
-    openmc_surf = openmc.XTorus(x0=surf.x0, y0=surf.y0, z0=surf.z0, a=surf.a, b=surf.b, c=surf.c, boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf
+    return openmc.XTorus(x0=surf.x0, y0=surf.y0, z0=surf.z0, a=surf.a, b=surf.b, 
+                         c=surf.c, boundary_type=boundary(surf), name=surf.name)
 
 def make_ytorus(surf:YTorus):
     """
     """
-    openmc_surf = openmc.YTorus(x0=surf.x0, y0=surf.y0, z0=surf.z0, a=surf.a, b=surf.b, c=surf.c, boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf
+    return openmc.YTorus(x0=surf.x0, y0=surf.y0, z0=surf.z0, a=surf.a, b=surf.b, 
+                         c=surf.c, boundary_type=boundary(surf), name=surf.name)
 
 def make_ztorus(surf:ZTorus):
     """
     """
-    openmc_surf = openmc.ZTorus(x0=surf.x0, y0=surf.y0, z0=surf.z0, a=surf.a, b=surf.b, c=surf.c, boundary_type=boundary(surf), name=surf.name)
-    return openmc_surf
+    return openmc.ZTorus(x0=surf.x0, y0=surf.y0, z0=surf.z0, a=surf.a, b=surf.b, 
+                         c=surf.c, boundary_type=boundary(surf), name=surf.name)
+
+def make_xpoints(surf:XPoints):
+    """
+    """
+    new_surf = surf.convert()
+    if isinstance(new_surf, XPlane):
+        _surf = make_xplane(new_surf)
+    elif isinstance(new_surf, XCone):
+        _surf = make_xcone(new_surf)
+    elif isinstance(new_surf, XCylinder):
+        _surf = make_xcylinder(new_surf)
+    elif isinstance(new_surf, XYZQuadric):
+        _surf = make_xyzquadric(new_surf)
+
+    _surf.name = surf.name
+    return surf
+
+def make_ypoints(surf:YPoints):
+    """
+    """
+    new_surf = surf.convert()
+    if isinstance(new_surf, YPlane):
+        _surf = make_yplane(new_surf)
+    elif isinstance(new_surf, YCone):
+        _surf = make_ycone(new_surf)
+    elif isinstance(new_surf, YCylinder):
+        _surf = make_ycylinder(new_surf)
+    elif isinstance(new_surf, XYZQuadric):
+        _surf = make_xyzquadric(new_surf)
+
+    _surf.name = surf.name
+    return surf
+
+def make_zpoints(surf:ZPoints):
+    """
+    """
+    new_surf = surf.convert()
+    if isinstance(new_surf, ZPlane):
+        _surf = make_zplane(new_surf)
+    elif isinstance(new_surf, ZCone):
+        _surf = make_zcone(new_surf)
+    elif isinstance(new_surf, ZCylinder):
+        _surf = make_zcylinder(new_surf)
+    elif isinstance(new_surf, XYZQuadric):
+        _surf = make_xyzquadric(new_surf)
+
+    _surf.name = surf.name
+    return surf
 
 """def make_cell(cell, openmc_surfaces):
     openmc_cell = openmc.Cell(int(cell.name))
@@ -315,7 +378,8 @@ def mcnp_to_openmc(deck:mp.Deck):
     # This way their matrices are only created once.
     for k in deck.transformations:
         tr = deck.transformations[k]
-        openmc_transformations[k] = (decompose_transformation(tr.transformation, tr.unit))
+        openmc_transformations[k] = (decompose_transformation(tr.transformation, 
+                                                              tr.unit))
 
     # Translate surfaces.
     for k in deck.surfaces:
@@ -354,8 +418,12 @@ def mcnp_to_openmc(deck:mp.Deck):
             openmc_surfaces[int(k)] = make_ytorus(surf)
         elif isinstance(surf, YTorus):
             openmc_surfaces[int(k)] = make_ztorus(surf)
-        #TODO: Add in the rest of the conversions.
-        #TODO: This includes X, Y, Z point surfaces.
+        elif isinstance(surf, XPoints):
+            openmc_surfaces[int(k)] = make_xpoints(surf)
+        elif isinstance(surf, YPoints):
+            openmc_surfaces[int(k)] = make_ypoints(surf)
+        elif isinstance(surf, ZPoints):
+            openmc_surfaces[int(k)] = make_zpoints(surf)
         #TODO: Cones might need to become quadrics for rotations.
         else:
             print('SURFACE ERROR!\n', surf)
@@ -448,7 +516,7 @@ def mcnp_to_openmc(deck:mp.Deck):
                 # Get lattice array of MCNP universes.
                 lattice = cell.fill
                 # Dimensions in k, j, i order
-                dim = lattice.dims[::-1] #((1+lattice.k[1]-lattice.k[0]), (1+lattice.j[1]-lattice.j[0]), (1+lattice.i[1]-lattice.i[0]))
+                dim = lattice.dims[::-1]
                 if str(lattice.type) == '1' or str(lattice.type).upper() == 'REC':
                     openmc_lattice = np.empty(dim).astype(openmc.Universe)
                     for z in range(dim[0]):
@@ -484,16 +552,18 @@ def mcnp_to_openmc(deck:mp.Deck):
                                     u_list.append(openmc_ring[-1])
                             openmc_rings[-1].append(openmc_ring)
                     #TODO: get the background fill
-                    # Might be redundant since we need a fully specified MCNP lattice
-                    # which means including elements outside the rings already.
+                    # Might be redundant since we need a fully specified MCNP 
+                    # lattice which means including elements outside the rings 
+                    # already.
                     lat_u.append(u_list)
                     fill = openmc.HexLattice()
                     fill.universes = openmc_rings
                     #fill.num_rings = rings[1]
                     #fill.num_axial = dim[0]
                     # Get the pitch.
-                    # Since we assume equal X and Y pitch, and because the 1st and 2nd surfaces
-                    # must be parallel, we just need the distance for the first plane.
+                    # Since we assume equal X and Y pitch, and because the 1st 
+                    # and 2nd surfaces must be parallel, we just need the 
+                    # distance for the first plane.
                     #lat_surf = next(iter(cell.region.get_surfaces().items()))[1]
                     #fill.pitch = [abs(next(iter(cell.region.get_surfaces().items()))[1].d)]
                     lat_surfs = list(cell.region.get_surfaces().items())
@@ -537,12 +607,14 @@ def mcnp_to_openmc(deck:mp.Deck):
         lat_fill = openmc_cells[cell_id].fill
         # Lattice dimensions
         dims = lat_dims[k]
-        # Go through cells and change the lattice universe fill to lattice object.
+        # Go through cells and change the lattice universe fill to 
+        # lattice object.
         for j in openmc_cells:
             if openmc_cells[j].fill == openmc_universes[k]:
                 if isinstance(lat_fill, openmc.RectLattice):
                     #TODO: What if the boundary is not a rectangle?
-                    # Use the region filled by the lattice to find the lower left corner of the lattice.
+                    # Use the region filled by the lattice to find the lower 
+                    # left corner of the lattice.
                     # Assuming the cell is rectangular (6 planes)
                     xlim = []
                     ylim = []

@@ -4,10 +4,152 @@ import numpy as np
 
 from .wrap import wrappers, overrides
 from .region import *
-from .points import Point
+from .points import Point, PPoint
 from .mixin import IDManagerMixin
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
+
+def convert_surface(p_surf):
+    """Convert from point surface to standard surface.
+    """
+    if isinstance(p_surf, XPoints):
+        offset = 0
+    elif isinstance(p_surf, YPoints):
+        offset = 1
+    else:
+        offset = 2
+    tol = 1e-12
+    tol2 = 1e12
+    # Add in missing points
+    c = p_surf.points
+    if len(c) == 1:
+        c.append(c[0])
+        c.append(c[0])
+    elif len(c) == 2:
+        c.append(c[1])
+
+    #print(c)
+
+    t1 = min([c[0][0], c[1][0], c[2][0]])
+    t2 = max([c[0][0], c[1][0], c[2][0]])
+    t0 = max([(c[0][0]-c[1][0])**2 - (c[0][1]-c[1][1])**2, 
+                (c[1][0]-c[2][0])**2 - (c[1][1]-c[2][1])**2,
+                (c[0][0]-c[2][0])**2 - (c[0][1]-c[2][1])**2])**0.5
+    max_r = max([abs(c[0][1] - c[1][1]), 
+                    abs(c[1][1] - c[2][1]),
+                    abs(c[0][1] - c[2][1])])
+
+    # Plane
+    if t2 - t1 <= tol * t0:
+        if isinstance(p_surf, XPoints):
+            surf = XPlane(x0=p_surf.points[0][0])
+        elif isinstance(p_surf, YPoints):
+            surf = YPlane(y0=p_surf.points[0][0])
+        else:
+            surf = ZPlane(z0=p_surf.points[0][0])
+    # Cylinder
+    elif max_r <= tol * t0:
+        r = sum([c[0][1], c[1][1], c[2][1]])/3
+        if isinstance(p_surf, XPoints):
+            surf = XCylinder(r=r)
+        elif isinstance(p_surf, YPoints):
+            surf = YCylinder(r=r)
+        else:
+            surf = ZCylinder(r=r)
+    # One Sheet Cone
+    elif (abs(((c[1][0]-c[0][0]) * (c[2][1]-c[1][1])) 
+                - ((c[2][0]-c[1][0]) * (c[1][1]-c[0][1]))) * tol2 <= t0**2):
+        print('\nOne sheet\n')
+        t1 = c[0][0] + c[1][0] + c[2][0]
+        t2 = c[0][1] + c[1][1] + c[2][1]
+        sheet = ((3*(c[0][0]*c[0][1] + c[1][0]*c[1][1] + c[2][0]*c[2][1]) - t1*t2) 
+                    / (3*(c[0][0]**2 + c[1][0]**2 + c[2][0]**2) - t1**2))
+        r2 = sheet**2
+        x0 = (t1-t2/sheet) / 3
+        if isinstance(p_surf, XPoints):
+            surf = XCone(x0=x0, r2=r2, sheet=sheet)
+        elif isinstance(p_surf, YPoints):
+            surf = YCone(y0=x0, r2=r2, sheet=sheet)
+        else:
+            surf = ZCone(z0=x0, r2=r2, sheet=sheet)
+    else:
+        # Plane of two sheets - Error - 
+        if (abs(c[0][1]-c[1][1]) > tol2*abs(c[0][0]-c[1][0]) 
+            or abs(c[1][1]-c[2][1]) > tol2*abs(c[1][0]-c[2][0]) 
+            or abs(c[2][1]-c[0][1]) > tol2*abs(c[2][0]-c[0][0])):
+            return 'ERROR: surface would create 2 parallel planes!'
+        # Find coefficients for symmetric GQ surface.
+        else:
+            a = np.zeros(shape=(4,4))
+            i0 = 0
+            for i in range(3):
+                a[0,i] = c[i][0]**2
+                if a[0,i] > a[0,i0]:
+                    i0 = i
+                a[1,i] = c[i][0]
+                a[2,i] = 1
+                a[3,i] = -c[i][1]**2
+            i1 = max(1, 3-i0) - 1
+            for i in range(3):
+                print(i,i0)
+                if i != i0:
+                    for j in range(1,4):
+                        a[j,i] = a[j,i] - a[0,i]*a[j,i0]/a[0,i0]
+                    if abs(a[1,i]) > abs(a[1,i1]):   
+                        i1=i
+            i2 = 3-i0-i1
+            a[2,i2] = a[2,i2]-a[1,i2]*a[2,i1]/a[1,i1]
+            a[2,3] = (a[3,i2]-a[1,i2]*a[3,i1]/a[1,i1])/a[2,i2]
+            a[1,3] = (a[3,i1]-a[2,i1]*a[2,3])/a[1,i1]
+            a[0,3] = (a[3,i0]-a[2,i0]*a[2,3]-a[1,i0]*a[1,3])/a[0,i0]
+
+            # Sphere
+            if abs(a[0,3] - 1)*tol2 <= 1:
+                # At origin
+                if abs(a[1,3] - 1)*tol2 <= t0:
+                    surf = Sphere(r=-a[2,3])
+                else:
+                    x0 = -0.5*a[1,3]
+                    r0 = x0**2 - a[2,3]
+                    surf = Sphere(x0=x0, r=r0)
+            
+            # Some kind of SQ
+            else:
+                coefs = np.zeros(10)
+                for i in range(10):
+                    coefs[9-i] = (i+1)//8 # Use integer division
+                # Paraboloid
+                if abs(a[0,3]*tol2) <= 1:
+                    """"""
+                    coefs[0+offset] = 0 
+                    coefs[3+offset] = 0.5 * a[1,3]
+                    coefs[7+offset] = -a[2,3] / a[1,3] 
+                # Hyperboloid, ellipsoid, or cone
+                else:
+                    coefs[0+offset] = a[0,3] 
+                    coefs[6] = a[2,3] - 0.25*a[1,3]**2/a[0,3]
+                    coefs[7+offset] = -0.5 * a[1,3] / a[0,3] 
+                    # Two sheet cone
+                    if abs(coefs[6]*tol2) <= t0**2 and a[0,3] <= 0:
+                        coefs[0] = coefs[7+offset] 
+                        coefs[1] = -a[0,3]
+                        coefs[2] = 0
+                    # Hyperbolid or ellipsoid
+                    else:
+                        if (coefs[6] > 0 and coefs[7+offset] < t2 
+                            and coefs[7+offset] > t1):
+                            print('ERROR: points on different sheets!')
+
+                surf = XYZQuadric(a=coefs[0], b=coefs[1], c=coefs[2],
+                                    d=coefs[3], e=coefs[4], f=coefs[5],
+                                    g=coefs[6], x=coefs[7], y=coefs[8],
+                                    z=coefs[9])
+
+    #surf.name = p_surf.name
+    surf.boundary_type = p_surf.boundary_type
+    #surf.comment = p_surf.comment
+    surf.transformation = p_surf.transformation
+    return surf
 
 class Halfspace(HalfspaceBase):
     __doc__ = HalfspaceBase().__doc__
@@ -790,16 +932,7 @@ class XCone(IDManagerMixin, XConeBase, Surface):
         if comment is not None:
             self.comment = comment
         if sheet is not None:
-            _sheet = SheetBase()
-            _sheet.value = 1
-            if isinstance(sheet, str):
-                _sheet.side = sheet
-            else:
-                if sheet > 0:
-                    _sheet.side = '+'
-                else:
-                    _sheet.side = '-'
-            self.sheet = _sheet
+            self.sheet = Sheet(side=sheet)
         else:
             self.sheet = sheet
 
@@ -851,16 +984,7 @@ class YCone(IDManagerMixin, YConeBase, Surface):
         if comment is not None:
             self.comment = comment
         if sheet is not None:
-            _sheet = SheetBase()
-            _sheet.value = 1
-            if isinstance(sheet, str):
-                _sheet.side = sheet
-            else:
-                if sheet > 0:
-                    _sheet.side = '+'
-                else:
-                    _sheet.side = '-'
-            self.sheet = _sheet
+            self.sheet = Sheet(side=sheet)
         else:
             self.sheet = sheet
 
@@ -912,16 +1036,7 @@ class ZCone(IDManagerMixin, ZConeBase, Surface):
         if comment is not None:
             self.comment = comment
         if sheet is not None:
-            _sheet = SheetBase()
-            _sheet.value = 1
-            if isinstance(sheet, str):
-                _sheet.side = sheet
-            else:
-                if sheet > 0:
-                    _sheet.side = '+'
-                else:
-                    _sheet.side = '-'
-            self.sheet = _sheet
+            self.sheet = Sheet(side=sheet)
         else:
             self.sheet = sheet
 
@@ -1228,12 +1343,31 @@ class XPoints(IDManagerMixin, XPointsBase, Surface):
     def __str__(self):
         return self.print_surface()
 
+    def convert(self):
+        return convert_surface(self)
+
+    @property
+    def points(self):
+        _points = self._e_object.getPoints()
+        points = []
+        for p in _points:
+            points.append(p.aslist())
+        return points
+
+    @points.setter
+    def points(self, points):
+        _points = self._e_object.getPoints()
+        del _points[:]
+        for p in points:
+            _points.append(PPoint.aspoint(p))
+            
+
 class YPoints(IDManagerMixin, YPointsBase, Surface):
     __doc__ = """Y symmetric surface defined by points
     """
     __doc__ += YPointsBase().__doc__
 
-    def _init(self, name, points:list, boundary_type='VACUUM', comment=None):
+    def _init(self, name=None, points=[], boundary_type='VACUUM', comment=None):
         self.name = name
         self.points = points
         self.boundary_type = boundary_type
@@ -1248,13 +1382,31 @@ class YPoints(IDManagerMixin, YPointsBase, Surface):
 
     def __str__(self):
         return self.print_surface()
+
+    def convert(self):
+        return convert_surface(self)
+
+    @property
+    def points(self):
+        _points = self._e_object.getPoints()
+        points = []
+        for p in _points:
+            points.append(p.aslist())
+        return points
+
+    @points.setter
+    def points(self, points):
+        _points = self._e_object.getPoints()
+        del _points[:]
+        for p in points:
+            _points.append(PPoint.aspoint(p))
 
 class ZPoints(IDManagerMixin, ZPointsBase, Surface):
     __doc__ = """Z symmetric surface defined by points
     """
     __doc__ += ZPointsBase().__doc__
 
-    def _init(self, name, points:list, boundary_type='VACUUM', comment=None):
+    def _init(self, name=None, points=[], boundary_type='VACUUM', comment=None):
         self.name = name
         self.points = points
         self.boundary_type = boundary_type
@@ -1270,6 +1422,47 @@ class ZPoints(IDManagerMixin, ZPointsBase, Surface):
     def __str__(self):
         return self.print_surface()
 
+    def convert(self):
+        return convert_surface(self)
+
+    @property
+    def points(self):
+        _points = self._e_object.getPoints()
+        points = []
+        for p in _points:
+            points.append(p.aslist())
+        return points
+
+    @points.setter
+    def points(self, points):
+        _points = self._e_object.getPoints()
+        del _points[:]
+        for p in points:
+            _points.append(PPoint.aspoint(p))
+
+
+class Sheet(SheetBase):
+    __doc__ = SheetBase().__doc__
+
+    def _init(self, side='+'):
+        if isinstance(side, str):
+            self.side = side
+        elif side < 0:
+            self.side = '-'
+        else:
+            self.side = '+'
+        self.value = 1
+    
+    def __str__(self):
+        if self.side == '+':
+            return 'positive'
+        else:
+            return 'negative'
+
+    def __repr__(self):
+        return str(self)
+
+    
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)

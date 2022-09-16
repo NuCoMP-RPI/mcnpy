@@ -11,7 +11,10 @@ class Point(PointBase):
         self.z = z
 
     def aspoint(p):
-        return Point(p[0], p[1], p[2])
+        if isinstance(p, Point):
+            return p
+        else:
+            return Point(p[0], p[1], p[2])
 
     def __str__(self):
         string = '(' + str(self.x) + ', ' + str(self.y) + ', ' + str(self.z) + ')'
@@ -26,6 +29,15 @@ class PPoint(PPointBase):
     def _init(self, d:float, r:float):
         self.d = d
         self.r = r
+
+    def aspoint(p):
+        if isinstance(p, PPoint):
+            return p
+        else:
+            return PPoint(p[0], p[1])
+
+    def aslist(self):
+        return [self.d, self.r]
 
     def __str__(self):
         string = '(' + str(self.d) + ', ' + str(self.r) + ')'
