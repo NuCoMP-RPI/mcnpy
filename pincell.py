@@ -6,11 +6,11 @@ deck = mp.Deck()
 # Materials
 enr = 3
 u_enr = U[238]%(100-enr) + U[235]%enr
-fuel = mp.Material(u_enr + O@2)
+fuel = mp.Material(u_enr + O[16]@2)
 # Include S(a,B). Normally added as a separate card in MCNP.
 fuel.s_alpha_beta = ['o_in_uo2', 'u238_in_uo2']
 
-mod = mp.Material(H@2 + O)
+mod = mp.Material(H[1]@2 + O)
 mod.s_alpha_beta = 'lwtr'
 
 solutes = {SN: 1.5, FE: 0.2, CR: 0.1}
@@ -52,8 +52,8 @@ for cell in deck.cells.values():
     else:
         cell.importances = {'n' : 1.0}
 
-deck += mp.CriticalitySource(histories=1e4, keff_guess=1.0, skip_cycles=200, 
-                             cycles=1200)
+deck += mp.CriticalitySource(histories=1e2, keff_guess=1.0, skip_cycles=100, 
+                             cycles=300)
 deck += mp.CriticalitySourcePoints([(0,0,0), (0,0,0.5), (0,0,-0.5)])
 
 # Print MCTAL file
@@ -64,4 +64,4 @@ print(deck)
 # Write to file
 deck.write('my_pincell.mcnp')
 
-#mp.Run('my_pincell.mcnp')
+mp.run_mcnp('my_pincell.mcnp')

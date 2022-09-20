@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from abc import ABC
 import numpy as np
-
+from .tally import Tally
 from .wrap import wrappers, overrides
 from .region import *
 from .points import Point, PPoint
@@ -159,6 +159,9 @@ class Halfspace(HalfspaceBase):
         self.surface = surface
         """if isinstance(self.surface, Macrobody):
             if self.surface.facet is not None:
+                self.facets = self.surface.facet"""
+        """if isinstance(self.surface, Macrobody):
+            if self.surface.facet is not None:
                 self.facets = '.' + str(surface.facet)
             #print(self.facets)"""
 
@@ -178,11 +181,13 @@ class Halfspace(HalfspaceBase):
         return -self.surface if str(self.side) == '+' else +self.surface
 
     def __str__(self):
-        string = self.surface.name
+        string = str(self.surface.name)
         if str(self.side) == '-':
             string = '-' + string
+        else:
+            string = '+' + string
         if self.facets is not None:
-            string += str(self.facets)
+            string = '{}.{}'.format(string, int(self.facets))
         return string
 
     def __repr__(self):
@@ -224,7 +229,6 @@ class Halfspace(HalfspaceBase):
         if surf is not None:
             self.surface = surf
 
-
 class Surface(SurfaceBase):
     __doc__ = SurfaceBase().__doc__
 
@@ -243,6 +247,33 @@ class Surface(SurfaceBase):
 
     def __neg__(self):
         return Halfspace('-', self)
+
+    def __or__(self, other):
+        print('here')
+        if isinstance(other, Tally.Bin.SurfaceUnion):
+            return Tally.Bin.SurfaceUnion([Tally.Bin.UnarySurfaceBin(self)] 
+                                         + [Tally.Bin.UnarySurfaceBin(other[:])])
+        else:
+            return Tally.Bin.SurfaceUnion([Tally.Bin.UnarySurfaceBin(self)] 
+                                         + [Tally.Bin.UnarySurfaceBin(other)])
+
+    def __and__(self, other):
+        if isinstance(other, Tally.Bin.CellLevel):
+            return Tally.Bin.CellLevel([Tally.Bin.UnaryCellBin(self)] 
+                                         + Tally.Bin.UnaryCellBin(other[:]))
+        else:
+            return Tally.Bin.CellLevel([Tally.Bin.UnaryCellBin(self)] 
+                                         + [Tally.Bin.UnaryCellBin(other)])
+
+    def __lshift__(self, other):
+        if isinstance(other, Tally.Bin.CellLevel):
+            return Tally.Bin.SurfaceLevels([Tally.Bin.CellLevel(
+                                          Tally.Bin.UnaryCellBin(self))] 
+                                          + Tally.Bin.CellLevel(other[:]))
+        else:#elif isinstance(other, (Cell, Universe)):
+            return Tally.Bin.SurfaceLevels([Tally.Bin.CellLevel(
+                                          Tally.Bin.UnaryCellBin(self))] 
+                                          + [Tally.Bin.CellLevel(other.__copy__())])
 
     def get_coefficients(self):
         return self.get_coefficients()
@@ -271,10 +302,65 @@ class Surface(SurfaceBase):
 
         return string
 
+class SurfaceFacet():
+    def __init__(self, surface, facet):
+        self.surface = surface
+        self._facet = facet
+
+    @property
+    def facet(self):
+        return self._facet
+
+    @facet.setter
+    def facet(self, facet):
+        if isinstance(self.surface, Macrobody):
+            self.facet = self.surface.facets(facet)
+        else:
+            self.facet = None
+
+    def __pos__(self):
+        hs = Halfspace('+', self.surface)
+        hs.facets = self.facet
+        return hs
+
+    def __neg__(self):
+        hs = Halfspace('-', self.surface)
+        hs.facets = self.facet
+        return hs
+
+    def get_coefficients(self):
+        return self.surface.get_coefficients()
+
+    def print_surface(self):
+        string = 'Surface\n'
+        string += '{0: <16}{1}{2}\n'.format('\tID', '=\t', str(self.surface.name))
+        string += '{0: <16}{1}{2}\n'.format('\tComment', '=\t', self.surface.comment)
+        string += '{0: <16}{1}{2}\n'.format('\tType', '=\t', 
+                                            type(self.surface).__name__)
+        string += '{0: <16}{1}{2}\n'.format('\tBoundary', '=\t', 
+                                            self.surface.boundary_type)
+
+        coefficients = '{0: <16}'.format('\tCoefficients') + '\n'
+        coeff = self.surface.get_coefficients()
+        for k in coeff:
+            coefficients += '{0: <16}{1}{2}\n'.format(
+                k, '=\t', coeff[k])
+        string += coefficients
+        if self.surface.transformation is None:
+            string += '{0: <16}{1}{2}\n'.format('\tTransformation', '=\t', 
+                                                'None')
+        else:
+            string += '{0: <16}{1}{2}\n'.format('\tTransformation', '=\t', 'TR' 
+                                                + str(self.surface.transformation.name))
+
+        return string
+
 class Macrobody(ABC):
     """All macrobodies with facets. Excludes Sphere and Ellipsoid.
     """
-    
+    def __getitem__(self, facet):
+        return SurfaceFacet(self, facet)
+
     def facets(self, facet:int):
         """
         """
@@ -289,11 +375,11 @@ class Macrobody(ABC):
         mbody_facets['Polyhedron'] = 6
 
         if (facet >= 0 and facet <= mbody_facets[self.__class__.__name__]):
-            self.facet = facet
+            return facet
         else:
             print(str(facet) + ' is an invalid facet number for ' 
                   + str(type(self)))
-        return self
+            return None
 
 # Macrobodies
 
@@ -343,7 +429,7 @@ class RectangularPrism(IDManagerMixin, RectangularPrismBase, Surface, Macrobody)
         self.boundary_type = boundary_type
         if comment is not None:
             self.comment = comment
-        self.facet = None
+        self._facet = None
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -372,6 +458,7 @@ class Box(IDManagerMixin, BoxBase, Surface, Macrobody):
         self.boundary_type = boundary_type
         if comment is not None:
             self.comment = comment
+        self._facet = None
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -398,7 +485,7 @@ class CircularCylinder(IDManagerMixin, CircularCylinderBase, Surface, Macrobody)
         self.boundary_type = boundary_type
         if comment is not None:
             self.comment = comment
-        self.facet = None
+        self._facet = None
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -429,6 +516,7 @@ class HexagonalPrism(IDManagerMixin, HexagonalPrismBase, Surface, Macrobody):
         self.boundary_type = boundary_type
         if comment is not None:
             self.comment = comment
+        self._facet = None
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -461,6 +549,7 @@ class EllipticalCylinder(IDManagerMixin, EllipticalCylinderBase, Surface, Macrob
         self.boundary_type = boundary_type
         if comment is not None:
             self.comment = comment
+        self._facet = None
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -491,6 +580,7 @@ class TruncatedCone(IDManagerMixin, TruncatedConeBase, Surface, Macrobody):
         self.boundary_type = boundary_type
         if comment is not None:
             self.comment = comment
+        self._facet = None
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -519,6 +609,7 @@ class Wedge(IDManagerMixin, WedgeBase, Surface, Macrobody):
         self.boundary_type = boundary_type
         if comment is not None:
             self.comment = comment
+        self._facet = None
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -545,6 +636,7 @@ class Ellipsoid(IDManagerMixin, EllipsoidBase, Surface, Macrobody):
         self.boundary_type = boundary_type
         if comment is not None:
             self.comment = comment
+        self._facet = None
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -570,6 +662,7 @@ class Polyhedron(IDManagerMixin, PolyhedronBase, Surface, Macrobody):
         self.boundary_type = boundary_type
         if comment is not None:
             self.comment = comment
+        self._facet = None
 
     def get_coefficients(self):
         coef = OrderedDict()
@@ -1361,7 +1454,6 @@ class XPoints(IDManagerMixin, XPointsBase, Surface):
         for p in points:
             _points.append(PPoint.aspoint(p))
             
-
 class YPoints(IDManagerMixin, YPointsBase, Surface):
     __doc__ = """Y symmetric surface defined by points
     """
@@ -1440,7 +1532,6 @@ class ZPoints(IDManagerMixin, ZPointsBase, Surface):
         for p in points:
             _points.append(PPoint.aspoint(p))
 
-
 class Sheet(SheetBase):
     __doc__ = SheetBase().__doc__
 
@@ -1461,8 +1552,6 @@ class Sheet(SheetBase):
 
     def __repr__(self):
         return str(self)
-
-    
 
 for name, wrapper in overrides.items():
     override = globals().get(name, None)

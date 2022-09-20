@@ -7,17 +7,22 @@ from .util import camel_to_snake_case
 
 
 overrides = {}
+package_name = 'mcnpy'
 
 # Apply overrides to nested subclasses.
 # Can provide a custom naming prefix and classes to ignore.
 def subclass_overrides(klass, prefix=None, ignore=[]):
     for method in klass.__dict__.values():
         if str(method).startswith('<class') and method not in ignore:
-            overrides[method.__qualname__] = method
-            if prefix is None:
-                base_name = method.__bases__[0].__name__ + 'Base'
-            else:
-                base_name = prefix + method.__name__ + 'Base'
+            for cls in method.__bases__:
+                # Only the basic wrappers start with package_name+'.wrap'.
+                if package_name + '.wrap' in str(cls):
+                    overrides[cls.__name__] = method
+                    if prefix is None:
+                        base_name = cls.__name__ + 'Base'
+                    else:
+                        base_name = prefix + cls.__name__ + 'Base'
+                    break
             globals().update({base_name: method})
             # For multiple levels of nesting.
             subclass_overrides(method, prefix, ignore)
@@ -36,7 +41,7 @@ def wrap_e_object(target_id, gateway_client, wrappers=overrides):
 
 class WrapperConverter(object):
     def can_convert(self, object):
-        return type(object).__qualname__ in overrides
+        return type(object).__bases__[0].__name__ in overrides
 
     def convert(self, object, gateway_client):
         return object._e_object

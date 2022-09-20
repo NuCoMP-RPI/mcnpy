@@ -6,6 +6,29 @@ from .wrap import wrappers, overrides, subclass_overrides
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
+def str_name(obj):
+    if isinstance(obj, mp.Surface):
+        return str(obj.name)
+    elif isinstance(obj, mp.SurfaceFacet):
+        return str(obj.surface.name)
+    else:
+        return str(obj)
+
+# The cell and surface bins run into issues when they are reused. e.g. the same 
+# bin object cannot appear on 2 different tallies. To get around this, we can 
+# make copies so that each tally gets a unique object with the same semantics.
+# The exception is that proper cells and surfaces should not be copied because
+# they can be referenced freely throughout the input. The bins themselves
+# cannot be referenced. Conceptually, the copying is just like the user typing
+# out the same bins for multiple tallies.
+def copy_inputs(obj, other):
+    cp = obj.__copy__()
+    if isinstance(other, (mp.Cell, mp.Universe, mp.UniverseList, mp.Surface, 
+                          mp.SurfaceFacet)) is False:
+        return cp, other.__copy__()
+    else:
+        return cp, other
+
 class TallyABC(IDManagerMixin, ABC):
     """
     """
@@ -21,11 +44,11 @@ class TallyABC(IDManagerMixin, ABC):
             pass
         else:
             try:
-                self._e_object.setBins(Tally.Bins.CellBins(bins))
+                self._e_object.setBins(Tally.Bin.CellBins(bins.__copy__()))
             except:
-                self._e_object.setBins(Tally.Bins.SurfaceBins(bins))
+                self._e_object.setBins(Tally.Bin.SurfaceBins(bins.__copy__()))
 
-    @property
+    """@property
     def particles(self):
         return self._e_object.getParticles()
 
@@ -37,12 +60,13 @@ class TallyABC(IDManagerMixin, ABC):
             if isinstance(particles, list) is False:
                 particles = [particles]
             for p in particles:
-                _par.append(p)
+                _par.append(p)"""
                 
 class FTallyABC(TallyABC):
     """General class for F1, F2, F4, F6, F7, and F8 tallies.
     """
-    def _init(self, name=None, particles=None, bins=None, unit=None, total=None):
+    def _init(self, name=None, particles=None, bins=None, unit=None, 
+              total=None):
         """
         """
         self.name = name
@@ -54,7 +78,8 @@ class FTallyABC(TallyABC):
 class DetTallyABC(TallyABC):
     """F5 point and ring flux tallies.
     """
-    def _init(self, name=None, particles=None, detectors=None, unit=None, no_direct=None):
+    def _init(self, name=None, particles=None, detectors=None, unit=None, 
+              no_direct=None):
         """
         """
         self.name = name
@@ -66,7 +91,8 @@ class DetTallyABC(TallyABC):
 class RadTallyABC(TallyABC):
     """F5 radiography image tallies.
     """
-    def _init(self, name=None, particles=None, center=None, r0=None, reference=None, unit=None, no_direct=None):
+    def _init(self, name=None, particles=None, center=None, r0=None, 
+              reference=None, unit=None, no_direct=None):
         """
         """
         self.name = name
@@ -412,13 +438,25 @@ class Tally():
         """
         class Level(ABC):
             def __and__(self, other):
-                return Tally.Bin.CellLevel((self, other))
+                cp, cp2 = copy_inputs(self, other)
+                if 'Surface' in str(type(self)):
+                    return Tally.Bin.SurfaceLevel((cp, cp2))
+                else:
+                    return Tally.Bin.CellLevel((cp, cp2))
 
             def __or__(self, other):
-                return Tally.Bin.CellUnion((self, other))
+                cp, cp2 = copy_inputs(self, other)
+                if 'Surface' in str(type(self)):
+                    return Tally.Bin.SurfaceUnion((cp, cp2))
+                else:
+                    return Tally.Bin.CellUnion((cp, cp2))
 
             def __lshift__(self, other):
-                return Tally.Bin.CellLevels([self] + [other])
+                cp, cp2 = copy_inputs(self, other)
+                if 'Surface' in str(type(self)):
+                    return Tally.Bin.SurfaceLevels([cp] + [cp2])
+                else:
+                    return Tally.Bin.CellLevels([cp] + [cp2])
 
         class CellBins(CellBinsBase):
             __doc__ = CellBinsBase().__doc__
@@ -443,10 +481,10 @@ class Tally():
                     _bins.append(bins)
                 else:
                     for i in bins:
-                        if isinstance(i, (mp.Cell, mp.Universe)):
+                        if isinstance(i, (mp.Cell, mp.Universe, 
+                                          mp.UniverseList)):
                             _bins.append(Tally.Bin.UnaryCellBin(i))
                         else:
-                            print(type(i))
                             if i is not None:
                                 _bins.append(i)
 
@@ -470,22 +508,24 @@ class Tally():
                     or isinstance(level, Tally.Bin.Level)):
                     level = [level]
                 for i in level:
-                    if isinstance(i, (mp.Cell, mp.Universe)):
+                    if isinstance(i, (mp.Cell, mp.Universe, mp.UniverseList)):
                         _level.append(Tally.Bin.UnaryCellBin(i))
                     else:
                         _level.append(i)
 
             def __and__(self, other):
-                new = Tally.Bin.CellLevel(self)
-                new &= other
+                cp, cp2 = copy_inputs(self, other)
+                new = Tally.Bin.CellLevel(cp)
+                new &= cp2
                 return new
 
             def __iand__(self, other):
-                if isinstance(other, Tally.Bin.CellLevel):
-                    self.extend(other)
+                cp, cp2 = copy_inputs(self, other)
+                if isinstance(cp2, Tally.Bin.CellLevel):
+                    cp.extend(cp2)
                 else:
-                    self.level.addUnique(other._e_object)
-                return self
+                    cp.level.addUnique(cp2._e_object)
+                return cp
 
             # Implement mutable sequence protocol by delegating to list
             def __getitem__(self, key):
@@ -504,7 +544,10 @@ class Tally():
                 self.level.insert(index, value)
 
             def __str__(self):
-                return ' & '.join(map(str, self))
+                return ' & '.join(map(str_name, self))
+
+            def __repr__(self):
+                return str(self)
 
         class CellLevels(CellLevelsBase, MutableSequence):
             __doc__ = CellLevelsBase().__doc__
@@ -528,30 +571,39 @@ class Tally():
                 elif isinstance(levels, Tally.Bin.CellLevels):
                     self.extend(levels)
                 for i in levels:
-                    if isinstance(i, (Tally.Bin.UnaryCellBin, Tally.Bin.CellUnion)):
+                    if isinstance(i, (Tally.Bin.UnaryCellBin, 
+                                      Tally.Bin.CellUnion)):
                         _levels.append(Tally.Bin.CellLevel(i))
-                    elif isinstance(i, (mp.Cell, mp.Universe)):
-                        _levels.append(Tally.Bin.CellLevel(Tally.Bin.UnaryCellBin(i)))
+                    elif isinstance(i, (mp.Cell, mp.Universe, mp.UniverseList)):
+                        _levels.append(Tally.Bin.CellLevel(Tally.Bin.
+                                                           UnaryCellBin(i)))
                     else:
                         _levels.append(i)
 
 
             def __lshift__(self, other):
-                new = Tally.Bin.CellLevels(self)
-                new <<= other
+                cp, cp2 = copy_inputs(self, other)
+                new = Tally.Bin.CellLevels(cp)
+                new <<= cp2
                 return new
 
             def __ilshift__(self, other):
-                if isinstance(other, Tally.Bin.CellLevels):
-                    self.extend(other)
+                cp, cp2 = copy_inputs(self, other)
+                if isinstance(cp2, Tally.Bin.CellLevels):
+                    cp.extend(cp2)
                 else:
-                    if isinstance(other, (Tally.Bin.CellUnion, Tally.Bin.UnaryCellBin)):
-                        self.levels.addUnique(Tally.Bin.CellLevel([other])._e_object)
-                    elif isinstance(other, (mp.Cell, mp.Universe)):
-                        self.levels.addUnique(Tally.Bin.CellLevel([Tally.Bin.UnaryCellBin(other)])._e_object)
+                    if isinstance(cp2, (Tally.Bin.CellUnion, 
+                                        Tally.Bin.UnaryCellBin)):
+                        cp.levels.addUnique(Tally.Bin.CellLevel(
+                                            [cp2])._e_object)
+                    elif isinstance(cp2, (mp.Cell, mp.Universe, 
+                                          mp.UniverseList)):
+                        cp.levels.addUnique(Tally.Bin.CellLevel(
+                                            [Tally.Bin.UnaryCellBin(
+                                            cp2)])._e_object)
                     else:
-                        self.levels.addUnique(other._e_object)
-                return self
+                        cp.levels.addUnique(cp2._e_object)
+                return cp
 
             def __getitem__(self, key):
                 return self.levels[key]
@@ -570,6 +622,9 @@ class Tally():
 
             def __str__(self):
                 return '(' + ' << '.join(map(str, self)) + ')'
+            
+            def __repr__(self):
+                return str(self)
 
         class CellUnion(CellUnionBase, Level, MutableSequence):
             __doc__ = CellUnionBase().__doc__
@@ -577,19 +632,26 @@ class Tally():
             def _init(self, union):
                 """
                 """
-                self.union = union
+                if isinstance(union, Tally.Bin.CellUnion):
+                    self.union = union.union
+                else:
+                    self.union = union
 
             def __or__(self, other):
-                new = Tally.Bin.CellUnion(self)
-                new |= other
+                cp, cp2 = copy_inputs(self, other)
+                new = Tally.Bin.CellUnion(cp)
+                new |= cp2
                 return new
 
             def __ior__(self, other):
-                if isinstance(other, Tally.Bin.CellUnion):
-                    self.extend(other)
+                cp, cp2 = copy_inputs(self, other)
+                if isinstance(cp2, Tally.Bin.CellUnion):
+                    cp.extend(cp2)
+                elif isinstance(cp2, (mp.Cell, mp.Universe, mp.UniverseList)):
+                    cp.union.addUnique(Tally.Bin.UnaryCellBin(cp2)._e_object)
                 else:
-                    self.union.addUnique(other._e_object)
-                return self
+                    cp.union.addUnique(cp2._e_object)
+                return cp
 
             # Implement mutable sequence protocol by delegating to list
             def __getitem__(self, key):
@@ -640,38 +702,236 @@ class Tally():
         class SurfaceBins(SurfaceBinsBase):
             __doc__ = SurfaceBinsBase().__doc__
 
-            def _init(self, **kwargs):
+            def _init(self, bins):
                 """
                 """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+                self.bins = bins
 
-        class SurfaceLevel(SurfaceLevelBase):
+            @property
+            def bins(self):
+                return self._e_object.getBins()
+
+            @bins.setter
+            def bins(self, bins):
+                _bins = self._e_object.getBins()
+                del _bins[:]
+                if (isinstance(bins, (MutableSequence, tuple)) is False 
+                    or isinstance(bins, Tally.Bin.Level)): 
+                    bins = [bins]
+                if isinstance(bins, Tally.Bin.SurfaceLevels):
+                    _bins.append(bins)
+                else:
+                    for i in bins:
+                        if isinstance(i, (mp.Surface, mp.SurfaceFacet)):
+                            _bins.append(Tally.Bin.UnarySurfaceBin(i))
+                        else:
+                            if i is not None:
+                                _bins.append(i)
+
+        class SurfaceLevel(SurfaceLevelBase, Level, MutableSequence):
             __doc__ = SurfaceLevelBase().__doc__
 
-            def _init(self, **kwargs):
+            def _init(self, level):
                 """
                 """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+                self.level = level
 
-        class SurfaceLevels(SurfaceLevelsBase):
+            @property
+            def level(self):
+                return self._e_object.getLevel()
+
+            @level.setter
+            def level(self, level):
+                _level = self._e_object.getLevel()
+                del _level[:]
+                if (isinstance(level, (MutableSequence, tuple)) is False 
+                    or isinstance(level, Tally.Bin.Level)):
+                    level = [level]
+                for i in level:
+                    if isinstance(i, (mp.Surface, mp.SurfaceFacet)):
+                        _level.append(Tally.Bin.UnarySurfaceBin(i))
+                    else:
+                        _level.append(i)
+
+            def __and__(self, other):
+                cp, cp2 = copy_inputs(self, other)
+                new = Tally.Bin.SurfaceLevel(cp)
+                new &= cp2
+                return new
+
+            def __iand__(self, other):
+                cp, cp2 = copy_inputs(self, other)
+                if isinstance(cp2, Tally.Bin.SurfaceLevel):
+                    cp.extend(cp2)
+                else:
+                    cp.level.addUnique(cp2._e_object)
+                return cp
+
+            # Implement mutable sequence protocol by delegating to list
+            def __getitem__(self, key):
+                return self.level[key]
+
+            def __setitem__(self, key, value):
+                self.level[key] = value
+
+            def __delitem__(self, key):
+                del self.level[key]
+
+            def __len__(self):
+                return len(self.level)
+
+            def insert(self, index, value):
+                self.level.insert(index, value)
+
+            def __str__(self):
+                return ' & '.join(map(str_name, self))
+
+            def __repr__(self):
+                return str(self)
+
+        class SurfaceLevels(SurfaceLevelsBase, MutableSequence):
             __doc__ = SurfaceLevelsBase().__doc__
 
-            def _init(self, **kwargs):
+            def _init(self, levels):
                 """
                 """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+                self.levels = levels
 
-        class SurfaceUnion(SurfaceUnionBase):
+            @property
+            def levels(self):
+                _levels = []
+                _levels.append(self._e_object.getSurface_levels())
+                for i in range(len(self._e_object.getCell_levels())):
+                    _levels.append(_levels[i])
+
+                return _levels 
+
+            @levels.setter
+            def levels(self, levels):
+                _levels = []
+                if (isinstance(levels, (MutableSequence, tuple)) is False 
+                    or isinstance(levels, Tally.Bin.Level)):
+                    levels = [levels]
+                elif isinstance(levels, Tally.Bin.SurfaceLevels):
+                    self.extend(levels)
+                for i in levels:
+                    if isinstance(i, (Tally.Bin.UnarySurfaceBin, 
+                                      Tally.Bin.SurfaceUnion)):
+                        _levels.append(Tally.Bin.SurfaceLevel(i))
+                    elif isinstance(i, (mp.Surface, mp.SurfaceFacet)):
+                        _levels.append(Tally.Bin.SurfaceLevel(
+                                       Tally.Bin.UnarySurfaceBin(i)))
+                    elif isinstance(i, (Tally.Bin.UnaryCellBin, 
+                                        Tally.Bin.CellUnion)):
+                        _levels.append(Tally.Bin.CellLevel(i))
+                    elif isinstance(i, (mp.Cell, mp.Universe, mp.UniverseList)):
+                        _levels.append(Tally.Bin.CellLevel(
+                                       Tally.Bin.UnaryCellBin(i)))
+                    elif isinstance(i, Tally.Bin.SurfaceLevel):
+                        _levels.append(i)
+                    elif isinstance(i, Tally.Bin.CellLevels):
+                        for j in i:
+                            _levels.append(j)
+                    else:
+                        _levels.append(i)
+                self._e_object.setSurface_levels(_levels[0].__copy__())
+                _cell_levels = self._e_object.getCell_levels()
+                del _cell_levels[:]
+                for i in range(1, len(_levels)):
+                    _cell_levels.append(_levels[i])
+
+
+
+            def __lshift__(self, other):
+                cp, cp2 = copy_inputs(self, other)
+                new = Tally.Bin.SurfaceLevels(cp)
+                new <<= cp2
+                return new
+
+            def __ilshift__(self, other):
+                cp, cp2 = copy_inputs(self, other)
+                if isinstance(cp2, Tally.Bin.CellLevels):
+                    cp.extend(cp2)
+                else:
+                    if isinstance(cp2, (Tally.Bin.CellUnion, 
+                                        Tally.Bin.UnaryCellBin)):
+                        cp.levels.addUnique(Tally.Bin.CellLevel(
+                                            [cp2])._e_object)
+                    elif isinstance(cp2, (mp.Cell, mp.Universe, 
+                                          mp.UniverseList)):
+                        cp.levels.addUnique(Tally.Bin.CellLevel(
+                                            [Tally.Bin.UnaryCellBin(
+                                            cp2)])._e_object)
+                    else:
+                        cp.levels.addUnique(cp2._e_object)
+                return cp
+
+            def __getitem__(self, key):
+                return self.levels[key]
+
+            def __setitem__(self, key, value):
+                self.levels[key] = value
+
+            def __delitem__(self, key):
+                del self.levels[key]
+
+            def __len__(self):
+                return len(self.levels)
+
+            def insert(self, index, value):
+                self.levels.insert(index, value)
+
+            def __str__(self):
+                return '(' + ' << '.join(map(str_name, self)) + ')'
+
+            def __repr__(self):
+                return str(self)
+
+        class SurfaceUnion(SurfaceUnionBase, Level, MutableSequence):
             __doc__ = SurfaceUnionBase().__doc__
 
-            def _init(self, **kwargs):
+            def _init(self, union):
                 """
                 """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+                if isinstance(union, Tally.Bin.SurfaceUnion):
+                    self.union = union.union
+                else:
+                    self.union = union
+
+            def __or__(self, other):
+                cp, cp2 = copy_inputs(self, other)
+                new = Tally.Bin.SurfaceUnion(cp)
+                new |= cp2
+                return new
+
+            def __ior__(self, other):
+                cp, cp2 = copy_inputs(cp, other)
+                if isinstance(cp2, Tally.Bin.SurfaceUnion):
+                    cp.extend(cp2)
+                elif isinstance(cp2, (mp.Surface, mp.SurfaceFacet)):
+                    cp.union.addUnique(Tally.Bin.UnarySurfaceBin(cp2)._e_object)
+                else:
+                    cp.union.addUnique(cp2._e_object)
+                return cp
+
+            # Implement mutable sequence protocol by delegating to list
+            def __getitem__(self, key):
+                return self.union[key]
+
+            def __setitem__(self, key, value):
+                self.union[key] = value
+
+            def __delitem__(self, key):
+                del self.union[key]
+
+            def __len__(self):
+                return len(self.union)
+
+            def insert(self, index, value):
+                self.union.insert(index, value)
+
+            def __str__(self):
+                return '(' + ' | '.join(map(str, self)) + ')'
 
         class UnaryCellBin(UnaryCellBinBase, Level):
             __doc__ = UnaryCellBinBase().__doc__
@@ -695,44 +955,94 @@ class Tally():
                 if self.cell is None and self.universe is None:
                     return None
                 elif self.universe is not None:
-                    string = 'U=' + self.universe.name
+                    string = 'U=' + str(self.universe.name)
                 else:
-                    string = self.cell.name
+                    string = str(self.cell.name)
 
                 if self.index is not None:
                     string += str(self.index)
 
                 return string
 
+            def __repr__(self):
+                return str(self)
+
             def __or__(self, other):
-                if isinstance(other, Tally.Bin.CellUnion):
-                    return Tally.Bin.CellUnion([self] + other[:])
-                elif isinstance(other, (mp.Cell, mp.Universe)):
-                    return Tally.Bin.CellUnion([self] + [Tally.Bin.UnaryCellBin(other)])
+                cp, cp2 = copy_inputs(self, other)
+                if isinstance(cp2, Tally.Bin.CellUnion):
+                    return Tally.Bin.CellUnion([cp] + cp2[:])
+                elif isinstance(cp2, (mp.Cell, mp.Universe, mp.UniverseList)):
+                    return (Tally.Bin.CellUnion([cp] 
+                            + [Tally.Bin.UnaryCellBin(cp2)]))
                 else:
-                    return Tally.Bin.CellUnion((self, other))
+                    return Tally.Bin.CellUnion([cp, cp2])
 
             def __and__(self, other):
-                if isinstance(other, Tally.Bin.CellLevel):
-                    return Tally.Bin.CellLevel([self] + other[:])
-                elif isinstance(other, (mp.Cell, mp.Universe)):
-                    return Tally.Bin.CellLevel([self] + [Tally.Bin.UnaryCellBin(other)])
+                cp, cp2 = copy_inputs(self, other)
+                if isinstance(cp2, Tally.Bin.CellLevel):
+                    return Tally.Bin.CellLevel([cp] + cp2[:])
+                elif isinstance(cp2, (mp.Cell, mp.Universe, mp.UniverseList)):
+                    return (Tally.Bin.CellLevel([cp] 
+                            + [Tally.Bin.UnaryCellBin(cp2)]))
                 else:
-                    return Tally.Bin.CellLevel((self, other))
+                    return Tally.Bin.CellLevel([cp, cp2])
 
             def __getitem__(self, index):
                 _index = mp.Lattice.Index(index)
                 self.index = _index
                 return self
 
-        class UnarySurfaceBin(UnarySurfaceBinBase):
+        class UnarySurfaceBin(UnarySurfaceBinBase, Level):
             __doc__ = UnarySurfaceBinBase().__doc__
 
-            def _init(self, **kwargs):
+            def _init(self, surface, facet=None):
                 """
                 """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+                self.surface = surface
+                if facet is not None:
+                    self.facets = '.' + str(facet)
+
+            def __str__(self):
+                string = str(self.surface.name)
+                if self.facets is not None:
+                    string = '{}.{}'.format(string, int(self.facets))
+                return string
+
+            def __repr__(self):
+                return str(self)
+
+            def __or__(self, other):
+                cp, cp2 = copy_inputs(self, other)
+                if isinstance(cp2, Tally.Bin.SurfaceUnion):
+                    return Tally.Bin.SurfaceUnion([cp] + cp2[:])
+                elif isinstance(cp2, (mp.Surface, mp.SurfaceFacet)):
+                    return (Tally.Bin.SurfaceUnion([cp] 
+                            + [Tally.Bin.UnarySurfaceBin(cp2)]))
+                else:
+                    return Tally.Bin.SurfaceUnion((self, cp2))
+
+            def __and__(self, other):
+                cp, cp2 = copy_inputs(self, other)
+                if isinstance(cp2, Tally.Bin.SurfaceLevel):
+                    return Tally.Bin.SurfaceLevel([cp] + cp2[:])
+                elif isinstance(cp2, (mp.Surface, mp.SurfaceFacet)):
+                    return (Tally.Bin.SurfaceLevel([cp] 
+                            + [Tally.Bin.UnarySurfaceBin(cp2)]))
+                else:
+                    return Tally.Bin.SurfaceLevel((cp, cp2))
+
+            @property
+            def surface(self):
+                return self._e_object.getSurface()
+            
+            @surface.setter
+            def surface(self, surface):
+                if isinstance(surface, mp.Surface):
+                    self._e_object.setSurface(surface._e_object)
+                else:
+                    self._e_object.setSurface(surface.surface._e_object)
+                    self._e_object.setFacets('.' + str(surface.facet))
+
 
     class Bins(ABC):
         """
@@ -1119,7 +1429,8 @@ class Tally():
                 for k in kwargs:
                     setattr(self, k.lower(), kwargs[k])
 
-        class ReactivityPerturbation(IDManagerMixin, TallySettingABC, ReactivityPerturbationBase):
+        class ReactivityPerturbation(IDManagerMixin, TallySettingABC, 
+                                     ReactivityPerturbationBase):
             next_id = 1
             used_ids = set()
 
@@ -1133,7 +1444,8 @@ class Tally():
                 for k in kwargs:
                     setattr(self, k.lower(), kwargs[k])
 
-        class CriticalitySensitivity(IDManagerMixin, TallySettingABC, CriticalitySensitivityBase):
+        class CriticalitySensitivity(IDManagerMixin, TallySettingABC, 
+                                     CriticalitySensitivityBase):
             next_id = 1
             used_ids = set()
 
@@ -1147,7 +1459,8 @@ class Tally():
                 for k in kwargs:
                     setattr(self, k.lower(), kwargs[k])
 
-        class LatticeSpeedTallyEnhancement(NoIDMixin, TallySettingABC, LatticeSpeedTallyEnhancementBase):
+        class LatticeSpeedTallyEnhancement(NoIDMixin, TallySettingABC, 
+                                           LatticeSpeedTallyEnhancementBase):
             __doc__ = """SPDTL
             """
             __doc__ += LatticeSpeedTallyEnhancementBase().__doc__

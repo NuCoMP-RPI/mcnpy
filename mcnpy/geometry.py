@@ -218,7 +218,7 @@ class Cell(IDManagerMixin, CellBase):
         else:#elif isinstance(other, (Cell, Universe)):
             return Tally.Bin.CellLevels([Tally.Bin.CellLevel(
                                           Tally.Bin.UnaryCellBin(self))] 
-                                          + [Tally.Bin.CellLevel(other)])
+                                          + [Tally.Bin.CellLevel(other.__copy__())])
 
     def __str__(self):
             string = 'Cell\n'
