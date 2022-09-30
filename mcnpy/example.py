@@ -119,7 +119,13 @@ class RCF():
         post_r = 3.01625
         post_pos = 29.69
         # A default moderator H2O desnity.
-        density_mod = 0.998113
+        density_mod = 0.998113 # g/cc
+        # A default SS density.
+        density_ss = 8.0 # g/cc
+        # A default air density.
+        density_air = 0.001205 # g/cc
+        density_fill_gas = 1.78e-04 # g/cc
+        density_spring = 1.0 # g/cc
 
         # Rounding to avoid floating point errors.
         # This is safe to do since max precision is known.
@@ -287,10 +293,25 @@ class RCF():
                          x0=-abs_outer, x1=abs_outer, 
                          y0=-abs_outer, y1=abs_outer, 
                          z0=boron2_bottom, z1=boron2_top)
-        brake = RCC(comment='Control Rod - Brake',
-                    base=Point(0,0,follower_pos),
-                    axis=Point(0,0,brake_h),
-                    r=brake_r)
+        # Brake is fully in water or air.
+        if brake_h+follower_pos < water_height or follower_pos > water_height:
+            brake = RCC(comment='Control Rod - Brake',
+                        base=Point(0,0,follower_pos),
+                        axis=Point(0,0,brake_h),
+                        r=brake_r)
+            inp += brake
+        # Brake is partially submerged, two cells required.
+        else:
+            brake1 = RCC(comment='Control Rod - Brake in water',
+                         base=Point(0,0,follower_pos),
+                         axis=Point(0,0,water_height-follower_pos),
+                         r=brake_r)
+            brake2 = RCC(comment='Control Rod - Brake in air',
+                         base=Point(0,0,water_height),
+                         axis=Point(0,0,brake_h-(water_height-follower_pos)),
+                         r=brake_r)
+            inp += [brake1, brake2]
+        
         # Extends from the brake to bottom of tank.
         follower = RCC(comment='Control Rod - Follower',
                      base=Point(0,0,follower_pos),
@@ -319,14 +340,26 @@ class RCF():
                       z0=-1, z1=tank_h+1) 
 
         inp += [rod_clad_inner, rod_clad_outer, abs1_inner, abs1_outer,   
-                abs2_inner, abs2_outer, brake, follower, channel1, 
+                abs2_inner, abs2_outer, follower, channel1, 
                 channel2, channel3, channel4, channel]
 
         # Lattice element surfaces
+        #if sup_plate_bottom > water_height or water_height > sup_plate_top:
         sup_plate = RPP(comment='No Pin - Lower Sup. Plate',
                         x0=-0.5*lat_plate_width, x1=0.5*lat_plate_width, 
                         y0=-0.5*lat_plate_width, y1=0.5*lat_plate_width, 
                         z0=sup_plate_bottom, z1=sup_plate_top)
+        inp += sup_plate
+        if sup_plate_bottom < water_height and water_height < sup_plate_top:
+            sup_plate_a = RPP(comment='No Pin - Lower Sup. Plate, water',
+                              x0=-0.5*lat_plate_width, x1=0.5*lat_plate_width, 
+                              y0=-0.5*lat_plate_width, y1=0.5*lat_plate_width, 
+                              z0=sup_plate_bottom, z1=water_height)
+            sup_plate_b = RPP(comment='No Pin - Lower Sup. Plate, air',
+                              x0=-0.5*lat_plate_width, x1=0.5*lat_plate_width, 
+                              y0=-0.5*lat_plate_width, y1=0.5*lat_plate_width, 
+                              z0=water_height, z1=sup_plate_top)
+            inp += [sup_plate_a, sup_plate_b]
         sup_plate2 = RPP(comment='No Pin - Lower Lat. Plate',
                          x0=-0.5*lat_plate_width, x1=0.5*lat_plate_width, 
                          y0=-0.5*lat_plate_width, y1=0.5*lat_plate_width, 
@@ -367,10 +400,22 @@ class RCF():
                        base=Point(0,0,top_plug_base), 
                        axis=Point(0,0,top_plug_h), 
                        r=clad_ir)
-        pin_top = RCC(comment='Pin - Top',
-                      base=Point(0,0,pin_top_base), 
-                      axis=Point(0,0,pin_top_h), 
-                      r=clad_or)
+        if pin_top_base > water_height or water_height > pin_top_base+pin_top_h:
+            pin_top = RCC(comment='Pin - Top',
+                        base=Point(0,0,pin_top_base), 
+                        axis=Point(0,0,pin_top_h), 
+                        r=clad_or)
+            inp += pin_top
+        else:
+            pin_top1 = RCC(comment='Pin - Top',
+                        base=Point(0,0,pin_top_base), 
+                        axis=Point(0,0,water_height-pin_top_base), 
+                        r=clad_or)
+            pin_top2 = RCC(comment='Pin - Top',
+                        base=Point(0,0,water_height), 
+                        axis=Point(0,0,pin_top_h+pin_top_base-water_height), 
+                        r=clad_or)
+            inp += [pin_top1, pin_top2]
         clad_inner = RCC(comment='Pin - Cladding',
                          base=Point(0,0,bottom_spacer_base), 
                          axis=Point(0,0,clad_h), 
@@ -403,9 +448,9 @@ class RCF():
         # Add surfaces to deck.
         inp += [outside, tank, tank_bottom, tank_outside, fill_height, 
                 bottom_plate, pin_fill, tank_top, lat_container,
-                lat_element, sup_plate, sup_plate2, pin_bottom,
+                lat_element, sup_plate2, pin_bottom,
                 pin_bottom_hole, bottom_plug, bottom_spacer, spring, 
-                top_plug, pin_top, clad_inner, clad_outer, gap, top_plate, 
+                top_plug, clad_inner, clad_outer, gap, top_plate, 
                 top_plate_hole, pin_top_water, top_plate_hole_water, fuel, 
                 insulator, top_spacer, plate_plane1, plate_plane2, 
                 plate_plane3, plate_plane4, top_sup_plate1, top_sup_plate2,
@@ -431,12 +476,88 @@ class RCF():
         al203 = Material(AL[27]@0.4 + O[16]@0.6)
         al203.comment = 'Al203 Spacers'
 
-        gas = Material(H[1]@0.5 + HE[4]@0.5)
+        fill_gas = H[1]@0.5 + HE[4]@0.5
+        gas = Material(fill_gas)
         gas.comment = 'Gas Plenum'
 
+        air_mix = C%0.0124 + N[14]%75.5268 + O[16]%23.1781 + AR%1.2827
+        air = Material(air_mix)
+        air.comment = 'Air'
+
+
+
         # ~0.84 SS
-        ss_bottom_plate = Material(stainless_steel@0.84 + h2o@0.16)
-        ss_bottom_plate.comment = 'Bottom Sup. Plate (~.84 SS)'
+        #TODO: Not 100% clear on why this section has always been homogenized.
+        frac_ss = 0.84
+        frac_other = 1 - frac_ss
+        if sup_plate_bottom > water_height or water_height > sup_plate_top:
+            # Submerged
+            if sup_plate_bottom > water_height:
+                density_bottom_plate = (frac_other*density_mod 
+                                        + frac_ss*density_ss)
+                ss_bottom_plate = Material(stainless_steel@frac_ss 
+                                           + h2o@frac_other)
+                # If there's water, then we can add S(a,B)
+                ss_bottom_plate.s_alpha_beta = 'lwtr'
+            # Unsubmerged
+            else:
+                density_bottom_plate = (frac_other*density_air 
+                                        + frac_ss*density_ss)
+                ss_bottom_plate = Material(stainless_steel@frac_ss 
+                                           + air_mix@frac_other)
+            ss_bottom_plate.comment = 'Bottom Sup. Plate (~.84 SS)'
+            inp += ss_bottom_plate
+        else:
+            ss_bottom_plate1 = Material(stainless_steel@frac_ss + h2o@frac_other)
+            ss_bottom_plate1.comment = ('Bottom Sup. Plate Submerged, homog.')
+            ss_bottom_plate1.s_alpha_beta = 'lwtr'
+            density_bottom_plate1 = frac_other*density_mod + frac_ss*density_ss
+
+            ss_bottom_plate2 = Material(stainless_steel@frac_ss 
+                                        + air_mix@frac_other)
+            ss_bottom_plate2.comment = ('Bottom Sup. Plate Unsubmerged, homog.')
+            density_bottom_plate2 = frac_other*density_air + frac_ss*density_ss
+            inp += [ss_bottom_plate1, ss_bottom_plate2]
+
+        # ~0.674 SS
+        frac_ss = 0.674
+        frac_other = 1 - frac_ss
+        if pin_top_base > water_height or water_height > pin_top_base+pin_top_h:
+            # Submerged
+            if pin_top_base > water_height:
+                density_pin_top = (frac_other*density_mod 
+                                        + frac_ss*density_ss)
+                ss_pin_top = Material(stainless_steel@frac_ss 
+                                           + h2o@frac_other)
+                # If there's water, then we can add S(a,B)
+                ss_pin_top.s_alpha_beta = 'lwtr'
+            # Unsubmerged
+            else:
+                density_pin_top = (frac_other*density_air 
+                                        + frac_ss*density_ss)
+                ss_pin_top = Material(stainless_steel@frac_ss 
+                                           + air_mix@frac_other)
+            ss_pin_top.comment = 'Pin - Top (~.674 SS)'
+            inp += ss_pin_top
+        else:
+            ss_pin_top1 = Material(stainless_steel@frac_ss + h2o@frac_other)
+            ss_pin_top1.comment = ('Bottom Sup. Plate Submerged, homog.')
+            ss_pin_top1.s_alpha_beta = 'lwtr'
+            density_pin_top1 = frac_other*density_mod + frac_ss*density_ss
+
+            ss_pin_top2 = Material(stainless_steel@frac_ss 
+                                        + air_mix@frac_other)
+            ss_pin_top2.comment = ('Bottom Sup. Plate Unsubmerged, homog.')
+            density_pin_top2 = frac_other*density_air + frac_ss*density_ss
+            inp += [ss_pin_top1, ss_pin_top2]
+
+        # ~0.125 SS
+        frac_ss = (density_spring - density_fill_gas) / (density_ss 
+                                                         - density_fill_gas)
+        frac_other = 1 - frac_ss
+
+        ss_spring = Material(stainless_steel@frac_ss + fill_gas@frac_other)
+        ss_spring.comment = 'Spring (~.674 SS)'
 
         cladding_comp = {}
         cladding_comp[FE] = {54: 0.041105547, 56:0.64526918, 57: 0.014902079, 
@@ -460,36 +581,72 @@ class RCF():
         clad = Material(ss_clad)
         clad.comment='Cladding Composition from RCF SAR'
 
-        air = Material(C%0.0124 + N[14]%75.5268 + O[16]%23.1781 + AR%1.2827)
-        air.comment = 'Air'
-
         absorber = Material(B[10]@0.11944 + FE[56]@0.88056)
         absorber.comment = 'Boron Absorber'
 
-        #TODO: Need to update this for when the brake isn't fully submerged
-        # or there is something besides water present.
-        # Homog. 300cm3 steel 134cm3 water 
-        brake_h2o = 134 #cm3
+        # Homog. 300cm3 steel 134cm3 other.
+        # Brake is in water or air only, only one mayerial is required.
         brake_ss = 300 #cm3
-        frac_h2o = brake_h2o / (brake_h2o + brake_ss)
-        frac_ss = brake_ss / (brake_h2o + brake_ss)
-        hydr_brake = Material(stainless_steel@frac_ss + h2o@frac_h2o)
-        hydr_brake.comment = ('Hydraulic Brake (homog. 300cm3 '
-                              + 'steel 134mL water)')
-        hydr_brake.s_alpha_beta = 'lwtr'
+        brake_total_vol = np.pi * brake_r**2 * brake_h
+        frac_other = (brake_total_vol-brake_ss) / brake_total_vol
+        frac_ss = brake_ss / brake_total_vol
+        if brake_h+follower_pos < water_height or follower_pos > water_height:
+            # Brake is fully submerged
+            if brake_h < water_height:
+                hydr_brake = Material(stainless_steel@frac_ss + h2o@frac_other)
+                hydr_brake.comment = ('Hydraulic Brake (homog. 300cm3 '
+                                    + 'steel 134mL water)')
+                hydr_brake.s_alpha_beta = 'lwtr'
+                density_brake = frac_other*density_mod + frac_ss*density_ss
+            # Brake is fully unsubmerged
+            else:
+                hydr_brake = Material(stainless_steel@frac_ss 
+                                      + air_mix@frac_other)
+                hydr_brake.comment = ('Hydraulic Brake (homog. 300cm3 '
+                                    + 'steel 134mL air)')
+                density_brake = frac_other*density_air + frac_ss*density_ss
+            inp += hydr_brake
+        # Brake is in water and air.
+        else:
+            hydr_brake1 = Material(stainless_steel@frac_ss + h2o@frac_other)
+            hydr_brake1.comment = ('Hydraulic Brake Submerged, homog.')
+            hydr_brake1.s_alpha_beta = 'lwtr'
+            density_brake1 = frac_other*density_mod + frac_ss*density_ss
 
-        inp += [mod, uo2, ss, al203, gas, absorber, hydr_brake, ss_bottom_plate, 
-                air, clad]
+            hydr_brake2 = Material(stainless_steel@frac_ss 
+                                   + air_mix@frac_other)
+            hydr_brake2.comment = ('Hydraulic Brake Unsubmerged, homog.')
+            density_brake2 = frac_other*density_air + frac_ss*density_ss
+            inp += [hydr_brake1, hydr_brake2]
+
+        inp += [mod, uo2, ss, al203, gas, absorber, air, clad, ss_spring]
 
         # Create regions.
-        r_sup_plate_outside = (-sup_plate & +lat_container & +channel1 
-                               & +channel2 & +channel3 & +channel4)
+        if sup_plate_bottom > water_height or water_height > sup_plate_top:
+            r_sup_plate_outside = (-sup_plate & +lat_container & +channel1 
+                                & +channel2 & +channel3 & +channel4)
+        else:
+            r_sup_plate_outside_a = (-sup_plate_a & +lat_container & +channel1 
+                                     & +channel2 & +channel3 & +channel4)
+            r_sup_plate_outside_b = (-sup_plate_b & +lat_container & +channel1 
+                                     & +channel2 & +channel3 & +channel4)
+
+            r_sup_plate_outside = ((-sup_plate_a | -sup_plate_b) 
+                                   & +lat_container & +channel1 
+                                   & +channel2 & +channel3 & +channel4)
+        
         r_sup_plate_outside2 = (-sup_plate2 & +lat_container & +channel1 
                                 & +channel2 & +channel3 & +channel4)
         r_bottom_plate = (-bottom_plate & -plate_plane1 & -plate_plane2 
                           & -plate_plane3 & +channel1 & +channel2 & +channel3 
-                          & +channel4 & -plate_plane4 & +lat_container 
-                          & ~(-sup_plate | -sup_plate2))
+                          & +channel4 & -plate_plane4 & +lat_container) 
+                          #& ~(-sup_plate | -sup_plate2))
+        if sup_plate_bottom > water_height or water_height > sup_plate_top:
+            r_bottom_plate = r_bottom_plate & ~(-sup_plate | -sup_plate2)
+        else:
+            r_bottom_plate = r_bottom_plate & ~(-sup_plate_a | -sup_plate_b 
+                                                | -sup_plate2)
+
         r_top_plate_outside = (-top_plate & +lat_container & +channel1 
                                & +channel2 & +channel3 & +channel4)
         r_top_sup_plate = (+top_sup_plate1 & +top_sup_plate2 & +top_sup_plate3
@@ -503,6 +660,7 @@ class RCF():
                       & ~r_sup_plate_outside & ~r_sup_plate_outside2 
                       & ~r_bottom_plate & ~r_top_plate_outside & ~r_sup_posts
                       & ~r_top_sup_plate & ~r_mid_sup_plate)
+        
         r_abs1 = -abs1_outer & +abs1_inner
         r_abs2 = -abs2_outer & +abs2_inner
         r_rod_clad = -rod_clad_outer & +rod_clad_inner & ~r_abs1 & ~r_abs2
@@ -511,32 +669,49 @@ class RCF():
         r_gap = +fuel & -gap
         r_top_plate_hole = +top_plate_hole & -top_plate
         r_cladding = -clad_outer & +clad_inner
-        r_around_pin = (-fill_height & -pin_fill & +sup_plate 
+        r_around_pin = (-pin_fill #& +sup_plate 
                         & ~r_sup_plate_around_hole & +pin_bottom & ~r_gap 
                         & +fuel & +bottom_plug & +top_plug & +bottom_spacer 
-                        & +top_spacer & +insulator & +spring & +pin_top 
+                        & +top_spacer & +insulator & +spring #& +pin_top 
                         & ~r_top_plate_hole & ~r_cladding)
+        if sup_plate_bottom > water_height or water_height > sup_plate_top:
+            r_around_pin = r_around_pin & +sup_plate
+        else:
+            r_around_pin = r_around_pin & +sup_plate_a & +sup_plate_b
+        if pin_top_base > water_height or water_height > pin_top_base+pin_top_h:
+            r_around_pin = r_around_pin  & +pin_top
+        else:
+            r_around_pin = r_around_pin & +pin_top1 & pin_top2
 
         # Create cells.
-        inp += Cell(material=ss*8.0, comment='Tank',
+        inp += Cell(material=ss*density_ss, comment='Tank',
                     region=-tank_bottom | (+tank & -tank_outside))
-        inp += Cell(material=air*0.001205, comment='Air Outside Tank',
+        inp += Cell(material=air*density_air, comment='Air Outside Tank',
                     region=+tank_outside & -outside & +tank_bottom)
-        inp += Cell(material=ss_bottom_plate*7.0, 
-                    comment='Bottom Sup. Plate',
-                    region=r_sup_plate_outside)
-        inp += Cell(material=ss*8.0, comment='Bottom Lat. Plate',
+        if sup_plate_bottom > water_height or water_height > sup_plate_top:
+            inp += Cell(material=ss_bottom_plate*density_bottom_plate, 
+                        comment='Bottom Sup. Plate',
+                        region=r_sup_plate_outside)
+        else:
+            inp += Cell(material=ss_bottom_plate1*density_bottom_plate1, 
+                        comment='Bottom Sup. Plate',
+                        region=r_sup_plate_outside_a)
+            inp += Cell(material=ss_bottom_plate2*density_bottom_plate2, 
+                        comment='Bottom Sup. Plate',
+                        region=r_sup_plate_outside_b)
+        inp += Cell(material=ss*density_ss, comment='Bottom Lat. Plate',
                     region=r_sup_plate_outside2)
-        inp += Cell(material=ss*8.0, comment='Bottom Sup. Plate',
+        inp += Cell(material=ss*density_ss, comment='Bottom Sup. Plate',
                     region=r_bottom_plate)
-        inp += Cell(material=ss*8.0, comment='Top Lat. Plate',
+        inp += Cell(material=ss*density_ss, comment='Top Lat. Plate',
                     region=r_top_plate_outside)
-        inp += Cell(material=ss*8.0, comment='Top Sup. Plate',
+        inp += Cell(material=ss*density_ss, comment='Top Sup. Plate',
                     region=r_top_sup_plate)
-        inp += Cell(material=ss*8.0, comment='Mid Sup. Plate',
+        inp += Cell(material=ss*density_ss, comment='Mid Sup. Plate',
                     region=r_mid_sup_plate)
-        inp += Cell(material=ss*8.0, comment='Sup. Posts', region=r_sup_posts)
-        inp += Cell(material=air*0.001205, comment='Air in Tank',
+        inp += Cell(material=ss*density_ss, 
+                    comment='Sup. Posts', region=r_sup_posts)
+        inp += Cell(material=air*density_air, comment='Air in Tank',
                     region=r_tank_air)
         inp += Cell(comment='Termination Region', region=+outside)
         if water_height > 0.0:
@@ -549,46 +724,60 @@ class RCF():
                                & ~r_top_sup_plate & ~r_mid_sup_plate 
                                & ~r_sup_plate_outside2)
 
-        """inp += [c_tank, c_tank_air, c_outside_air, c_sup_plate_outside, 
-                c_bottom_plate, c_out_of_bounds, c_top_plate_outside, 
-                c_top_sup_plate, c_mid_sup_plate, c_sup_plate_outside2, 
-                c_sup_posts]"""
-
         # Control Rods.
         tr1 = Transformation(transformation=[[22.38,0,0]])
         inp += tr1
 
-        #TODO: Need to update brake desnity for when rod isn't fully submerged.
         control_rod = []
-        control_rod.append(Cell(material=hydr_brake*5.84, 
-                                comment='Control Rod - Brake',
-                                region=-brake, transformation=tr1))
+        if brake_h+follower_pos < water_height or follower_pos > water_height:
+            control_rod.append(Cell(material=hydr_brake*density_brake, 
+                                    comment='Control Rod - Brake',
+                                    region=-brake, transformation=tr1))
+        else:
+            control_rod.append(Cell(material=hydr_brake1*density_brake1, 
+                                    comment='Control Rod - Brake in water',
+                                    region=-brake1, transformation=tr1))
+            control_rod.append(Cell(material=hydr_brake2*density_brake2, 
+                                    comment='Control Rod - Brake in air',
+                                    region=-brake2, transformation=tr1))
         control_rod.append(Cell(material=absorber*8.092, 
                                 comment='Control Rod - Lower Absorber',
                                 region=r_abs1, transformation=tr1))
         control_rod.append(Cell(material=absorber*8.092, 
                                 comment='Control Rod - Upper Absorber',
                                 region=r_abs2, transformation=tr1))
-        control_rod.append(Cell(material=ss*8.0, comment='Control Rod - Cladding',
+        control_rod.append(Cell(material=ss*density_ss, 
+                                comment='Control Rod - Cladding',
                                 region=-rod_clad_outer & +rod_clad_inner 
                                        & ~r_abs1 & ~r_abs2, transformation=tr1))
-        control_rod.append(Cell(material=ss*8.0, comment='Control Rod - Follower',
+        control_rod.append(Cell(material=ss*density_ss, 
+                                comment='Control Rod - Follower',
                                 region=-follower, transformation=tr1))
-        #control_rod = [c_brake, c_abs1, c_abs2, c_rod_clad, c_follower]
-        #u_control_rod = c_brake ** c_abs1 ** c_abs2 ** c_rod_clad ** c_follower
 
         if water_height > 0.0:
-            control_rod.append(Cell(material=mod*density_mod,  
-                                    comment='Control Rod - Channel Water',
-                                    region=-channel & -fill_height & +brake 
-                                           & ~r_rod_clad & ~r_abs1 & ~r_abs2 
-                                           & +follower, transformation=tr1))
-            #u_control_rod **= c_rod_water
-        control_rod.append(Cell(material=air*0.001205, 
-                                comment='Control Rod - Channel Air',
-                                region=-channel & +fill_height & +brake & ~r_abs1 
-                                       & ~r_abs2 & ~r_rod_clad & +follower, 
-                                transformation=tr1))
+            if brake_h+follower_pos < water_height or follower_pos > water_height:
+                control_rod.append(Cell(material=mod*density_mod,  
+                                        comment='Control Rod - Channel Water',
+                                        region=-channel & -fill_height & +brake 
+                                            & ~r_rod_clad & ~r_abs1 & ~r_abs2 
+                                            & +follower, transformation=tr1))
+                control_rod.append(Cell(material=air*density_air, 
+                                        comment='Control Rod - Channel Air',
+                                        region=-channel & +fill_height & +brake & ~r_abs1 
+                                            & ~r_abs2 & ~r_rod_clad & +follower, 
+                                        transformation=tr1))
+            else:
+                control_rod.append(Cell(material=mod*density_mod,  
+                                        comment='Control Rod - Channel Water',
+                                        region=-channel & -fill_height & +brake1
+                                            & +brake2 
+                                            & ~r_rod_clad & ~r_abs1 & ~r_abs2 
+                                            & +follower, transformation=tr1))
+                control_rod.append(Cell(material=air*density_air, 
+                                        comment='Control Rod - Channel Air',
+                                        region=-channel & +fill_height & +brake1 & +brake2 & ~r_abs1 
+                                            & ~r_abs2 & ~r_rod_clad & +follower, 
+                                        transformation=tr1))
         #u_control_rod **= c_rod_air
 
         # Define Universe for a Control Rod.
@@ -607,13 +796,21 @@ class RCF():
 
         # Cells for element without a pin.
         cells_no_pin = []
-        cells_no_pin.append(Cell(material=ss_bottom_plate*7.0, 
-                           comment='No Pin - Lower Sup. Plate',
-                           region=-sup_plate))
-        cells_no_pin.append(Cell(material=ss*8.0, 
+        if sup_plate_bottom > water_height or water_height > sup_plate_top:
+            cells_no_pin.append(Cell(material=ss_bottom_plate*density_bottom_plate, 
+                            comment='No Pin - Lower Sup. Plate',
+                            region=-sup_plate))
+        else:
+            cells_no_pin.append(Cell(material=ss_bottom_plate1*density_bottom_plate1, 
+                            comment='No Pin - Lower Sup. Plate',
+                            region=-sup_plate_a))
+            cells_no_pin.append(Cell(material=ss_bottom_plate2*density_bottom_plate2, 
+                            comment='No Pin - Lower Sup. Plate',
+                            region=-sup_plate_b))
+        cells_no_pin.append(Cell(material=ss*density_ss, 
                                  comment='No Pin - Lower Lat. Plate',
                                  region=r_sup_plate_around_hole))
-        cells_no_pin.append(Cell(material=ss*8.0, 
+        cells_no_pin.append(Cell(material=ss*density_ss, 
                                  comment='No Pin - Top Lat. Plate',
                                  region=r_top_plate_around_hole))
         #cells_no_pin = [c_sup_plate, c_sup_plate_around_hole, c_top_plate_around_hole]
@@ -625,7 +822,7 @@ class RCF():
                                             & ~r_sup_plate_around_hole 
                                             & ~r_top_plate_around_hole))
         if (water_height < el_height):
-            cells_no_pin.append(Cell(material=air*0.001205, 
+            cells_no_pin.append(Cell(material=air*density_air, 
                                      comment='No Pin - Air',
                                      region=+fill_height & -pin_fill & +sup_plate 
                                             & ~r_sup_plate_around_hole 
@@ -638,50 +835,64 @@ class RCF():
 
         # Cells for element with a pin.
         cells_pin = []
-        cells_pin.append(Cell(material=ss_bottom_plate*7.0, 
-                              comment='Pin - Bottom Sup. Plate',
-                              region=-sup_plate))
-        cells_pin.append(Cell(material=ss*8.0, comment='Pin - Bottom Lat. Plate',
+        if sup_plate_bottom > water_height or water_height > sup_plate_top:
+            cells_pin.append(Cell(material=ss_bottom_plate*density_bottom_plate, 
+                                comment='Pin - Bottom Sup. Plate',
+                                region=-sup_plate))
+        else:
+            cells_pin.append(Cell(material=ss_bottom_plate1*density_bottom_plate1, 
+                                  comment='Pin - Bottom Sup. Plate',
+                                  region=-sup_plate_a))
+            cells_pin.append(Cell(material=ss_bottom_plate2*density_bottom_plate2, 
+                                  comment='Pin - Bottom Sup. Plate',
+                                  region=-sup_plate_b))
+        cells_pin.append(Cell(material=ss*density_ss, 
+                              comment='Pin - Bottom Lat. Plate',
                               region=r_sup_plate_around_hole))
-        cells_pin.append(Cell(material=ss*8.0, comment='Pin - Bottom',
+        cells_pin.append(Cell(material=ss*density_ss, comment='Pin - Bottom',
                               region=-pin_bottom))
         cells_pin.append(Cell(material=gas*1.78e-4, comment='Pin - Gap',
                               region=+fuel & -gap))
         cells_pin.append(Cell(material=uo2*10.048, comment='Pin - Fuel',
                               region=-fuel))
-        cells_pin.append(Cell(material=ss*8.0, comment='Pin - Bottom Plug',
+        cells_pin.append(Cell(material=ss*density_ss, 
+                              comment='Pin - Bottom Plug',
                               region=-bottom_plug))
-        cells_pin.append(Cell(material=ss*8.0, comment='Pin - Top Plug',
+        cells_pin.append(Cell(material=ss*density_ss, comment='Pin - Top Plug',
                               region=-top_plug))
         cells_pin.append(Cell(material=al203*3.9, comment='Pin - Bottom Spacer',
                               region=-bottom_spacer))
-        cells_pin.append(Cell(material=ss*8.0, comment='Pin - Top Spacer',
+        cells_pin.append(Cell(material=ss*density_ss, comment='Pin - Top Spacer',
                               region=-top_spacer))
         cells_pin.append(Cell(material=al203*3.9, comment='Pin - Insulator',
                               region=-insulator))
-        cells_pin.append(Cell(material=ss*1.0, comment='Pin - Spring',
+        cells_pin.append(Cell(material=ss_spring*density_spring, 
+                              comment='Pin - Spring',
                               region=-spring))
-        if water_height > pin_top_h:
-            cells_pin.append(Cell(material=ss*5.71, comment='Pin - Top',
+        #if water_height > pin_top_h:
+        if pin_top_base > water_height or water_height > pin_top_base+pin_top_h:
+            cells_pin.append(Cell(material=ss_pin_top*density_pin_top, 
+                                  comment='Pin - Top',
                                   region=-pin_top))
         else:
-            cells_pin.append(Cell(material=ss*5.39, comment='Pin - Top',
-                                  region=-pin_top))
-        cells_pin.append(Cell(material=ss*8.0, comment='Pin - Top Lat. Plate',
+            cells_pin.append(Cell(material=ss_pin_top1*density_pin_top1, 
+                                  comment='Pin - Top',
+                                  region=-pin_top1))
+            cells_pin.append(Cell(material=ss_pin_top1*density_pin_top2, 
+                                  comment='Pin - Top',
+                                  region=-pin_top2))
+        cells_pin.append(Cell(material=ss*density_ss, 
+                              comment='Pin - Top Lat. Plate',
                               region=r_top_plate_hole))
-        cells_pin.append(Cell(material=clad*8.0, comment='Pin Cladding',
+        cells_pin.append(Cell(material=clad*density_ss, comment='Pin Cladding',
                               region=r_cladding))
-        """cells_pin = [c_sup_plate_pin, c_sup_plate_around_hole_pin, 
-                     c_pin_bottom, c_gap, c_fuel, c_bottom_plug, c_top_plug, 
-                     c_bottom_spacer, c_top_spacer, c_insulator, c_spring, 
-                     c_pin_top, c_top_plate_hole, c_cladding]"""
         if water_height > 0.0:
             cells_pin.append(Cell(material=mod*density_mod, comment='Pin - Water',
-                                  region=r_around_pin))
+                                  region=r_around_pin & -fill_height))
         if water_height < el_height:
-            cells_pin.append(Cell(material=air*0.001205, 
+            cells_pin.append(Cell(material=air*density_air, 
                                   comment='Pin - Air',
-                                  region=r_around_pin))
+                                  region=r_around_pin & +fill_height))
         inp += cells_pin
         # Define Universe for element with pin.
         u4 = UniverseList(name=4, cells=cells_pin)

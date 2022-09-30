@@ -216,98 +216,22 @@ def formatter(deck, title=None):
     # A 4-6 digit ZAID, WS, a +/- number with optional exponents
     #p_mat = re.compile('(\d\d\d\d\d?\d?)(\.\d\d\D?)?(\W+)((\+|-)?\d*\.?\d+(e(\+|-)?\d+\.?\d*)?)', re.IGNORECASE)
     p_fill = compile('fill', IGNORECASE)
-    #p_m_id = re.compile('^m\d+', re.IGNORECASE)
-    """p_surface_tally = re.compile('^f\d*(1|2)\ \:', re.IGNORECASE)
-    p_facet = re.compile('\d*\ \.\d')
-    p_f5_axis = re.compile('(f\d*5\s+x\ \:)|(f\d*5\s+y\ \:)|(f\d*5\s+z\ \:)', re.IGNORECASE)
-    p_fip = re.compile('^fip\s+\d*5\ \:', re.IGNORECASE)
-    p_fir = re.compile('^fir\s+\d*5\ \:', re.IGNORECASE)
-    p_tir = re.compile('^tir\s+\d*5\ \:', re.IGNORECASE)
-    p_pi = re.compile('^pi\s+\d*5\ \:', re.IGNORECASE)
-    p_fic = re.compile('^fic\s+\d*5\ \:', re.IGNORECASE)
-    p_tic = re.compile('^tic\s+\d*5\ \:', re.IGNORECASE)
-    p_angle_bins = re.compile('^c\s+\d*(0|1|2|4|5|6|7|8)', re.IGNORECASE)
-    p_seg_bins = re.compile('^fs\s+\d*(0|1|2|4|5|6|7|8)', re.IGNORECASE)
-    p_e_bins = re.compile('^E\s+\d*(0|1|2|4|5|6|7|8)', re.IGNORECASE)
-    p_fm = re.compile('^FM\s+\d*(0|1|2|4|5|6|7|8)', re.IGNORECASE)
-    p_si = re.compile('^si\s+\d+', re.IGNORECASE)
-    p_sp = re.compile('^sp\s+\d+', re.IGNORECASE)
-    p_sb = re.compile('^sb\s+\d+', re.IGNORECASE)
-    p_ds = re.compile('^ds\s+\d+', re.IGNORECASE)
-    p_dist = re.compile('\sd\s\d+', re.IGNORECASE)
-    # TODO: Work out why the weird formatting on IMP keywords occurs.
-    # Probably need to list out the possible particles.
-    p_imp = re.compile('imp:[^0-9.]+', re.IGNORECASE)
-    p_imp2 = re.compile('imp : [^0-9.]+', re.IGNORECASE)
-    p_r_paren = re.compile('[)]')
-    p_l_paren = re.compile('[(]')"""
-    #p_imp1 = re.compile('imp\s+\:\s+*{1}', re.IGNORECASE)
-    #p_imp2 = re.compile('imp\:*{1}', re.IGNORECASE)
 
     # List of characters that should be un-spaced or otherwise changed at every occurance.
-    old_char = []
-    #old_char.append(' . 70   ') # For workaround regarding C lib entensions.
-    """old_char.append(' = ')
-    old_char.append('- ')
-    old_char.append(' ,')
-    old_char.append('+ ')
-    old_char.append(' : ')
-    old_char.append('# ')"""
-    old_char.append('##')
-    """old_char.append(' . ')
-    old_char.append(' NC  ')
-    old_char.append(' C  ')
-    old_char.append(' D  ')
-    old_char.append(' M  ')
-    old_char.append(' P  ')
-    old_char.append(' U  ')
-    old_char.append(' Y  ')
-    old_char.append(' E  ')
-    old_char.append(' H  ')
-    old_char.append(' O  ')
-    old_char.append(' R  ')
-    old_char.append(' S  ')
-    old_char.append(' A  ')
-    old_char.append('* TRCL')
-    old_char.append('( ')
-    old_char.append(' )')
-    old_char.append(', ')
-    old_char.append(' [')
-    old_char.append('[ ')
-    old_char.append(' ]')"""
-    #old_char.append('] ')
-
-    new_char = []
-    #new_char.append('.70C  ') # For workaround regarding C lib entensions.
-    """new_char.append('=')
-    new_char.append('-')
-    new_char.append(',')
-    new_char.append('+')
-    new_char.append(':')
-    new_char.append('#')"""
-    new_char.append('')
-    """new_char.append('.')
-    new_char.append('NC ')
-    new_char.append('C ')
-    new_char.append('D ')
-    new_char.append('M ')
-    new_char.append('P ')
-    new_char.append('U ')
-    new_char.append('Y ')
-    new_char.append('E ')
-    new_char.append('H ')
-    new_char.append('O ')
-    new_char.append('R ')
-    new_char.append('S ')
-    new_char.append('A ')
-    new_char.append('*TRCL')
-    new_char.append('(')
-    new_char.append(')')
-    new_char.append(',')
-    new_char.append('[')
-    new_char.append('[')
-    new_char.append(']')"""
-    #new_char.append(']')
+    chars = {}
+    chars['##'] = ''
+    #TODO: Fix TMESH spacing directly in serializer
+    tmesh = {}
+    tmesh[' CORA '] = '\nCORA'
+    tmesh[' CORB '] = '\nCORB'
+    tmesh[' CORC '] = '\nCORC'
+    tmesh[' RMESH '] = '\nRMESH'
+    tmesh[' CMESH '] = '\nCMESH'
+    tmesh[' SMESH '] = '\nSMESH'
+    tmesh[' ERGSH '] = '\nERGSH'
+    tmesh[' MSHMF '] = '\nMSHMF'
+    tmesh[' FM '] = '\nFM'
+    tmesh[' +FM '] = '\n+FM'
 
     d = deck.splitlines()
     
@@ -322,6 +246,7 @@ def formatter(deck, title=None):
     else:
         string = ''
     for line in d:
+        tmesh_block = False
         # Removes leading space.
         if (line.startswith('     ') == False):
             line = line.lstrip()
@@ -333,74 +258,18 @@ def formatter(deck, title=None):
         else:
             before_comment = line
             comment = ''
-        """if (re.search(p_angle_bins, before_comment)):
-            before_comment = before_comment.upper().replace('C ', 'C', 1)
-        if (re.search(p_seg_bins, before_comment)):
-            before_comment = before_comment.upper().replace('FS ', 'FS', 1)
-        if (re.search(p_e_bins, before_comment)):
-            before_comment = before_comment.upper().replace('E ', 'E', 1)
-        if (re.search(p_fm, before_comment)):
-            before_comment = before_comment.upper().replace('FM ', 'FM', 1)
-        if (re.search(p_si, before_comment)):
-            before_comment = before_comment.upper().replace('SI ', 'SI', 1)
-        if (re.search(p_sp, before_comment)):
-            before_comment = before_comment.upper().replace('SP ', 'SP', 1)
-        if (re.search(p_sb, before_comment)):
-            before_comment = before_comment.upper().replace('SB ', 'SB', 1)
-        if (re.search(p_ds, before_comment)):
-            before_comment = before_comment.upper().replace('DS ', 'DS', 1)
-        if (re.search(p_dist, before_comment)):
-            before_comment = before_comment.upper().replace('D ', 'D')"""
+
         # Don't do anything for C comment lines.
         if (before_comment.upper().startswith('C ') == False):# and line.upper().startswith('MODE') == False):
-            """# Removes space between M and material ID.
-            if (before_comment.upper().startswith('M ')):
-                before_comment = before_comment.upper().replace('M ', 'M', 1)
-            # Removes space between * and surface ID.
-            if (before_comment.startswith('* ')):
-                before_comment = before_comment.replace('* ', '*',1)
-            # Removes space between F and tally ID.
-            if (before_comment.upper().startswith('F ')):
-                before_comment = before_comment.upper().replace('F ', 'F', 1)
-            if (before_comment.upper().startswith('+ F ')):
-                before_comment = before_comment.upper().replace('+ F ', '+F', 1)
-            if (before_comment.upper().startswith('+F ')):
-                before_comment = before_comment.upper().replace('*F ', '*F', 1)
-            if (re.search(p_surface_tally, before_comment)):
-                matches = re.findall(p_facet, before_comment)
-                #print(matches)
-                for m in matches:
-                    before_comment = re.sub(m, re.sub(' ', '', m), before_comment)
-            if (re.search(p_f5_axis, before_comment)):
-                #print('HERE', before_comment, '\n')
-                before_comment = before_comment.upper().replace('5 X', '5X', 1).replace('5 Y', '5Y', 1).replace('5 Z', '5Z', 1)
-            if (re.search(p_fip, before_comment)):
-                before_comment = before_comment.upper().replace('P ', 'P', 1)
-            if (re.search(p_pi, before_comment)):
-                before_comment = before_comment.upper().replace('PI ', 'FIP', 1)
-            if (re.search(p_fir, before_comment) or re.search(p_tir, before_comment)):
-                before_comment = before_comment.upper().replace('R ', 'R', 1).replace('T', 'F', 1)
-            if (re.search(p_fic, before_comment) or re.search(p_tic, before_comment)):
-                before_comment = before_comment.upper().replace('C ', 'C', 1).replace('T', 'F', 1)
-            # Will need to update this one for supporting comments
-            if (before_comment.upper().startswith('MT ')):
-                before_comment = before_comment.upper().replace('MT ', 'MT', 1).replace('U-O2', ' U/O2', 1).replace('O2-U', ' O2/U', 1).replace(' T ', 'T ')
-            if (line.upper().startswith('TR ') or before_comment.upper().startswith('*TR ')):
-                before_comment = before_comment.upper().replace('TR ', 'TR', 1).replace('(', '').replace(')', '')"""
-
+            if before_comment.upper().startswith('TMESH'):
+                tmesh_block = True
             # Only replacing '##' right now.
-            for j in range(len(old_char)):
-                before_comment = before_comment.upper().replace(old_char[j], new_char[j])
-            # Fix IMP keywords.
-            """if (re.search(p_imp, before_comment)):
-                match = re.search(p_imp, before_comment).group()
-                before_comment = before_comment.upper().replace(match, match+' ')
-            if (re.search(p_imp2, before_comment)):
-                match = re.search(p_imp2, before_comment).group()
-                before_comment = before_comment.upper().replace(match, match+' ')
-            if (re.search(p_r_paren, before_comment) is True and re.search(p_l_paren, before_comment) is False):
-                match = re.search(p_r_paren, before_comment).group()
-                before_comment = before_comment.upper().replace(match, match+' ')"""
+            for k in chars:
+                before_comment = before_comment.upper().replace(k, chars[k])
+            # Because the serializer epic fails with TMESH...
+            if tmesh_block is True:
+                for k in tmesh:
+                    before_comment = before_comment.upper().replace(k, tmesh[k])
                 
             if search(p_fill, before_comment):
                 try:
@@ -409,12 +278,8 @@ def formatter(deck, title=None):
                     line = line_wrap(before_comment, comment, line_limit)
             else:
                 line = line_wrap(before_comment, comment, line_limit)
-            """elif re.search(p_m_id, before_comment):
-                try:
-                    line = print_material(before_comment, p_mat, line_limit, comment)
-                except:
-                    line = line_wrap(before_comment, comment, line_limit)
-            else:
-                line = line_wrap(before_comment, comment, line_limit)"""
+            if tmesh_block is True and 'ENDMD' in before_comment.upper():
+                tmesh_block = False
+
         string = string + line + '\n'
     return string

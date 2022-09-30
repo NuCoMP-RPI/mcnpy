@@ -10,7 +10,7 @@ fuel = mp.Material(u_enr + O[16]@2)
 # Include S(a,B). Normally added as a separate card in MCNP.
 fuel.s_alpha_beta = ['o_in_uo2', 'u238_in_uo2']
 
-mod = mp.Material(H[1]@2 + O)
+mod = mp.Material(H[1]@2 + O[16])
 mod.s_alpha_beta = 'lwtr'
 
 solutes = {SN: 1.5, FE: 0.2, CR: 0.1}
@@ -60,8 +60,9 @@ deck += mp.CriticalitySourcePoints([(0,0,0), (0,0,0.5), (0,0,-0.5)])
 deck += mp.PrintDump(print_mctal=1)
 
 print(deck)
+print(deck.serialize())
 
 # Write to file
-deck.write('my_pincell.mcnp')
+#deck.write('my_pincell.mcnp')
 
-mp.run_mcnp('my_pincell.mcnp')
+#mp.run_mcnp('my_pincell.mcnp')

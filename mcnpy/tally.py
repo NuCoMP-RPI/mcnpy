@@ -47,21 +47,17 @@ class TallyABC(IDManagerMixin, ABC):
                 self._e_object.setBins(Tally.Bin.CellBins(bins.__copy__()))
             except:
                 self._e_object.setBins(Tally.Bin.SurfaceBins(bins.__copy__()))
-
-    """@property
-    def particles(self):
-        return self._e_object.getParticles()
-
-    @particles.setter
-    def particles(self, particles):
-        _par = self._e_object.getParticles()
-        del _par[:]
-        if particles is not None:
-            if isinstance(particles, list) is False:
-                particles = [particles]
-            for p in particles:
-                _par.append(p)"""
                 
+class TMeshABC(TallyABC):
+    """For tracking TMESH 1, 2, 4 IDs"""
+    @property
+    def bins(self):
+        pass
+
+    @bins.setter
+    def bins(self, bins):
+        pass
+
 class FTallyABC(TallyABC):
     """General class for F1, F2, F4, F6, F7, and F8 tallies.
     """
@@ -278,160 +274,203 @@ class Tally():
     # This is really just the container around a TMESH block.
     # All of the numbered meshes are their own set of cards/classes.
     #TODO: Work on better combining these cards.
-    class TMESH(SuperimposedTallyMeshBase):
+    class SuperimposedTallyMesh(SuperimposedTallyMeshBase):
         __doc__ = """TMESH
         """
         __doc__ += SuperimposedTallyMeshBase().__doc__
         
-        def _init(self, **kwargs):
+        def _init(self, meshes=[]):
             """
             """
-            for k in kwargs:
-                setattr(self, k.lower(), kwargs[k])
+            self.meshes = meshes
+
+    class TMESH(TMESHBase):
+        __doc__ = TMESHBase().__doc__
+
+        def _init(self, mesh=None, mesh_data=None):
+            """
+            """
+            self.mesh = mesh
+            self.mesh_data = mesh_data
+
+        @property
+        def mesh(self):
+            return self._e_object.getMesh()
+
+        @mesh.setter
+        def mesh(self, mesh):
+            self._e_object.setMesh(mesh._e_object)
+
+        class Data(MeshDataBase):
+            __doc__ = MeshDataBase().__doc__
+
+            def _init(self, coord=[], options=[]):
+                """
+                """
+                self.coord = coord
+                self.options = options
+
+        class Options(MeshOptionsBase):
+            __doc__ = MeshOptionsBase().__doc__
+            
+            class MF(MeshMFBase):
+                __doc__ = MeshMFBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+                class EnergyPairs(energyPairsBase):
+                    __doc__ = energyPairsBase().__doc__
+
+                    def _init(self, **kwargs):
+                        """
+                        """
+                        for k in kwargs:
+                            setattr(self, k, kwargs[k])
+
+            class Multiplier(MeshMultiplierBase):
+                __doc__ = MeshMultiplierBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+            class EnergyLimits(EnergyLimitsBase):
+                __doc__ = EnergyLimitsBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
 
         class CORA(CORABase):
             __doc__ = CORABase().__doc__
 
-            def _init(self, **kwargs):
+            def _init(self, tmesh=None, coord=None):
                 """
                 """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+                self.tmesh = tmesh
+                self.coord = coord
+            
+            @property
+            def tmesh(self):
+                return self._e_object.getID()
+
+            @tmesh.setter
+            def tmesh(self, tmesh):
+                self._e_object.setID(tmesh._e_object)
 
         class CORB(CORBBase):
             __doc__ = CORBBase().__doc__
 
-            def _init(self, **kwargs):
+            def _init(self, tmesh=None, coord=None):
                 """
                 """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+                self.tmesh = tmesh
+                self.coord = coord
+            
+            @property
+            def tmesh(self):
+                return self._e_object.getID()
+
+            @tmesh.setter
+            def tmesh(self, tmesh):
+                self._e_object.setID(tmesh._e_object)
 
         class CORC(CORCBase):
             __doc__ = CORCBase().__doc__
 
-            def _init(self, **kwargs):
+            def _init(self, tmesh=None, coord=None):
                 """
                 """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+                self.tmesh = tmesh
+                self.coord = coord
+            
+            @property
+            def tmesh(self):
+                return self._e_object.getID()
 
-        class dParams(dParamsBase):
-            __doc__ = dParamsBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class EnergyLimits(EnergyLimitsBase):
-            __doc__ = EnergyLimitsBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class energyPairs(energyPairsBase):
-            __doc__ = energyPairsBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class MeshData(MeshDataBase):
-            __doc__ = MeshDataBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class MeshMF(MeshMFBase):
-            __doc__ = MeshMFBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class MeshMultiplier(MeshMultiplierBase):
-            __doc__ = MeshMultiplierBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class MeshOptions(MeshOptionsBase):
-            __doc__ = MeshOptionsBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
-
-        class Mesh(TMESHBase):
-            __doc__ = TMESHBase().__doc__
-
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+            @tmesh.setter
+            def tmesh(self, tmesh):
+                self._e_object.setID(tmesh._e_object)
 
         class TMESHType(TMESHTypeBase):
             __doc__ = TMESHTypeBase().__doc__
 
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
 
-        class TypeOne(TypeOneBase):
+        class TrackAveraged(TMeshABC, TypeOneBase, TMESHType):
+            next_id = 1
+            increment = 10
+
             __doc__ = TypeOneBase().__doc__
 
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+            def _init(self, name=None, mesh_type=None, particles=[], 
+                      keywords=[], dose=None, mfact=[], transformation=None):
+                self.mesh_type = mesh_type
+                self.name = name
+                self.particles = particles
+                self.keywords = keywords
+                self.dose_params = dose
+                self.mfactinfo = mfact
+                self.transformation = transformation
 
-        class TypeTwo(TypeTwoBase):
+
+            class dParams(dParamsBase):
+                __doc__ = dParamsBase().__doc__
+
+                def _init(self, **kwargs):
+                    """
+                    """
+                    for k in kwargs:
+                        setattr(self, k, kwargs[k])
+
+        class Source(TMeshABC, TypeTwoBase, TMESHType):
+            next_id = 2
+            increment = 10
+
             __doc__ = TypeTwoBase().__doc__
 
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+            def _init(self, name=None, mesh_type=None, particles=[], 
+                      transformation=None):
+                self.mesh_type = mesh_type
+                self.name = name
+                self.particles = particles
+                self.transformation = transformation
 
-        class TypeThree(TypeThreeBase):
+        class EnergyDeposition(TypeThreeBase, TMESHType):
+            next_id = 3
+            increment = 10
+            used_ids = set()
+
             __doc__ = TypeThreeBase().__doc__
 
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+            def _init(self, name=None, mesh_type=None, keywords=[], 
+                      mfact=[], transformation=None):
+                self.mesh_type = mesh_type
+                self.name = name
+                self.keywords = keywords
+                self.m_val = mfact
+                self.transformation = transformation
 
-        class TypeFour(TypeFourBase):
+        class DXTRAN(TMeshABC, TypeFourBase, TMESHType):
+            next_id = 4
+            increment = 10
+
             __doc__ = TypeFourBase().__doc__
 
-            def _init(self, **kwargs):
-                """
-                """
-                for k in kwargs:
-                    setattr(self, k, kwargs[k])
+            def _init(self, name=None, mesh_type=None, particles=[], 
+                      transformation=None):
+                self.mesh_type = mesh_type
+                self.name = name
+                self.particles = particles
+                self.transformation = transformation
 
     class Bin(ABC):
         """
@@ -1042,7 +1081,6 @@ class Tally():
                 else:
                     self._e_object.setSurface(surface.surface._e_object)
                     self._e_object.setFacets('.' + str(surface.facet))
-
 
     class Bins(ABC):
         """
