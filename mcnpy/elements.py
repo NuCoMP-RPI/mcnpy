@@ -170,6 +170,14 @@ class _Element():
             self.unit = element.unit
         self.lib = element.lib
 
+        # Need to reset the singleton after use.
+        if isinstance(element, _Element) is False:
+            element.mass = 0
+            element.fraction = 1
+            element.unit = 'ATOM'
+            element.lib = None
+            element.meta = None
+
     def __add__(self, other):
         return correct_units(self, other)
 

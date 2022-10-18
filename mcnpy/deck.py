@@ -15,7 +15,7 @@ from .physics import PhysicsSetting
 from .variance_reduction import VarianceReductionSetting
 from .tally import TallyABC, TallySettingABC
 from ._deck import Deck as _Deck
-from .gateway import load_file, deck_resource, print_deck
+from metapy.gateway import load_file, deck_resource, print_deck
 from .deck_formatter import formatter, preprocessor, deck_cleanup
 
 def run_mcnp(input, exe='mcnp6', exe_op='IXR', inp=True, mcnp_path=None, 
