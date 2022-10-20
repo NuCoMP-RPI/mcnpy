@@ -23,6 +23,7 @@ gap = mp.Material(H[1]@0.5 + HE[4]@0.5)
 
 deck += [fuel, mod, clad, gap]
 
+# Surfaces
 fuel_outer_radius = mp.ZCylinder(name=1, x0=0, y0=0, r=0.39)
 clad_inner_radius = mp.ZCylinder(name=2, x0=0, y0=0, r=0.40)
 clad_outer_radius = mp.ZCylinder(name=3, x0=0, y0=0, r=0.46)
@@ -33,12 +34,14 @@ bounding_box = mp.RectangularPrism(x0=-pitch/2, x1=pitch/2, y0=-pitch/2,
 deck += [fuel_outer_radius, clad_inner_radius, clad_outer_radius, 
          bounding_box]
 
+# Regions
 fuel_region = -fuel_outer_radius & -bounding_box
 gap_region = +fuel_outer_radius & -clad_inner_radius & -bounding_box
 clad_region = +clad_inner_radius & -clad_outer_radius & -bounding_box
 mod_region = +clad_outer_radius & -bounding_box
 outside_region = +bounding_box
 
+# Cells
 fuel_cell = mp.Cell(1, fuel_region, fuel*10.0)
 clad_cell = mp.Cell(2, clad_region, clad*6.6)
 mod_cell = mp.Cell(3, mod_region, mod*1.0)
@@ -52,6 +55,7 @@ for cell in deck.cells.values():
     else:
         cell.importances = {'n' : 1.0}
 
+# Source
 deck += mp.CriticalitySource(histories=1e2, keff_guess=1.0, skip_cycles=100, 
                              cycles=300)
 deck += mp.CriticalitySourcePoints([(0,0,0), (0,0,0.5), (0,0,-0.5)])
