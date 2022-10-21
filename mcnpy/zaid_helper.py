@@ -279,7 +279,7 @@ def zaid_to_element(zaid):
                   + ' (interpretted as ' + str(zaid) + ') has no MCNP XS!')
 
     try:
-        zaid_num = e[int(zaid_num[:-3])] + zaid_num[3:]
+        zaid_num = e[int(zaid_num[:-3])] + zaid_num[-3:]
     except:
         print('\nERROR! Element with atomic number ' + zaid_num[:-3] 
               + ' does not exist!')
@@ -310,9 +310,9 @@ def element_to_zaid(zaid):
         a = ''.join(c for c in string if c.isdigit())
         if len(a) == 0:
             a = '000'
-        elif len(a == 1):
+        elif len(a) == 1:
             a = '00' + a
-        elif len(a == 2):
+        elif len(a) == 2:
             a = '0' + a
         zaid_num = z + a
     # The converted ZAID can now be checked against the available XS.

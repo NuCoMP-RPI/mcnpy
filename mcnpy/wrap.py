@@ -5,6 +5,7 @@ from metapy.wrap import wrap_e_object, wrap_e_package, e_class_body, _subclass_o
 overrides = {}
 package_name = 'mcnpy'
 numeric_ids = True
+package = ePackage(package_name)
 
 # Apply overrides to nested subclasses.
 # Can provide a custom naming prefix and classes to ignore.
@@ -19,18 +20,18 @@ class WrapperConverter(object):
         return object._e_object
 
 # Defined per package to ensure proper wrapper ownership.
-def wrap_e_class(e_class, e_factory, InternalEObject, overrides):
+def wrap_e_class(e_class, e_factory, InternalEObject, overrides, package_name):
     """Return a Python class which wraps and implements an EClass."""
 
     return type(e_class.getName(), (InternalEObject,), 
-                e_class_body(e_class, e_factory, overrides, numeric_ids))
+                e_class_body(e_class, e_factory, overrides, numeric_ids, package_name))
 
 register_input_converter(WrapperConverter(), prepend=True)
 
 # Start with the auto-wrapping turned on.
 register_output_converter(REFERENCE_TYPE, 
     (lambda target_id, 
-    gateway_client: wrap_e_object(target_id, gateway_client, overrides)))
+    gateway_client: wrap_e_object(target_id, gateway_client, overrides, package_name)))
 
-wrappers = wrap_e_package(ePackage(package_name), overrides, wrap_e_class)
+wrappers = wrap_e_package(package, overrides, package_name, wrap_e_class)
 overrides.update(wrappers)

@@ -16,9 +16,15 @@ def _element_factory(name:str):
             return self.instance
 
         def __getitem__(self, mass, lib=None, meta=None):
-            self.mass = mass
-            self.lib = lib
-            self.meta = meta
+            if isinstance(mass, tuple):
+                self.mass = mass[0]
+                self.lib = None
+                self.meta = None
+                if len(mass) == 2:
+                    self.lib = mass[1]
+                elif len(mass) == 3:
+                    self.lib = mass[1]
+                    self.meta = mass[2]
             return self
 
         # By weight percent.
@@ -255,7 +261,6 @@ class _Mixture():
 
     # By atomic fraction.
     def __matmul__(self, other):
-        #nuclide = Nuclide(self.zaid(), other, 'ATOM', self.lib)
         self.fraction = float(other)
         if list(self.elements.values())[0].unit != 'ATOM':
             self.weight_to_atom(self.fraction)
@@ -265,7 +270,6 @@ class _Mixture():
 
     # By weight fraction.
     def __mul__(self, other):
-        #nuclide = Nuclide(self.zaid(), other, 'ATOM', self.lib)
         self.fraction = float(other)
         if list(self.elements.values())[0].unit == 'ATOM':
             self.atom_to_weight(self.fraction)
@@ -277,7 +281,6 @@ class _Mixture():
         #mass = 0
         norm = 0
         for el in self.elements.values():
-            #mass += el.fraction / zaid_mass(el.zaid, el.meta)
             el.fraction = el.fraction / zaid_mass(el.zaid, el.meta)
             norm += el.fraction
             """if norm == 1:
