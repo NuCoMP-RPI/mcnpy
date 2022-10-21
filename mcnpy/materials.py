@@ -78,8 +78,8 @@ class Material(IDManagerMixin, MaterialBase):
         self.density_unit = 'G_CM3'
         return self
 
-    def __matmul__(self, desnity):
-        self.density = desnity
+    def __matmul__(self, density):
+        self.density = density
         self.density_unit = 'A_BCM'
         return self
 

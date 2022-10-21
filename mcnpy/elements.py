@@ -25,6 +25,8 @@ def _element_factory(name:str):
                 elif len(mass) == 3:
                     self.lib = mass[1]
                     self.meta = mass[2]
+            else:
+                self.mass = mass
             return self
 
         # By weight percent.
