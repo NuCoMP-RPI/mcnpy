@@ -1,9 +1,9 @@
 $ This file was written with mcnpy
-1 1 -10.0 -1 -4 IMP:N=1.0 
-2 3 -6.6 2 -3 -4 IMP:N=1.0 
-3 2 -1.0 3 -4 IMP:N=1.0 
-4 4 -1.78E-4 1 -2 -4 IMP:N=1.0 
-5 0 4 IMP:N=0.0 
+1 1 -10.0 -1 -4 IMP:N,p,e=1.0 
+2 3 -6.6 2 -3 -4 IMP:N,p,e=1.0 
+3 2 -1.0 3 -4 IMP:N,p,e=1.0 
+4 4 -1.78E-4 1 -2 -4 IMP:N,p,e=1.0 
+5 0 4 IMP:N,p,e=0.0 
 
 1 CZ 0.39 
 2 CZ 0.4 
@@ -27,6 +27,8 @@ M4
      2004   0.5 
 MT1 O2-U U-O2 
 MT2 LWTR 
-KCODE 100.0 1.0 100.0 200.0 
+KCODE 100.0 1.0 100.0 300.0 
 KSRC 0.0 0.0 0.0 0.0 0.0 0.5 0.0 0.0 -0.5 
 PRDMP 0.0 -60.0 1.0 
+mode p n e
+cut:n,p,e j 1

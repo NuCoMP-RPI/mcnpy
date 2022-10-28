@@ -12,7 +12,6 @@ setup(
     author_email='kowalp@rpi.edu',
     description='API to read, write, and edit MCNP decks',
     license='MIT',
-    install_requires=['py4j', 'psutil', 'h5py', 'numpy', 'metapy'],
-    package_data={'mcnpy': ['*.h5']},
+    install_requires=['py4j', 'numpy', 'metapy'],
     platforms=['Windows', 'Linux']
 )

@@ -1,7 +1,7 @@
 from abc import ABC
 from .wrap import wrappers, overrides
 from .mixin import IDManagerMixin
-from .zaid_helper import element_to_zaid, zaid_to_element, library_check
+from metapy.zaid_helper import element_to_zaid, zaid_to_element, library_check
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -21,7 +21,7 @@ class Material(IDManagerMixin, MaterialBase):
             self.nuclides = nuclides
         except:
             self.name = None
-            self.nuclides = name.nuclides()
+            self.nuclides = name.nuclides(Nuclide)
         if comment is not None:
             self.comment = comment
         self._unit = unit
