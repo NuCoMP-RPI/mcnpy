@@ -16,6 +16,9 @@ class Point(PointBase):
         else:
             return Point(p[0], p[1], p[2])
 
+    def aslist(self):
+        return [self.x, self.y, self.z]
+
     def __str__(self):
         string = '(' + str(self.x) + ', ' + str(self.y) + ', ' + str(self.z) + ')'
         return string

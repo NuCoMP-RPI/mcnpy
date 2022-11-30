@@ -59,7 +59,7 @@ def convert_surface(p_surf):
     # One Sheet Cone
     elif (abs(((c[1][0]-c[0][0]) * (c[2][1]-c[1][1])) 
                 - ((c[2][0]-c[1][0]) * (c[1][1]-c[0][1]))) * tol2 <= t0**2):
-        print('\nOne sheet\n')
+        #print('\nOne sheet\n')
         t1 = c[0][0] + c[1][0] + c[2][0]
         t2 = c[0][1] + c[1][1] + c[2][1]
         sheet = ((3*(c[0][0]*c[0][1] + c[1][0]*c[1][1] + c[2][0]*c[2][1]) - t1*t2) 
@@ -184,8 +184,8 @@ class Halfspace(HalfspaceBase):
         string = str(self.surface.name)
         if str(self.side) == '-':
             string = '-' + string
-        else:
-            string = '+' + string
+        """else:
+            string = '+' + string"""
         if self.facets is not None:
             string = '{}.{}'.format(string, int(self.facets))
         return string
