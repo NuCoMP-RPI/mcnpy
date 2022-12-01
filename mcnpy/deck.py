@@ -160,8 +160,8 @@ class Deck():
             self.transformations = {}
         if self.materials is None:
             self.materials = {}
-        if self.universes is None:
-            self.universes = {}
+        if self._universes is None:
+            self._universes = {}
 
         if self.settings is None:
             self.settings = []
@@ -185,6 +185,37 @@ class Deck():
         if self.mat_settings is None:
             self.mat_settings = []
     
+    @property
+    def universes(self):
+        _universes = self._universes.copy().items()
+        for u in _universes:
+            _cells = u[1].cells.copy().items()
+            for c in _cells:
+                if c[1].universe is None:
+                    pass
+                else:
+                    # Correct universe ID
+                    if c[1].universe.name == u[0]:
+                        pass
+                    # Incorrect ID
+                    else:
+                        # Remove from current UniverseList
+                        del self._universes[u[0]].cells[c[0]]
+                        # Add to existing or make new
+                        if c[1].universe.name not in self._universes:
+                            self._universes[c[1].universe.name] = UniverseList(name=c[1].universe.name, cells=None)
+                            self._universes[c[1].universe.name]._e_object = self.cells[c[0]].universe._e_object
+                        self._universes[c[1].universe.name].add_only(self.cells[c[0]])
+            # Remove empty UniverseLists
+            if not self._universes[u[0]].cells:
+                del self._universes[u[0]]
+
+        return self._universes
+
+    @universes.setter
+    def universes(self, universes):
+        self._universes = universes
+
     @classmethod
     def read(cls, filename='inp.mcnp', renumber=False, preprocess=False):
             _deck = Deck()
