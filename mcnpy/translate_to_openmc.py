@@ -1,11 +1,11 @@
-import openmc
-import sys
 import math
+import re
+import numpy as np
 
+import openmc
 from openmc.model.surface_composite import XConeOneSided, YConeOneSided, ZConeOneSided
 import mcnpy as mp
-import numpy as np
-import re
+
 from mcnpy.surfaces import Sphere
 from mcnpy.surfaces import Plane, XPlane, YPlane, ZPlane
 from mcnpy.surfaces import XCylinder, YCylinder, ZCylinder 
@@ -750,19 +750,14 @@ def mcnp_to_openmc(deck:mp.Deck):
     geom.remove_redundant_surfaces()
     return(geom, mats)
 
-if __name__ == '__main__':
-    deck = mp.Deck().read(filename=sys.argv[1], renumber=True)
+def translate(mcnp_file):
+    deck = mp.Deck().read(filename=mcnp_file, renumber=True)
     decompose(deck)
-    #print(deck.export())
     deck.remove_redundant_surfaces()
     deck.remove_unused_surfaces()
-    #print(deck.export(renumber=False))
-    #deck.write()
     print('MCNP Geometry Decomposed\nStarting Translation\n')
 
     # Tuple with geometry and materials.
     model = mcnp_to_openmc(deck)
-    model[1].cross_sections = '/home/peter/openmc_XS/mcnp_endfb71/cross_sections.xml'
-    model[1].export_to_xml() # materials
-    model[0].export_to_xml() # geometry
-    
+    model[1].export_to_xml(mcnp_file.replace('.mcnp', '.materials.xml')) # materials
+    model[0].export_to_xml(mcnp_file.replace('.mcnp', '.geometry.xml')) # geometry

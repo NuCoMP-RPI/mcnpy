@@ -1,6 +1,6 @@
 from abc import ABC
 from .wrap import wrappers, overrides
-from .zaid_helper import element_to_zaid, zaid_to_element
+from metapy.zaid_helper import element_to_zaid, zaid_to_element
 from .points import Point
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
