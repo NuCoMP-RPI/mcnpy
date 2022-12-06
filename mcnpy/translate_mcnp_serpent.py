@@ -1,7 +1,7 @@
 import pathlib
 import serpy as sp
 import mcnpy as mp
-from surface_converter import serpent_surfs_to_mcnp, mcnp_surfs_to_serpent
+from mcnpy.surface_converter import serpent_surfs_to_mcnp, mcnp_surfs_to_serpent
 
 def make_serpent_material(material):
     """Translate MCNP Material to Serpent Material.
