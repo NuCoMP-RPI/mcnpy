@@ -1,3 +1,5 @@
+import math
+import numpy as np
 import pathlib
 import serpy as sp
 import mcnpy as mp
@@ -41,7 +43,8 @@ def make_mcnp_material(material, id):
         nuclides.append(mp.Nuclide(n.name, n.fraction, n.unit, n.library))
     return mp.Material(name=id, nuclides=nuclides, comment=material.name)
 
-def make_mcnp_cell(mcnp_deck, serp_mat_ids, serp_surf_ids, serp_cell, id, outside_surfs):
+def make_mcnp_cell(mcnp_deck, serp_mat_ids, serp_surf_ids, serp_cell, id, 
+                   outside_surfs):
     """Translate Serpent Cell to MCNP Cell.
 
     Parameters
@@ -80,6 +83,11 @@ def make_mcnp_cell(mcnp_deck, serp_mat_ids, serp_surf_ids, serp_cell, id, outsid
         mcnp_cell.density =  float(serp_cell.material.x.density)
         mcnp_cell.density_unit = serp_cell.material.x.unit
         mcnp_cell.importances = {'n' : 1.0}
+    # Set Fill
+    elif serp_cell.fill is not None:
+        # Set fill later.
+        mcnp_cell.importances = {'n' : 1.0}
+    # No fill, no material
     else:
         if serp_cell.material is None:
             surfs = mcnp_cell.region.get_surfaces()
@@ -149,6 +157,69 @@ def make_serpent_cell(serp_deck, mcnp_cell, universe):
 
     return serp_cell
 
+def make_mcnp_lattice(serp_lattice: sp.Lattice, u_map, mcnp_universes):
+    """Translate Serpent Lattice to MCNP Lattice.
+
+    Parameters
+    ----------
+    serp_lattice : serpy.Lattice
+        Serpent Lattice being translated. 
+    u_map : dict
+        Dict mapping MCNP Cell IDs to their filling Universe IDs.
+    mcnp_universes : dict
+        Dict of available MCNP Universes.
+
+    Returns
+    -------
+    mcnp_lat : mcnpy.Lattice
+        Translated MCNP Lattice.
+    element : mcnpy.Surface
+        Surface boundary of the lattice element.
+    """
+    #mcnp_lat = mp.Lattice()
+    serp_lat = serp_lattice.lat_type
+    if isinstance(serp_lat, sp.Full3DLattice):
+        shape = serp_lat.lattice.shape
+        lattice = np.empty(shape, 'int32')
+        for z in range(shape[0]):
+            for y in range(shape[1]):
+                for x in range(shape[2]):
+                    lattice[z][y][x] = u_map[serp_lat.lattice[z][y][x].name]
+        lattice = lattice
+        if serp_lat.type == 11:
+            type = 'REC'
+            x = serp_lat.pitch[0]/2 
+            y = serp_lat.pitch[1]/2 
+            z = serp_lat.pitch[2]/2 
+            element = mp.RectangularPrism(None, serp_lat.x0-x, serp_lat.x0+x,
+                                                serp_lat.y0-y, serp_lat.y0+y,
+                                                serp_lat.z0-z, serp_lat.z0+z)
+        if shape[2]%2 == 0:
+            dim = (shape[2]-1) / 2
+            i = [-dim-0.5, dim-0.5]
+        else:
+            dim = (shape[2]-1) / 2
+            i = [-dim, dim]
+
+        if shape[1]%2 == 0:
+            dim = (shape[1]-1) / 2
+            j = [-dim-0.5, dim-0.5]
+        else:
+            dim = (shape[1]-1) / 2
+            j = [-dim, dim]
+
+        if shape[0]%2 == 0:
+            dim = (shape[0]-1) / 2
+            k = [-dim-0.5, dim-0.5]
+        else:
+            dim = (shape[0]-1) / 2
+            k = [-dim, dim]
+
+        mcnp_lat = mp.Lattice(i, j, k, lattice, type, mcnp_universes)
+        
+    return (mcnp_lat, element)
+        
+
 def serpent_to_mcnp(serp_deck:sp.Deck):
     """Translate Serpent Deck to MCNP Deck.
     
@@ -184,21 +255,52 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
         mcnp_deck += make_mcnp_material(material, i)
 
     outside_surfs = {}
+    u_fill = {}
+    lat_fill = {}
+    u_map = {}
     i = 0
     ui = 0
     for universe in serp_deck.universes.values():
-        ui = ui +1
+        ui = ui + 1
+        u_map[universe.name] = ui
         cells = []
         for cell in universe.cells.values():
             i = i + 1
+            if cell.fill is not None:
+                # Universe fill
+                if cell.fill in serp_deck.universes:
+                    u_fill[i] = ui
+                # Lattice fill
+                else:
+                    lat_fill[i] = serp_deck.lattices[cell.fill.name]
             cell_trans = make_mcnp_cell(mcnp_deck, mat_ids, surf_ids, cell, i,
                                         outside_surfs)
             outside_surfs = cell_trans[1]
             cells.append(cell_trans[0])
+        # Apparently universes must be assigned after cells are added to deck.
+        # Appears fine until working with universe refs on lattices.
+        # TODO: figure out why this makes such a big difference.
+        mcnp_deck += cells
         # Assign to universe
         if str(universe.name) != str(serp_deck.root):
             mp.UniverseList(ui, cells)
-        mcnp_deck += cells
+
+    # Fill loop
+    # Universe
+    for k in u_fill:
+        mcnp_deck.cells[k].fill = mcnp_deck.universes[u_fill[k]]
+    # Lattice
+    for k in lat_fill:
+        _mcnp_lat = make_mcnp_lattice(lat_fill[k], u_map, mcnp_deck.universes)
+        mcnp_lat = _mcnp_lat[0]
+        #mcnp_lat.universes = mcnp_deck.universes
+        ui = ui + 1
+        mcnp_deck += _mcnp_lat[1]
+        element = mp.Cell(name=None, region=-_mcnp_lat[1], fill=mcnp_lat)
+        element.importances = {'n' : 1.0}
+        mcnp_deck += element
+        el_universe = mp.UniverseList(name=ui, cells=element)
+        mcnp_deck.cells[k].fill = el_universe
         
     for card in serp_deck.settings:
         if isinstance(card, sp.NeutronPopulation):

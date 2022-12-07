@@ -741,48 +741,88 @@ class Lattice():
                  universes=None, transformations=None):
         """Class for lattices. Defined by max indicies `i`, `j`, `k`, and a 3D array `lattice`. The array should be defined using `numpy.array()` where `k` indicies are your outermost dimension followed by `j` and `i`. Elements of `lattice` can be `LatticeElement` objects, universe IDs, tuple(universe ID, transformation ID), or 0. When using IDs, `universes` and `transformations` must include the key value pair of ID and object. Using `Transforms` instead of `Transformations` is also allowed.
         """
-        self.dims = []
-        self.i = i
-        self.j = j
-        self.k = k
-        self.type = type
-        self.dims.append(self.i[1]-self.i[0]+1)
-        self.dims.append(self.j[1]-self.j[0]+1)
-        self.dims.append(self.k[1]-self.k[0]+1)
-        self.size = self.dims[0]*self.dims[1]*self.dims[2]
-        self.universes = universes
-        self.transformations = transformations
+        self._i = i
+        self._j = j
+        self._k = k
+        self._type = type
+        self._universes = universes
+        self._transformations = transformations
+        self._lattice = lattice
 
-        self.lattice = lattice
-        
+    @property
+    def i(self):
+        return self._i
+
+    @i.setter
+    def i(self, i):
+        self._i = i
+
+    @property
+    def j(self):
+        return self._j
+
+    @j.setter
+    def j(self, j):
+        self._j = j
+
+    @property
+    def k(self):
+        return self._k
+
+    @k.setter
+    def k(self, k):
+        self._k = k
+
+    @property
+    def dims(self):
+        _dims = []
+        _dims.append(self.i[1]-self.i[0]+1)
+        _dims.append(self.j[1]-self.j[0]+1)
+        _dims.append(self.k[1]-self.k[0]+1)
+        return _dims
+
+    @property
+    def size(self):
+        return int(self.dims[0]*self.dims[1]*self.dims[2])
+
+    @property
+    def type(self):
+        return self._type
+
+    @type.setter
+    def type(self, type):
         if (str(type).upper() == 'REC' or str(type).upper() == 'RECTANGULAR' 
         or str(type) == '1'):
-            self.type = 'REC'
+            self._type = 'REC'
         elif (str(type).upper() == 'HEX' or str(type).upper() == 'HEXAGONAL' 
         or str(type) == '2'):
-            self.type = 'HEX'
+            self._type = 'HEX'
         else:
-            self.type = str(type) + ' (INVALID!)'
+            self._type = str(type) + ' (INVALID!)'
 
-    """@property
+    @property
+    def universes(self):
+        return self._universes
+
+    @universes.setter
+    def universes(self, universes):
+        self._universes = universes
+
+    @property
     def lattice(self):
-        return self.lattice
+        return self._lattice
 
     @lattice.setter
     def lattice(self, lattice):
-        _lattice = np.empty(shape=(self.dims[2], self.dims[1], self.dims[0]), 
-                            dtype='object')
-        print(lattice)
-        for k in range(self.dims[2]):
-            for j in range(self.dims[1]):
-                for i in range(self.dims[0]):
-                    #print(str(k) + ' ' + str(j) + ' ' + str(i) + ' ' + str(lattice[k, j, i]))
-                    el = self.make_element(lattice[k, j, i])
-                    #print(el)
-                    _lattice[k, j, i] = el#self.make_element(lattice[k, j, i])
-        print('EXITED LOOP')
-        self._lattice = _lattice
-        print(_lattice)"""
+        self._lattice = lattice
+
+    @property
+    def transformations(self):
+        return self._transformations
+
+    @transformations.setter
+    def transformations(self, transformations):
+        self._transformations = transformations
 
     def make_element(self, element):
         if isinstance(element, (tuple, list)) is False:
@@ -839,9 +879,9 @@ class Lattice():
     def flatten(self):
         """Flattens the provided lattice.
         """
-        lattice = self.lattice.reshape(self.size)#.astype('int32')
+        lattice = self.lattice.flatten()#.astype('int32')
         _lattice = []
-        for i in range(self.size):
+        for i in range(self.lattice.size):
             if self.universes is not None:
                 _lattice.append(self.make_element(lattice[i]))
             else:
