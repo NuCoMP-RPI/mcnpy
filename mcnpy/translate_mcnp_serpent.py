@@ -175,6 +175,8 @@ def make_mcnp_lattice(serp_lattice: sp.Lattice, u_map, mcnp_universes):
         Translated MCNP Lattice.
     element : mcnpy.Surface
         Surface boundary of the lattice element.
+    transformation :mcnpy.Transformation
+        TR card to re-center lattice.
     """
     #mcnp_lat = mp.Lattice()
     serp_lat = serp_lattice.lat_type
@@ -194,9 +196,11 @@ def make_mcnp_lattice(serp_lattice: sp.Lattice, u_map, mcnp_universes):
             element = mp.RectangularPrism(None, serp_lat.x0-x, serp_lat.x0+x,
                                                 serp_lat.y0-y, serp_lat.y0+y,
                                                 serp_lat.z0-z, serp_lat.z0+z)
+        trans = [0,0,0]
         if shape[2]%2 == 0:
             dim = (shape[2]-1) / 2
             i = [-dim-0.5, dim-0.5]
+            trans[0] = serp_lat.pitch[0]/2 
         else:
             dim = (shape[2]-1) / 2
             i = [-dim, dim]
@@ -204,6 +208,7 @@ def make_mcnp_lattice(serp_lattice: sp.Lattice, u_map, mcnp_universes):
         if shape[1]%2 == 0:
             dim = (shape[1]-1) / 2
             j = [-dim-0.5, dim-0.5]
+            trans[1] = serp_lat.pitch[1]/2 
         else:
             dim = (shape[1]-1) / 2
             j = [-dim, dim]
@@ -211,13 +216,15 @@ def make_mcnp_lattice(serp_lattice: sp.Lattice, u_map, mcnp_universes):
         if shape[0]%2 == 0:
             dim = (shape[0]-1) / 2
             k = [-dim-0.5, dim-0.5]
+            trans[2] = serp_lat.pitch[2]/2 
         else:
             dim = (shape[0]-1) / 2
             k = [-dim, dim]
 
         mcnp_lat = mp.Lattice(i, j, k, lattice, type, mcnp_universes)
+
         
-    return (mcnp_lat, element)
+    return (mcnp_lat, element, mp.Transformation(transformation=[trans]))
         
 
 def serpent_to_mcnp(serp_deck:sp.Deck):
