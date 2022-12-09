@@ -100,7 +100,7 @@ def make_mcnp_cell(mcnp_deck, serp_mat_ids, serp_surf_ids, serp_cell, id,
 
     return (mcnp_cell, outside_surfs)
 
-def make_serpent_cell(serp_deck, mcnp_cell, universe):
+def make_serpent_cell(serp_deck, mcnp_cell):
     """Translate Serpent Cell to MCNP Cell.
 
     Parameters
@@ -109,8 +109,6 @@ def make_serpent_cell(serp_deck, mcnp_cell, universe):
         Serpent Deck being translated to.
     mcnp_cell : mcnpy.Cell
         MCNP Cell being translated.
-    universe : serpy.Universe
-        Serpent Universe that owns the Cell.
 
     Returns
     -------
@@ -119,7 +117,7 @@ def make_serpent_cell(serp_deck, mcnp_cell, universe):
     """
     region = sp.Region.from_expression(str(mcnp_cell.region), serp_deck.surfaces,
                                        serp_deck.cells)
-    serp_cell = sp.Cell(mcnp_cell.name, region, universe=universe)
+    serp_cell = sp.Cell(mcnp_cell.name, region)
     if mcnp_cell.fill is None:
         if mcnp_cell.material is None:
             #TODO: link to imp data card
@@ -149,15 +147,16 @@ def make_serpent_cell(serp_deck, mcnp_cell, universe):
                 # Add new material with different density.
                 if exist is False:
                     m_id = str(mcnp_cell.material.name) + '_rho_' + str(density)
-                    serp_deck += make_serpent_material(mcnp_cell.material, m_id)
+                    serp_deck += make_serpent_material(mcnp_cell.material)
                     fill = serp_deck.materials[m_id]
         serp_cell.material = fill
     else:
-        raise Exception('Cell Fill not supported yet!')
+        pass
+        #raise Exception('Cell Fill not supported yet!')
 
     return serp_cell
 
-def make_mcnp_lattice(serp_lattice: sp.Lattice, u_map, mcnp_universes):
+def make_mcnp_lattice(serp_lattice, u_map, mcnp_universes):
     """Translate Serpent Lattice to MCNP Lattice.
 
     Parameters
@@ -175,10 +174,10 @@ def make_mcnp_lattice(serp_lattice: sp.Lattice, u_map, mcnp_universes):
         Translated MCNP Lattice.
     element : mcnpy.Surface
         Surface boundary of the lattice element.
-    transformation :mcnpy.Transformation
-        TR card to re-center lattice.
+    transformation : mcnpy.Transformation or None
+        TR card to re-center lattice or None if not required.
     """
-    #mcnp_lat = mp.Lattice()
+
     serp_lat = serp_lattice.lat_type
     if isinstance(serp_lat, sp.Full3DLattice):
         shape = serp_lat.lattice.shape
@@ -187,20 +186,17 @@ def make_mcnp_lattice(serp_lattice: sp.Lattice, u_map, mcnp_universes):
             for y in range(shape[1]):
                 for x in range(shape[2]):
                     lattice[z][y][x] = u_map[serp_lat.lattice[z][y][x].name]
-        lattice = lattice
         if serp_lat.type == 11:
             type = 'REC'
             x = serp_lat.pitch[0]/2 
             y = serp_lat.pitch[1]/2 
             z = serp_lat.pitch[2]/2 
-            element = mp.RectangularPrism(None, serp_lat.x0-x, serp_lat.x0+x,
-                                                serp_lat.y0-y, serp_lat.y0+y,
-                                                serp_lat.z0-z, serp_lat.z0+z)
-        trans = [0,0,0]
+            element = mp.RectangularPrism(None, -x, x, -y, y, -z, z)
+        trans = serp_lat.origin
         if shape[2]%2 == 0:
             dim = (shape[2]-1) / 2
             i = [-dim-0.5, dim-0.5]
-            trans[0] = serp_lat.pitch[0]/2 
+            trans[0] = trans[0] + serp_lat.pitch[0]/2 
         else:
             dim = (shape[2]-1) / 2
             i = [-dim, dim]
@@ -208,7 +204,7 @@ def make_mcnp_lattice(serp_lattice: sp.Lattice, u_map, mcnp_universes):
         if shape[1]%2 == 0:
             dim = (shape[1]-1) / 2
             j = [-dim-0.5, dim-0.5]
-            trans[1] = serp_lat.pitch[1]/2 
+            trans[1] = trans[1] + serp_lat.pitch[1]/2 
         else:
             dim = (shape[1]-1) / 2
             j = [-dim, dim]
@@ -216,16 +212,90 @@ def make_mcnp_lattice(serp_lattice: sp.Lattice, u_map, mcnp_universes):
         if shape[0]%2 == 0:
             dim = (shape[0]-1) / 2
             k = [-dim-0.5, dim-0.5]
-            trans[2] = serp_lat.pitch[2]/2 
+            trans[2] = trans[2] + serp_lat.pitch[2]/2 
         else:
             dim = (shape[0]-1) / 2
             k = [-dim, dim]
 
         mcnp_lat = mp.Lattice(i, j, k, lattice, type, mcnp_universes)
 
+    if trans == [0,0,0]:
+        return (mcnp_lat, element, None)
+    else:
+        return (mcnp_lat, element, mp.Transformation(transformation=[trans]))
         
-    return (mcnp_lat, element, mp.Transformation(transformation=[trans]))
-        
+def make_serpent_lattice(mcnp_cell, serp_universes):
+    """
+    Parameters
+    ----------
+    mcnp_cell : mcnpy.Cell
+        MCNP Cell with lattice fill.
+    serp_universes : dict
+        Dict of Serpent Universes.
+
+    Returns
+    -------
+    lat : serpy.Full3DLattice or serpy.LatticeType
+    """
+    mcnp_lattice = mcnp_cell.fill
+    shape = mcnp_lattice.lattice.shape
+    lattice = np.empty(shape, dtype='str')
+    for z in range(shape[0]):
+        for y in range(shape[1]):
+            for x in range(shape[2]):
+                lattice[z][y][x] = str(mcnp_lattice.lattice[z][y][x].fill.name)
+    surfaces = mcnp_cell.region.get_surfaces()
+    xlim = []
+    ylim = []
+    zlim = []
+    for surf in surfaces.values():
+        if isinstance(surf, mp.XPlane):
+            xlim.append(surf.x0)
+        elif isinstance(surf, mp.YPlane):
+            ylim.append(surf.y0)
+        elif isinstance(surf, mp.ZPlane):
+            zlim.append(surf.z0)
+        elif isinstance(surf, mp.Plane):
+            #TODO: Consider off axis planes
+            if surf.a == 1 and surf.b == 0 and surf.c == 0:
+                xlim.append(surf.d)
+            elif surf.a == 0 and surf.b == 1 and surf.c == 0:
+                ylim.append(surf.d)
+            elif surf.a == 0 and surf.b == 0 and surf.c == 1:
+                zlim.append(surf.d)
+            else:
+                print("Lattice bounding box off-axis")
+        elif isinstance(surf, mp.RectangularPrism):
+            xlim = [surf.x0, surf.x1]
+            ylim = [surf.y0, surf.y1]
+            zlim = [surf.z0, surf.z1]
+        else:
+            print(surf)
+            print("LATTICE ERROR!")
+
+    # Calculate the pitch from the lattice dimensions and container cell limits.
+    # Note that the lattice dims are in z,y,x order.
+    pitch = []
+    pitch.append((max(xlim)-min(xlim)))
+    pitch.append((max(ylim)-min(ylim)))
+    pitch.append((max(zlim)-min(zlim)))
+    
+    origin = []
+    origin.append(max(xlim) - 0.5*pitch[0])
+    origin.append(max(ylim) - 0.5*pitch[1])
+    origin.append(max(zlim) - 0.5*pitch[2])
+
+    range_i =  mcnp_lattice.i[0] + (mcnp_lattice.i[1] - mcnp_lattice.i[0])*0.5
+    range_j =  mcnp_lattice.j[0] + (mcnp_lattice.j[1] - mcnp_lattice.j[0])*0.5
+    range_k =  mcnp_lattice.k[0] + (mcnp_lattice.k[1] - mcnp_lattice.k[0])*0.5
+
+    origin[0] = origin[0] + range_i*pitch[0]
+    origin[1] = origin[1] + range_j*pitch[1]
+    origin[2] = origin[2] + range_k*pitch[2]
+    
+    return sp.Full3DLattice(lattice=lattice, universes=serp_universes, 
+                            pitch=pitch, origin=origin)    
+
 
 def serpent_to_mcnp(serp_deck:sp.Deck):
     """Translate Serpent Deck to MCNP Deck.
@@ -305,6 +375,9 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
         mcnp_deck += _mcnp_lat[1]
         element = mp.Cell(name=None, region=-_mcnp_lat[1], fill=mcnp_lat)
         element.importances = {'n' : 1.0}
+        if _mcnp_lat[2] is not None:
+            mcnp_deck += _mcnp_lat[2]
+            element.transformation = _mcnp_lat[2]
         mcnp_deck += element
         el_universe = mp.UniverseList(name=ui, cells=element)
         mcnp_deck.cells[k].fill = el_universe
@@ -339,6 +412,7 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
     serp_deck : serpy.Deck
         Translated Serpent Deck.
     """
+    mcnp_deck
     serp_deck = sp.Deck()
     bc_type = 1
 
@@ -351,10 +425,52 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
                 bc_type = 2
         serp_deck += mcnp_surfs_to_serpent(surf).surface()
 
+    serp_universes = {}
+    u_fill = {}
+    lat_fill = {}
+    # Make cells and determine universe vs lattice fill.
     for universe in mcnp_deck.universes.values():
+        if str(universe.name) not in serp_universes.keys():
+            serp_universes[str(universe.name)] = []
         for cell in universe.cells.values():
-            serp_deck += make_serpent_cell(serp_deck, cell, 
-                                           sp.Universe(universe.name))
+            if cell.fill is not None:
+                if isinstance(cell.fill, mp.Lattice):
+                    lat_fill[str(cell.name)] = str(cell.universe.name)
+                else:
+                    serp_deck += make_serpent_cell(serp_deck, cell)
+
+                    serp_universes[str(universe.name)].append(serp_deck.cells[str(cell.name)])
+                    u_id = str(cell.fill.fill.name)
+                    if u_id not in serp_universes.keys():
+                        serp_universes[u_id] = []
+                    u_fill[str(cell.name)] = u_id
+            else:
+                serp_deck += make_serpent_cell(serp_deck, cell)
+                serp_universes[str(universe.name)].append(serp_deck.cells[str(cell.name)])
+
+    # Make universes
+    for k in serp_universes:
+        sp.UniverseList(k, serp_universes[k])
+
+    # Fill cells
+    u_lat = {}
+    for k in u_fill:
+        try:
+            # Filled by universe
+            serp_deck.cells[k].fill = serp_deck.universes[u_fill[k]]
+        except KeyError:
+            # Filled by lattice
+            if u_fill[k] not in u_lat.keys():
+                u_lat[u_fill[k]] = sp.Universe(u_fill[k])
+            serp_deck.cells[k].fill = u_lat[u_fill[k]]
+
+    # Build lattices
+    for k in lat_fill:
+        if lat_fill[k] not in serp_deck.lattices.keys():
+            serp_deck += sp.Lattice(u_lat[lat_fill[k]], 
+                                    make_serpent_lattice(mcnp_deck.cells[int(k)], 
+                                                         serp_deck.universes))  
+    serp_deck.remove_unused_surfaces()
 
     for k in mcnp_deck.src_settings:
         if isinstance(k, mp.CriticalitySource):
@@ -385,13 +501,3 @@ def translate_file(file_name: str):
         return mcnp_to_serpent(mp.Deck.read(file_name))
     elif ext == '.serpent':
         return serpent_to_mcnp(sp.Deck.read(file_name))
-
-"""if __name__ == '__main__':
-    import sys
-    name = str(pathlib.Path(sys.argv[1]))[:-len(str(pathlib.Path(sys.argv[1]).suffix))]
-    if pathlib.Path(sys.argv[1]).suffix.lower() == '.mcnp':
-        name += '.serpent'
-    elif pathlib.Path(sys.argv[1]).suffix.lower() == '.serpent':
-        name += '.mcnp'
-
-    translate_file(sys.argv[1]).write(name)"""
