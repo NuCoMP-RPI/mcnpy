@@ -7,6 +7,7 @@ from .points import Vector
 from .mixin import IDManagerMixin
 from .variance_reduction import DeterministicTransportSphere as DTS
 from .wrap import wrappers, overrides, subclass_overrides
+from .wrap import package as ePackage
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -404,7 +405,7 @@ class Transformation(IDManagerMixin, TransformationBase, GeometrySetting):
     name : str
         Unique ID for the transformation.
     transformation : mcnpy.geometry.Transform or nested list
-        The transformation itself descriped as a Transform or a list. The list may contain up to 3 items. First a list of displacements, second a 3x3 array describing the rotation matrix, and third the 'm' value specifiying the rotation reference frame.
+        The transformation itself described as a Transform or a list. The list may contain up to 3 items. First a list of displacements, second a 3x3 array describing the rotation matrix, and third the 'm' value specifiying the rotation reference frame.
     """
     next_id = 1
     used_ids = set()
@@ -480,17 +481,30 @@ class Transform(TransformBase):
 
         @matrix.setter
         def matrix(self, _matrix):
-            self.xx = _matrix[0, 0]
-            self.yx = _matrix[0, 1]
-            self.zx = _matrix[0, 2]
+            if (_matrix[0,0] == 0 and _matrix[0,1] == 0 and _matrix[0,2] == 0 and
+                _matrix[1,0] == 0 and _matrix[1,1] == 0 and _matrix[1,2] == 0 and
+                _matrix[2,0] == 0 and _matrix[2,1] == 0 and _matrix[2,2] == 0):
+                self._e_object.eUnset(ePackage.ROT_MATRIX__XX)
+                self._e_object.eUnset(ePackage.ROT_MATRIX__YX)
+                self._e_object.eUnset(ePackage.ROT_MATRIX__ZX)
+                self._e_object.eUnset(ePackage.ROT_MATRIX__XY)
+                self._e_object.eUnset(ePackage.ROT_MATRIX__YY)
+                self._e_object.eUnset(ePackage.ROT_MATRIX__ZY)
+                self._e_object.eUnset(ePackage.ROT_MATRIX__XZ)
+                self._e_object.eUnset(ePackage.ROT_MATRIX__YZ)
+                self._e_object.eUnset(ePackage.ROT_MATRIX__ZZ)
+            else:
+                self.xx = _matrix[0, 0]
+                self.yx = _matrix[0, 1]
+                self.zx = _matrix[0, 2]
 
-            self.xy = _matrix[1, 0]
-            self.yy = _matrix[1, 1]
-            self.zy = _matrix[1, 2]
+                self.xy = _matrix[1, 0]
+                self.yy = _matrix[1, 1]
+                self.zy = _matrix[1, 2]
 
-            self.xz = _matrix[2, 0]
-            self.yz = _matrix[2, 1]
-            self.zz = _matrix[2, 2]
+                self.xz = _matrix[2, 0]
+                self.yz = _matrix[2, 1]
+                self.zz = _matrix[2, 2]
 
 class Volumes(VolumesBase, GeometrySetting):
     __doc__ = VolumesBase().__doc__

@@ -1,3 +1,4 @@
+import re
 import math
 import numpy as np
 import pathlib
@@ -5,13 +6,52 @@ import serpy as sp
 import mcnpy as mp
 from mcnpy.surface_converter import serpent_surfs_to_mcnp, mcnp_surfs_to_serpent
 
-def make_serpent_material(material):
+DEG_RAD = 180. / math.pi
+RAD_DEG = 1 / DEG_RAD
+
+def decompose_mcnp_transformation(transform, angle='COSINES'):
+    """
+    """
+    #TODO: Consider angle units and other options.
+    #TODO: decomposed transformations should be stored for reuse.
+    vector = [transform.disp1, transform.disp2, transform.disp3]
+    rot = transform.rotation
+    if rot is not None:
+        rotX = np.array([rot.xx, rot.yx, rot.zx])
+        rotY = np.array([rot.xy, rot.yy, rot.zy])
+        rotZ = np.array([rot.xz, rot.yz, rot.zz])
+
+        if str(angle) == 'DEGREES' or str(angle) == '*':
+            rotX = np.cos(rotX * RAD_DEG)
+            rotY = np.cos(rotY * RAD_DEG)
+            rotZ = np.cos(rotZ * RAD_DEG)
+
+        # If a set is all == 0, then it was jumped.
+        # Replacing with defaults.
+        #TODO: Fix this assumption for defaults.
+        if rotX[0] == 0 and rotX[1] == 0 and rotX[2] == 0:
+            rotX = [1.0, 0.0, 0.0]
+        if rotY[0] == 0 and rotY[1] == 0 and rotY[2] == 0:
+            rotY = [0.0, 1.0, 0.0]
+        if rotZ[0] == 0 and rotZ[1] == 0 and rotZ[2] == 0:
+            rotZ = [0.0, 0.0, 1.0]
+
+        rot_matrix = np.array([rotX, rotY, rotZ]).transpose()
+    else:
+        rot_matrix = None
+
+    return (vector, rot_matrix)
+
+def make_serpent_material(material, name=None):
     """Translate MCNP Material to Serpent Material.
 
     Parameters
     ----------
     material : mcnpy.Material
         MCNP Material to be translated.
+
+    name : str (Optional)
+        Name for Serpent material.
 
     Returns
     -------
@@ -20,8 +60,14 @@ def make_serpent_material(material):
     """
     nuclides = []
     for n in material.nuclides:
-        nuclides.append(sp.MaterialNuclide(n.name, n.fraction, n.unit, n.library))
-    return sp.Material(name=material.name, nuclides=nuclides)
+        try:
+            nuclides.append(sp.MaterialNuclide(n.name, n.fraction, n.unit, n.library))
+        except AttributeError:
+            #TODO: Decide best option for MCNP materials with no .lib extension.
+            nuclides.append(sp.MaterialNuclide(n.name, n.fraction, n.unit, '70C'))
+    if name is None:
+        name = material.name
+    return sp.Material(name=name, nuclides=nuclides)
 
 def make_mcnp_material(material, id):
     """Translate Serpent Material to MCNP Material.
@@ -72,9 +118,13 @@ def make_mcnp_cell(mcnp_deck, serp_mat_ids, serp_surf_ids, serp_cell, id,
     # Assuming that all cell complements have been dealt with
     # Set region
     reg = str(serp_cell.region)
+    #print(reg)
     for k in serp_surf_ids:
-        reg = reg.replace(str(k), str(serp_surf_ids[k]))
+        reg = re.sub('(?<!\d)'+str(k)+'(?!(\d|%))', str(serp_surf_ids[k])+'%', reg)
+    reg = reg.replace('%', '')
+    #print(reg)
     region = mp.Region.from_expression(reg, mcnp_deck.surfaces, mcnp_deck.cells)
+    #print('+++++++++++++++++++++++++++')
     mcnp_cell = mp.Cell(name=id, region=region)
     # Set material
     if isinstance(serp_cell.material, sp.MaterialReference):
@@ -99,6 +149,65 @@ def make_mcnp_cell(mcnp_deck, serp_mat_ids, serp_surf_ids, serp_cell, id,
     mcnp_cell.comment = serp_cell.name
 
     return (mcnp_cell, outside_surfs)
+
+def apply_mcnp_cell_trans(mcnp_deck):
+    """Apply TRCL to individual surfaces in the cell's region.
+    If the cell is filled, we will also need a Serpent fill transformation.
+
+    Parameters
+    ----------
+    mcnp_deck : mcnpy.Deck
+        MCNP deck being translated.
+    
+    Returns
+    -------
+    fill_trans : dict
+        Dict mapping TR cards to cell IDs.
+    """
+    fill_trans = {}
+    for cell in mcnp_deck.cells.values():
+        trcl = cell.transformation
+        names = {}
+        # No TR card.
+        if trcl is None:
+            transform = cell.transform
+            angle = cell.transform_angle_unit
+            # Directly uses transform on cell.
+            # Make TR card.
+            if transform is not None:
+                angle = cell.transform_angle_unit
+                trcl = mp.Transformation(transformation=transform, unit=angle)
+                trcl.name = max(list(mcnp_deck.transformations.keys())) + 1
+                mcnp_deck += trcl
+
+        # TR card exists or was created.
+        if trcl is not None:
+            # Store which cells also need a fill transformation.
+            fill_trans[cell.name] = trcl.name
+            surfaces = cell.region.get_surfaces()
+            i = 1
+            for surf in surfaces.values():
+                surf_new = surf.__copy__()
+                surf_new.name = max(list(mcnp_deck.surfaces.keys())) + i
+                i = i + 1
+                surf_new.transformation = trcl
+                mcnp_deck += surf_new
+                names[str(surf.name)] = str(surf_new.name)
+            region_str = str(cell.region)
+            # Unset cell's TRCL.
+            cell.transform = None
+            cell.transform_angle_unit = None
+            cell.transformation = None
+       
+        # Replace old cell region if necessary.
+        for k in names:
+            region_str = re.sub('(?<!\d)'+k+'(?!\d)', names[k], region_str)
+            cell.region = mp.Region.from_expression(region_str, 
+                                                    mcnp_deck.surfaces, 
+                                                    mcnp_deck.cells)
+    return fill_trans
+    #mcnp_deck.remove_redundant_surfaces()
+    #mcnp_deck.remove_unused_surfaces()
 
 def make_serpent_cell(serp_deck, mcnp_cell):
     """Translate Serpent Cell to MCNP Cell.
@@ -136,18 +245,29 @@ def make_serpent_cell(serp_deck, mcnp_cell):
                 fill = serp_deck.materials[str(mcnp_cell.material.name)]
             # Material has at least one density defined for it.
             else:
-                exist = False
-                # Check if alternate denity has already been used.
-                for serp_mat in serp_deck.materials.values():
-                    if serp_mat.name == mcnp_cell.material.name:
-                        if serp_mat.density == density:
-                            exist = True
-                            fill = serp_mat
-                            break
-                # Add new material with different density.
-                if exist is False:
-                    m_id = str(mcnp_cell.material.name) + '_rho_' + str(density)
-                    serp_deck += make_serpent_material(mcnp_cell.material)
+                # Check if alternate density has already been used.
+                #if str(mcnp_cell.material.name) in list(serp_deck.materials.keys()):
+                serp_mat = serp_deck.materials[str(mcnp_cell.material.name)]
+                if (serp_mat.density == str(density) 
+                    and serp_mat.unit ==  mcnp_cell.density_unit):
+                    fill = serp_deck.materials[str(mcnp_cell.material.name)]
+                elif ((str(mcnp_cell.material.name) + '_rho_' 
+                      + str(density)).replace('.', '_') 
+                      in list(serp_deck.materials.keys())):
+                    fill = serp_deck.materials[(str(mcnp_cell.material.name) 
+                                                + str(mcnp_cell.density_unit) 
+                                                + '_rho_' 
+                                                + str(density)).replace('.', '_')]
+                else:
+                    #print(serp_mat.density, density, serp_mat.unit, mcnp_cell.density_unit)
+                    m_id = (str(mcnp_cell.material.name) 
+                            + str(mcnp_cell.density_unit) + '_rho_' 
+                            + str(density)).replace('.', '_')
+                    new_mat = make_serpent_material(mcnp_cell.material, m_id)
+                    if str(mcnp_cell.density_unit) == '-':
+                        serp_deck += new_mat*density
+                    else:
+                        serp_deck += new_mat@density
                     fill = serp_deck.materials[m_id]
         serp_cell.material = fill
     else:
@@ -191,9 +311,11 @@ def make_mcnp_lattice(serp_lattice, u_map, mcnp_universes):
             x = serp_lat.pitch[0]/2 
             y = serp_lat.pitch[1]/2 
             z = serp_lat.pitch[2]/2 
-            element = mp.RectangularPrism(None, -x, x, -y, y, -z, z)
-        trans = serp_lat.origin
-        if shape[2]%2 == 0:
+            element = mp.RectangularPrism(None, serp_lat.origin[0]-x, serp_lat.origin[0]+x, 
+                                                serp_lat.origin[1]-y, serp_lat.origin[1]+y, 
+                                                serp_lat.origin[2]-z, serp_lat.origin[2]+z)
+        trans = [0,0,0]
+        if shape[2]%2 == 0 and shape[2] != 0:
             dim = (shape[2]-1) / 2
             i = [-dim-0.5, dim-0.5]
             trans[0] = trans[0] + serp_lat.pitch[0]/2 
@@ -201,7 +323,7 @@ def make_mcnp_lattice(serp_lattice, u_map, mcnp_universes):
             dim = (shape[2]-1) / 2
             i = [-dim, dim]
 
-        if shape[1]%2 == 0:
+        if shape[1]%2 == 0 and shape[1] != 0:
             dim = (shape[1]-1) / 2
             j = [-dim-0.5, dim-0.5]
             trans[1] = trans[1] + serp_lat.pitch[1]/2 
@@ -209,7 +331,7 @@ def make_mcnp_lattice(serp_lattice, u_map, mcnp_universes):
             dim = (shape[1]-1) / 2
             j = [-dim, dim]
 
-        if shape[0]%2 == 0:
+        if shape[0]%2 == 0 and shape[0] != 0:
             dim = (shape[0]-1) / 2
             k = [-dim-0.5, dim-0.5]
             trans[2] = trans[2] + serp_lat.pitch[2]/2 
@@ -296,7 +418,6 @@ def make_serpent_lattice(mcnp_cell, serp_universes):
     return sp.Full3DLattice(lattice=lattice, universes=serp_universes, 
                             pitch=pitch, origin=origin)    
 
-
 def serpent_to_mcnp(serp_deck:sp.Deck):
     """Translate Serpent Deck to MCNP Deck.
     
@@ -310,20 +431,10 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
     mcnp_deck : mcnpy.Deck
         Translated MCNP Deck.
     """
+    print('Translating MCNP => Serpent')
     mcnp_deck = mp.Deck()
 
-    surf_ids = {}
-    i = 0
-    for surface in serp_deck.surfaces.values():
-        # The "type" has the actual parameters
-        i = i + 1
-        surf_ids[surface.name] = i
-
-        mcnp_surf = serpent_surfs_to_mcnp(surface)
-        mcnp_surf.name = i
-        mcnp_surf.comment = surface.name
-        mcnp_deck += mcnp_surf
-
+    print('Translating Materials...')
     mat_ids = {}
     i = 0
     for material in serp_deck.materials.values():
@@ -331,27 +442,100 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
         mat_ids[material.name] = i
         mcnp_deck += make_mcnp_material(material, i)
 
+    print('Translating Surfaces...')
+    surf_ids = {}
+    i = 0
+    for surface in serp_deck.surfaces.values():
+        # The "type" has the actual parameters
+        i = i + 1
+        surf_ids[surface.name] = i
+
+        mcnp_surf = serpent_surfs_to_mcnp(surface, i)
+        mcnp_surf.comment = surface.name
+        if surface.name in serp_deck.transformations_surf:
+            trans = serp_deck.transformations_surf[surface.name].transform
+            if trans.transform.rot_matrix.all() == 0:
+                tr = mp.Transformation(transformation=[trans.transform.displacement, None])
+            else:
+                tr = mp.Transformation(transformation=[trans.transform.displacement, 
+                                                    trans.transform.rot_matrix])
+            if len(mcnp_deck.transformations.keys()) > 0:
+                tr_exist = False
+                for trans in mcnp_deck.transformations.copy().items():
+                    if tr.transformation.displacement == trans[1].transformation.displacement:
+                        if tr.transformation.rotation is not None and trans[1].transformation.rotation is not None:
+                            if tr.transformation.rotation.matrix.all() == trans[1].transformation.rotation.matrix.all():
+                                mcnp_surf.transformation = mcnp_deck.transformations[trans[0]]
+                                tr_exist = True
+                                break
+                        else:
+                            mcnp_surf.transformation = mcnp_deck.transformations[trans[0]]
+                            tr_exist = True
+                            break
+                if tr_exist == False:
+                    mcnp_deck += tr
+                    mcnp_surf.transformation = tr
+            else:
+                mcnp_deck += tr
+                mcnp_surf.transformation = tr
+
+        mcnp_deck += mcnp_surf
+
+    print('Translating Universes and Cells...')
     outside_surfs = {}
     u_fill = {}
     lat_fill = {}
     u_map = {}
-    i = 0
+
+    # Generate universe map.
     ui = 0
-    for universe in serp_deck.universes.values():
+    for k in serp_deck.universes:
         ui = ui + 1
-        u_map[universe.name] = ui
+        u_map[k] = ui
+    
+    i = 0
+    for universe in serp_deck.universes.values():
+        #ui = ui + 1
+        #u_map[universe.name] = ui
         cells = []
         for cell in universe.cells.values():
             i = i + 1
             if cell.fill is not None:
                 # Universe fill
-                if cell.fill in serp_deck.universes:
-                    u_fill[i] = ui
+                if cell.fill.name in list(serp_deck.universes.keys()):
+                    u_fill[i] = u_map[cell.fill.name]
                 # Lattice fill
                 else:
                     lat_fill[i] = serp_deck.lattices[cell.fill.name]
             cell_trans = make_mcnp_cell(mcnp_deck, mat_ids, surf_ids, cell, i,
                                         outside_surfs)
+            if cell.name in serp_deck.transformations_fill:
+                trans = serp_deck.transformations_fill[cell.name].transform
+                if trans.transform.rot_matrix.all() == 0:
+                    tr = mp.Transformation(transformation=[trans.transform.displacement, None])
+                else:
+                    tr = mp.Transformation(transformation=[trans.transform.displacement, 
+                                                        trans.transform.rot_matrix])
+                mcnp_deck += tr
+                cell_trans[0].transformation = tr
+                surfaces = cell_trans[0].region.get_surfaces()
+                # Test if all surfaces use the same TR card.
+                trcl = True
+                for surf in surfaces.values():
+                    if surf.transformation is not None:
+                        if surf.transformation.transformation != cell_trans[0].transformation.transformation:
+                            trcl = False
+                            break
+                    else:
+                        trcl = False
+                        break
+                # If the fill and surfaces use the same TR, remove TR from surfaces and just use an MCNP cell transformation.
+                if trcl == True:
+                    for surf in surfaces.values():
+                        mcnp_deck -= surf.transformation
+                        surf.transformation = None
+
+
             outside_surfs = cell_trans[1]
             cells.append(cell_trans[0])
         # Apparently universes must be assigned after cells are added to deck.
@@ -359,13 +543,19 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
         # TODO: figure out why this makes such a big difference.
         mcnp_deck += cells
         # Assign to universe
-        if str(universe.name) != str(serp_deck.root):
-            mp.UniverseList(ui, cells)
+        if universe.name != str(serp_deck.root):
+            mp.UniverseList(u_map[universe.name], cells)
 
+    print('Filling Cells...')
     # Fill loop
     # Universe
+    #print(u_fill)
+    #print(mcnp_deck.cells)
+    #print(mcnp_deck.universes)
     for k in u_fill:
         mcnp_deck.cells[k].fill = mcnp_deck.universes[u_fill[k]]
+    
+    print('Constructing Lattices...')
     # Lattice
     for k in lat_fill:
         _mcnp_lat = make_mcnp_lattice(lat_fill[k], u_map, mcnp_deck.universes)
@@ -382,6 +572,7 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
         el_universe = mp.UniverseList(name=ui, cells=element)
         mcnp_deck.cells[k].fill = el_universe
         
+    print('Translating Data cards...')
     for card in serp_deck.settings:
         if isinstance(card, sp.NeutronPopulation):
             kcode = mp.CriticalitySource(histories=card.npg, 
@@ -397,6 +588,7 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
             print(card)
             #raise Exception('Data translation not supported yet!')
 
+    print('Done!')
     return mcnp_deck
 
 def mcnp_to_serpent(mcnp_deck: mp.Deck):
@@ -412,19 +604,32 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
     serp_deck : serpy.Deck
         Translated Serpent Deck.
     """
-    mcnp_deck
+    print('Translating MCNP => Serpent')
     serp_deck = sp.Deck()
     bc_type = 1
 
+    print('Translating Materials...')
     for mat in mcnp_deck.materials.values():
         serp_deck += make_serpent_material(mat)
     
+    # Apply cell transformations.
+    print('Decomposing Cell Transformations...')
+    fill_trans = apply_mcnp_cell_trans(mcnp_deck)
+
+    print('Translating Surfaces...')
     for surf in mcnp_deck.surfaces.values():
         if bc_type == 1:
             if surf.boundary_type == 'reflective' or surf.boundary_type == '*':
                 bc_type = 2
         serp_deck += mcnp_surfs_to_serpent(surf).surface()
+        # Surface transformations
+        if surf.transformation is not None:
+            tr = mcnp_deck.transformations[surf.transformation.name]
+            disp, rot = decompose_mcnp_transformation(tr.transformation)
+            strans = sp.Transform.Surface(unit=serp_deck.surfaces[str(surf.name)], transform=sp.Transform.Data(displacement=disp, rot_matrix=rot))
+            serp_deck += sp.Transformation.Surface(unit=serp_deck.surfaces[str(surf.name)], transform=strans)
 
+    print('Translating Universes and Cells...')
     serp_universes = {}
     u_fill = {}
     lat_fill = {}
@@ -444,6 +649,11 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
                     if u_id not in serp_universes.keys():
                         serp_universes[u_id] = []
                     u_fill[str(cell.name)] = u_id
+                    if cell.name in fill_trans:
+                        tr = mcnp_deck.transformations[fill_trans[cell.name]]
+                        disp, rot = decompose_mcnp_transformation(tr.transformation)
+                        ftrans = sp.Transform.Fill(unit=serp_deck.cells[str(cell.name)], transform=sp.Transform.Data(displacement=disp, rot_matrix=rot))
+                        serp_deck += sp.Transformation.Fill(unit=serp_deck.cells[str(cell.name)], transform=ftrans)
             else:
                 serp_deck += make_serpent_cell(serp_deck, cell)
                 serp_universes[str(universe.name)].append(serp_deck.cells[str(cell.name)])
@@ -452,6 +662,7 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
     for k in serp_universes:
         sp.UniverseList(k, serp_universes[k])
 
+    print('Filling Cells...')
     # Fill cells
     u_lat = {}
     for k in u_fill:
@@ -464,6 +675,7 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
                 u_lat[u_fill[k]] = sp.Universe(u_fill[k])
             serp_deck.cells[k].fill = u_lat[u_fill[k]]
 
+    print('Constructing Lattices...')
     # Build lattices
     for k in lat_fill:
         if lat_fill[k] not in serp_deck.lattices.keys():
@@ -472,6 +684,7 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
                                                          serp_deck.universes))  
     serp_deck.remove_unused_surfaces()
 
+    print('Translating Data cards...')
     for k in mcnp_deck.src_settings:
         if isinstance(k, mp.CriticalitySource):
             serp_deck += sp.NeutronPopulation(npg=k.histories, 
@@ -480,6 +693,7 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
     if bc_type == 2:
         serp_deck += sp.BoundaryCondition(mode=2)
 
+    print('Done!')
     return serp_deck
 
 def translate_file(file_name: str):

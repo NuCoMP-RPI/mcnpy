@@ -188,50 +188,50 @@ def mcnp_surfs_to_serpent(surf):
         pass
         # Should be handled by decomposition
     
-def serpent_surfs_to_mcnp(surf):
+def serpent_surfs_to_mcnp(surf, name=None):
     """Convert Serpent surface to direct MCNP equivalent
     """
     # Surfaces defined by equations
     # Planes
     if isinstance(surf, sp.Plane):
-        return mp.Plane(None, surf.a, surf.b, surf.c, surf.d)
+        return mp.Plane(name, surf.a, surf.b, surf.c, surf.d)
     elif isinstance(surf, sp.XPlane):
-        return mp.XPlane(None, surf.x0)
+        return mp.XPlane(name, surf.x0)
     elif isinstance(surf, sp.YPlane):
-        return mp.YPlane(None, surf.y0)
+        return mp.YPlane(name, surf.y0)
     elif isinstance(surf, sp.ZPlane):
-        return mp.ZPlane(None, surf.z0)
+        return mp.ZPlane(name, surf.z0)
     # Points
     elif isinstance(surf, sp.PPoints):
         points = []
         for p in surf.points:
             points.append(mp.Point.aspoint(p))
-        return mp.PPoints(None, points)
+        return mp.PPoints(name, points)
     elif isinstance(surf, sp.XPoints):
         points = []
         for p in surf.points:
             points.append(mp.PPoint.aspoint(p))
-        return mp.XPoints(None, points)
+        return mp.XPoints(name, points)
     elif isinstance(surf, sp.YPoints):
         points = []
         for p in surf.points:
             points.append(mp.PPoint.aspoint(p))
-        return mp.YPoints(None, points)
+        return mp.YPoints(name, points)
     elif isinstance(surf, sp.ZPoints):
         points = []
         for p in surf.points:
             points.append(mp.PPoint.aspoint(p))
-        return mp.ZPoints(None, points)
+        return mp.ZPoints(name, points)
     # Torii
     elif isinstance(surf, sp.XTorus):
-        return mp.XTorus(None, surf.x0, surf.y0, surf.z0, surf.r, surf.r1, surf.r2)
+        return mp.XTorus(name, surf.x0, surf.y0, surf.z0, surf.r, surf.r1, surf.r2)
     elif isinstance(surf, sp.YTorus):
-        return mp.YTorus(None, surf.x0, surf.y0, surf.z0, surf.r, surf.r1, surf.r2)
+        return mp.YTorus(name, surf.x0, surf.y0, surf.z0, surf.r, surf.r1, surf.r2)
     elif isinstance(surf, sp.ZTorus):
-        return mp.ZTorus(None, surf.x0, surf.y0, surf.z0, surf.r, surf.r1, surf.r2)
+        return mp.ZTorus(name, surf.x0, surf.y0, surf.z0, surf.r, surf.r1, surf.r2)
     # Quadratic
     elif isinstance(surf, sp.Quadratic):
-        return mp.Quadric(None, surf.a, surf.b, surf.c, surf.d, surf.e, surf.f, 
+        return mp.Quadric(name, surf.a, surf.b, surf.c, surf.d, surf.e, surf.f, 
                             surf.g, surf.h, surf.i, surf.j)
     # Cones
     elif isinstance(surf, sp.XCone):
@@ -239,51 +239,51 @@ def serpent_surfs_to_mcnp(surf):
             sheet = sp.Sheet(surf.sheet.side)
         else:
             sheet = None
-        return mp.XCone(None, surf.x0, surf.y0, surf.z0, surf.r2, sheet)
+        return mp.XCone(name, surf.x0, surf.y0, surf.z0, surf.r2, sheet)
     elif isinstance(surf, sp.YCone):
         if surf.sheet is not None:
             sheet = sp.Sheet(surf.sheet.side)
         else:
             sheet = None
-        return mp.YCone(None, surf.x0, surf.y0, surf.z0, surf.r2, sheet)
+        return mp.YCone(name, surf.x0, surf.y0, surf.z0, surf.r2, sheet)
     elif isinstance(surf, sp.ZCone):
         if surf.sheet is not None:
             sheet = sp.Sheet(surf.sheet.side)
         else:
             sheet = None
-        return mp.ZCone(None, surf.x0, surf.y0, surf.z0, surf.r2, sheet)
+        return mp.ZCone(name, surf.x0, surf.y0, surf.z0, surf.r2, sheet)
     elif isinstance(surf, sp.Cone):
-        return mp.TruncatedCone(None, mp.Point.aspoint(surf.base), 
+        return mp.TruncatedCone(name, mp.Point.aspoint(surf.base), 
                                 mp.Point.aspoint(surf.axis), 0.0, surf.r)
     # Cylinders
     elif isinstance(surf, sp.XCylinder):
-        return mp.XCylinder(None, surf.y0, surf.z0, surf.r)
+        return mp.XCylinder(name, surf.y0, surf.z0, surf.r)
     elif isinstance(surf, sp.YCylinder):
-        return mp.YCylinder(None, surf.x0, surf.z0, surf.r)
+        return mp.YCylinder(name, surf.x0, surf.z0, surf.r)
     elif isinstance(surf, sp.ZCylinder):
-        return mp.ZCylinder(None, surf.x0, surf.y0, surf.r)
+        return mp.ZCylinder(name, surf.x0, surf.y0, surf.r)
     # Sphere
     elif isinstance(surf, sp.Sphere):
-        return mp.Sphere(None, surf.x0, surf.y0, surf.z0, surf.r)
+        return mp.Sphere(name, surf.x0, surf.y0, surf.z0, surf.r)
     
     # Macrobodies
     # Cuboid
     elif isinstance(surf, sp.Cuboid):
         #TODO: include 4 plane case
-        return mp.RectangularPrism(None, surf.x1, surf.x2, surf.y1, surf.y2, surf.z1, surf.z2)
+        return mp.RectangularPrism(name, surf.x1, surf.x2, surf.y1, surf.y2, surf.z1, surf.z2)
     # CircularCylinder
     elif isinstance(surf, sp.CircularCylinder):
-        return mp.CircularCylinder(None, mp.Point.aspoint(surf.base), 
+        return mp.CircularCylinder(name, mp.Point.aspoint(surf.base), 
                                    mp.Point.aspoint(surf.axis), surf.r)
     # Box
     elif isinstance(surf, sp.Box):
         points = []
         for p in surf.vectors:
             points.append(mp.Point.aspoint(p))
-        return mp.Box(None, mp.Point.aspoint(surf.corner), points)
+        return mp.Box(name, mp.Point.aspoint(surf.corner), points)
     # CircularCylinder
     elif isinstance(surf, sp.CircularCylinder):
-        return mp.CircularCylinder(None, mp.Point.aspoint(surf.base), mp.Point.aspoint(surf.axis), surf.r)
+        return mp.CircularCylinder(name, mp.Point.aspoint(surf.base), mp.Point.aspoint(surf.axis), surf.r)
     else:
         pass
         # Should be handled by decomposition

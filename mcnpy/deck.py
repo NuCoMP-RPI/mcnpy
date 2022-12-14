@@ -608,19 +608,19 @@ class Deck():
             if card.universe is not None:
                 self.universes[card.universe.name].remove(card)
             del self.cells[card.name]
-            self._deck.cells.cells.remove(card)
+            self._deck.cells.cells.remove(card._e_object)
         elif isinstance(card, Surface):
             del self.surfaces[card.name]
             try:
-                self._deck.surfaces.surfaces.remove(card)
+                self._deck.surfaces.surfaces.remove(card._e_object)
             except:
                 pass
         elif isinstance(card, Material):
             if card.s_alpha_beta is not None:
                 self.mat_settings.remove(card.s_alpha_beta)
-                self._deck.data.settings.remove(card.s_alpha_beta)
+                self._deck.data.settings.remove(card.s_alpha_beta._e_object)
             del self.materials[card.name]
-            self._deck.data.materials.remove(card)
+            self._deck.data.materials.remove(card._e_object)
 
         elif isinstance(card, Transformation):
             self._remove_data(card, self.transformations)
@@ -648,12 +648,12 @@ class Deck():
             self._remove_data(card, self.settings)
 
     def _remove_data(self, card, storage):
-        name = getattr(card, 'name', None)
-        if callable(name):
-            del storage[card.name]
-        else:
+        try:
             storage.remove(card)
-        self._deck.data.settings.remove(card)
+        except AttributeError:
+            del storage[card.name]
+
+        self._deck.data.settings.remove(card._e_object)
 
     def add_all(self, cards):
         """Add a list of cards to the deck.
@@ -754,5 +754,4 @@ class Deck():
                 unused.append(surface)
                 
         self.remove_all(unused)
-        print(str(len(unused))+' Surfaces were removed for being the same as ' 
-              + 'others.')
+        print(str(len(unused))+' Surfaces were removed for being unused.')
