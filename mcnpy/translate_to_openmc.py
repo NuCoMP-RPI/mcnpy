@@ -369,19 +369,21 @@ def mcnp_to_openmc(deck:mp.Deck):
     openmc_materials[0].set_density('g/cm3', 1e-100)
     mats = openmc.Materials([openmc_materials[0]])
 
+    print('Translating Materials...')
     for k in deck.materials:
         openmc_materials[int(k)] = make_material(deck.materials[k], str(k))
         mats.append(openmc_materials[int(k)])
-    print('Materials Translation Complete')
 
     # Store displacements and rotations from TR cards.
     # This way their matrices are only created once.
+    print('Decomposing Cell Transformations...')
     for k in deck.transformations:
         tr = deck.transformations[k]
         openmc_transformations[k] = (decompose_transformation(tr.transformation, 
                                                               tr.unit))
 
     # Translate surfaces.
+    print('Translating Surfaces...')
     for k in deck.surfaces:
         surf = deck.surfaces[k]
         if isinstance(surf, Sphere):
@@ -437,6 +439,7 @@ def mcnp_to_openmc(deck:mp.Deck):
 
     # Translate universes.
     # Note that universe 0 contains all cells without U keyword.
+    print('Translating Universes and Cells...')
     lat_u = []
     lat_disp = []
     for k in deck.universes:
@@ -599,6 +602,7 @@ def mcnp_to_openmc(deck:mp.Deck):
     Remove redundant universes.
     Lattice corrections.
     '''
+    print('Constructing Lattices...')
     q = 0
     for k in lat_universes:
         # ID of a cell containing a lattice.
@@ -747,15 +751,19 @@ def mcnp_to_openmc(deck:mp.Deck):
     # The root universe should always have ID 0. 
     # Universe 0 is the default universe in MCNP.
     geom = openmc.Geometry(openmc_universes[0])
+    print('Cleaning Up OpenMC Surfaces...')
     geom.remove_redundant_surfaces()
+    print('Done!')
     return(geom, mats)
 
 def translate(mcnp_file):
     deck = mp.Deck().read(filename=mcnp_file, renumber=True)
+    print('Decomposing Geometry...')
     decompose(deck)
+    print('Cleaning Up MCNP Surface Cards...')
     deck.remove_redundant_surfaces()
     deck.remove_unused_surfaces()
-    print('MCNP Geometry Decomposed\nStarting Translation\n')
+    print('Translating MCNP => OpenMC\n')
 
     # Tuple with geometry and materials.
     model = mcnp_to_openmc(deck)

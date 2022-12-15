@@ -239,13 +239,17 @@ class Deck():
                 self._deck = inp
 
             except:"""
-            raise Exception('Error importing MCNP Deck from file "' + filename 
-                            + '"')
+            
+            if isinstance(filename, _Deck):
+                self._deck = filename
+            else:
+                raise Exception('Error importing MCNP Deck from file "' + filename 
+                                + '"')
         try: 
-            cells = inp.cells.cells
-            surfaces = inp.surfaces.surfaces
-            settings = inp.data.settings
-            materials = inp.data.materials
+            cells = self._deck.cells.cells
+            surfaces = self._deck.surfaces.surfaces
+            settings = self._deck.data.settings
+            materials = self._deck.data.materials
             for i in range(len(cells)):
                 #self.cells.append(cells[i])
                 if renumber is True:
@@ -306,8 +310,8 @@ class Deck():
                 self.materials[int(materials[i].name)] = materials[i]
         except:
             # For CONTINUE decks
-            self.continue_run = inp._e_object.getContinue()
-            settings = inp.cont_data
+            self.continue_run = self._deck._e_object.getContinue()
+            settings = self._deck.cont_data
             for i in range(len(settings)):
                 self.settings.append(settings[i])
 

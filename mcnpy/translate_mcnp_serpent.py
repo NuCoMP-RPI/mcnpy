@@ -431,7 +431,7 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
     mcnp_deck : mcnpy.Deck
         Translated MCNP Deck.
     """
-    print('Translating MCNP => Serpent')
+    print('Translating MCNP => Serpent\n')
     mcnp_deck = mp.Deck()
 
     print('Translating Materials...')
@@ -588,7 +588,7 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
             print(card)
             #raise Exception('Data translation not supported yet!')
 
-    print('Done!')
+    print('\nDone!\n')
     return mcnp_deck
 
 def mcnp_to_serpent(mcnp_deck: mp.Deck):
@@ -604,7 +604,7 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
     serp_deck : serpy.Deck
         Translated Serpent Deck.
     """
-    print('Translating MCNP => Serpent')
+    print('Translating MCNP => Serpent\n')
     serp_deck = sp.Deck()
     bc_type = 1
 
@@ -693,7 +693,7 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
     if bc_type == 2:
         serp_deck += sp.BoundaryCondition(mode=2)
 
-    print('Done!')
+    print('\nDone!\n')
     return serp_deck
 
 def translate_file(file_name: str):
