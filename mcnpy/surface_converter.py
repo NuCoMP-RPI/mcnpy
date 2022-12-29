@@ -176,8 +176,8 @@ def mcnp_surfs_to_serpent(surf):
                          surf.name)
     # RCC
     elif isinstance(surf, mp.CircularCylinder):
-        return sp.CircularCylinder(surf.base.aslist(), surf.axis.aslist(), 
-                                   surf.r, surf.name)
+            return sp.CircularCylinder(surf.base.aslist(), surf.axis.aslist(), 
+                                       surf.r, surf.name)
     # BOX
     elif isinstance(surf, mp.Box):
         points = []

@@ -64,9 +64,9 @@ deck += mp.CriticalitySourcePoints([(0,0,0), (0,0,0.5), (0,0,-0.5)])
 deck += mp.PrintDump(print_mctal=1)
 
 print(deck)
-print(deck.serialize())
+#print(deck.serialize())
 
 # Write to file
-#deck.write('my_pincell.mcnp')
+deck.write('my_pincell.mcnp')
 
 #mp.run_mcnp('my_pincell.mcnp')

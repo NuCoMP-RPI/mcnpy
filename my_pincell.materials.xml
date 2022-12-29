@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<materials>
+  <material id="0" name="void">
+    <density units="g/cm3" value="1e-100" />
+    <nuclide ao="1.0" name="H1" />
+  </material>
+  <material depletable="true" id="1" name="1">
+    <density units="g/cm3" value="10.0" />
+    <nuclide ao="0.9696278737791809" name="U238" />
+    <nuclide ao="0.030372126220819046" name="U235" />
+    <nuclide ao="2.0" name="O16" />
+  </material>
+  <material id="2" name="2">
+    <density units="g/cm3" value="1.0" />
+    <nuclide ao="2.0" name="H1" />
+    <nuclide ao="1.0" name="O16" />
+  </material>
+  <material id="3" name="3">
+    <density units="g/cm3" value="6.6" />
+    <nuclide name="Zr94" wo="0.17569064464078685" />
+    <nuclide name="Zr96" wo="0.028908010256571783" />
+    <nuclide name="Zr92" wo="0.1696709563441852" />
+    <nuclide name="Zr90" wo="0.49793407394907613" />
+    <nuclide name="Zr91" wo="0.10979631480938008" />
+    <nuclide name="Sn119" wo="0.0012905970099601294" />
+    <nuclide name="Sn112" wo="0.00013715892984483816" />
+    <nuclide name="Sn122" wo="0.0007131822212409993" />
+    <nuclide name="Sn117" wo="0.001134462767874342" />
+    <nuclide name="Sn120" wo="0.004936075345470888" />
+    <nuclide name="Sn114" wo="9.499085610024345e-05" />
+    <nuclide name="Sn124" wo="0.0009065085556741097" />
+    <nuclide name="Sn116" wo="0.0021294032610291677" />
+    <nuclide name="Sn118" wo="0.0036082565088225095" />
+    <nuclide name="Sn115" wo="4.936454398277139e-05" />
+    <nuclide name="Fe57" wo="4.320737234767207e-05" />
+    <nuclide name="Fe56" wo="0.001838030575435607" />
+    <nuclide name="Fe54" wo="0.00011291116452800142" />
+    <nuclide name="Fe58" wo="5.850887688719549e-06" />
+    <nuclide name="Cr53" wo="9.673586887095358e-05" />
+    <nuclide name="Cr50" wo="4.173686536432398e-05" />
+    <nuclide name="Cr54" wo="2.4533642238675768e-05" />
+    <nuclide name="Cr52" wo="0.0008369936235260468" />
+  </material>
+  <material id="4" name="4">
+    <density units="g/cm3" value="0.000178" />
+    <nuclide ao="0.5" name="H1" />
+    <nuclide ao="0.5" name="He4" />
+  </material>
+</materials>

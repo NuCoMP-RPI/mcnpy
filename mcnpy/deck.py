@@ -109,7 +109,7 @@ def run_script(script, exe, *args, **kwargs):
     for k in kwargs:
         cmd.append(k + '=' + str(kwargs[k]))
     
-    proc = Popen()
+    proc = Popen(cmd)
 
 class Deck():
     """An object containing dicts for cells, surfaces, and materials. Most other 
@@ -149,6 +149,8 @@ class Deck():
         self.continue_run = continue_run
         self._deck = _Deck()
         self._deck.initialize()
+        self._is_reading = False
+        self.material_densities = {}
 
         if self.cells is None:
             self.cells = {}
@@ -187,28 +189,29 @@ class Deck():
     
     @property
     def universes(self):
-        _universes = self._universes.copy().items()
-        for u in _universes:
-            _cells = u[1].cells.copy().items()
-            for c in _cells:
-                if c[1].universe is None:
-                    pass
-                else:
-                    # Correct universe ID
-                    if c[1].universe.name == u[0]:
+        if self._is_reading is False:
+            _universes = self._universes.copy().items()
+            for u in _universes:
+                _cells = u[1].cells.copy().items()
+                for c in _cells:
+                    if c[1].universe is None:
                         pass
-                    # Incorrect ID
                     else:
-                        # Remove from current UniverseList
-                        del self._universes[u[0]].cells[c[0]]
-                        # Add to existing or make new
-                        if c[1].universe.name not in self._universes:
-                            self._universes[c[1].universe.name] = UniverseList(name=c[1].universe.name, cells=None)
-                            self._universes[c[1].universe.name]._e_object = self.cells[c[0]].universe._e_object
-                        self._universes[c[1].universe.name].add_only(self.cells[c[0]])
-            # Remove empty UniverseLists
-            if not self._universes[u[0]].cells:
-                del self._universes[u[0]]
+                        # Correct universe ID
+                        if c[1].universe.name == u[0]:
+                            pass
+                        # Incorrect ID
+                        else:
+                            # Remove from current UniverseList
+                            del self._universes[u[0]].cells[c[0]]
+                            # Add to existing or make new
+                            if c[1].universe.name not in self._universes:
+                                self._universes[c[1].universe.name] = UniverseList(name=c[1].universe.name, cells=None)
+                                self._universes[c[1].universe.name]._e_object = self.cells[c[0]].universe._e_object
+                            self._universes[c[1].universe.name].add_only(self.cells[c[0]])
+                # Remove empty UniverseLists
+                if not self._universes[u[0]].cells:
+                    del self._universes[u[0]]
 
         return self._universes
 
@@ -250,70 +253,85 @@ class Deck():
             surfaces = self._deck.surfaces.surfaces
             settings = self._deck.data.settings
             materials = self._deck.data.materials
-            for i in range(len(cells)):
+            self._is_reading = True
+            i = 0
+            for mat in materials:
+                i = i + 1
+                if renumber is True:
+                    mat.name = i
+                self.materials[int(mat.name)] = mat
+            i = 0
+            for cell in cells:
+                i = i + 1
                 #self.cells.append(cells[i])
                 if renumber is True:
-                    cells[i].name = i+1
-                self.cells[int(cells[i].name)] = cells[i]
-                self.get_universe(cells[i])
+                    cell.name = i
+                self.cells[int(cell.name)] = cell
+                self.get_universe(cell)
+                if cell.material is not None:
+                    rho = (cell.density, cell.density_unit)
+                    if cell.material.name in self.material_densities:
+                        if rho not in self.material_densities[int(cell.material.name)]:
+                            self.material_densities[int(cell.material.name)].append(rho)
+                    else:
+                        self.material_densities[int(cell.material.name)] = [rho]
             id = 0
-            for i in range(len(surfaces)):
+            for surf in surfaces:
                 id = id + 1
                 if renumber is True:
-                    surfaces[i].name = id
+                    surf.name = id
                     # Leave room for adding macrobodies.
-                    if (isinstance(surfaces[i], RectangularPrism) 
-                        or isinstance(surfaces[i], Box) 
-                        or isinstance(surfaces[i], Polyhedron)):
+                    if (isinstance(surf, RectangularPrism) 
+                        or isinstance(surf, Box) 
+                        or isinstance(surf, Polyhedron)):
                         id = id+6
-                    elif (isinstance(surfaces[i], CircularCylinder) 
-                        or isinstance(surfaces[i], EllipticalCylinder) 
-                        or isinstance(surfaces[i], TruncatedCone)):
+                    elif (isinstance(surf, CircularCylinder) 
+                        or isinstance(surf, EllipticalCylinder) 
+                        or isinstance(surf, TruncatedCone)):
                         id = id+3
-                    elif isinstance(surfaces[i], Wedge):
+                    elif isinstance(surf, Wedge):
                         id = id+5
-                    elif isinstance(surfaces[i], HexagonalPrism):
+                    elif isinstance(surf, HexagonalPrism):
                         id = id+8
-                    elif isinstance(surfaces[i], Ellipsoid):
+                    elif isinstance(surf, Ellipsoid):
                         id = id+1
-                self.surfaces[int(surfaces[i].name)] = surfaces[i]
-            for i in range(len(settings)):
-                if isinstance(settings[i], Transformation):
+                self.surfaces[int(surf.name)] = surf
+            i = 0
+            for setting in settings:
+                i = i + 1
+                if isinstance(setting, Transformation):
                     if renumber is True:
-                        settings[i].name = i+1
-                    self.transformations[int(settings[i].name)] = settings[i]
-                elif isinstance(settings[i], TallyABC):
-                    self.tallies[int(settings[i].name)] = settings[i]
-                elif isinstance(settings[i], GeometrySetting):
-                    self.geom_settings.append(settings[i])
-                elif isinstance(settings[i], OutputSetting):
-                    self.out_settings.append(settings[i])
-                elif isinstance(settings[i], MiscSetting):
-                    self.misc_settings.append(settings[i])
-                elif isinstance(settings[i], SourceSetting):
-                    self.src_settings.append(settings[i])
-                elif isinstance(settings[i], VarianceReductionSetting):
-                    self.vr_settings.append(settings[i])
-                elif isinstance(settings[i], TallySettingABC):
-                    self.tally_settings.append(settings[i])
-                elif isinstance(settings[i], MaterialSetting):
-                    self.mat_settings.append(settings[i])
-                elif isinstance(settings[i], TerminationSetting):
-                    self.term_settings.append(settings[i])
-                elif isinstance(settings[i], PhysicsSetting):
-                    self.phys_settings.append(settings[i])
+                        setting.name = i
+                    self.transformations[int(setting.name)] = setting
+                elif isinstance(setting, TallyABC):
+                    self.tallies[int(setting.name)] = setting
+                elif isinstance(setting, GeometrySetting):
+                    self.geom_settings.append(setting)
+                elif isinstance(setting, OutputSetting):
+                    self.out_settings.append(setting)
+                elif isinstance(setting, MiscSetting):
+                    self.misc_settings.append(setting)
+                elif isinstance(setting, SourceSetting):
+                    self.src_settings.append(setting)
+                elif isinstance(setting, VarianceReductionSetting):
+                    self.vr_settings.append(setting)
+                elif isinstance(setting, TallySettingABC):
+                    self.tally_settings.append(setting)
+                elif isinstance(setting, MaterialSetting):
+                    self.mat_settings.append(setting)
+                elif isinstance(setting, TerminationSetting):
+                    self.term_settings.append(setting)
+                elif isinstance(setting, PhysicsSetting):
+                    self.phys_settings.append(setting)
                 else:
-                    self.settings.append(settings[i])
-            for i in range(len(materials)):
-                if renumber is True:
-                    materials[i].name = i+1
-                self.materials[int(materials[i].name)] = materials[i]
+                    self.settings.append(setting)
+            self._is_reading = False
         except:
             # For CONTINUE decks
             self.continue_run = self._deck._e_object.getContinue()
             settings = self._deck.cont_data
-            for i in range(len(settings)):
-                self.settings.append(settings[i])
+            for setting in settings:
+                self.settings.append(setting)
 
     def _direct_export(self):
         """For serializing the deck without any Python post-processing.
@@ -662,22 +680,22 @@ class Deck():
     def add_all(self, cards):
         """Add a list of cards to the deck.
         """
-        for i in range(len(cards)):
-            self.add(cards[i])
+        for card in cards:
+            self.add(card)
 
     def remove_all(self, cards):
         """Remove a list of cards from the deck.
         """
-        for i in range(len(cards)):
-            self.remove(cards[i])
+        for card in cards:
+            self.remove(card)
 
     # Should be redundant with the IDManagerMixin class.
     def set_id(self, card, dict:dict):
         """To ensure every card is numbered.
         """
         if card.name is None:
-            if len(dict.keys()) > 0:
-                new_name = max(dict.keys()) + 1
+            if len(dict) > 0:
+                new_name = max(dict) + 1
             else:
                 new_name = 1
             card.name = new_name

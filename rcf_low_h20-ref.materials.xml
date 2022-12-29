@@ -1,0 +1,358 @@
+<?xml version='1.0' encoding='utf-8'?>
+<materials>
+  <material id="0" name="void">
+    <density units="g/cm3" value="1e-100" />
+    <nuclide ao="1.0" name="H1" />
+  </material>
+  <material id="1" name="1">
+    <density units="g/cm3" value="6.87969808" />
+    <nuclide ao="0.8106" name="Fe56" />
+    <nuclide ao="0.1596" name="Cr52" />
+    <nuclide ao="0.0798" name="Ni58" />
+    <nuclide ao="0.0168" name="Mn55" />
+    <nuclide ao="0.32000000000000006" name="H1" />
+    <nuclide ao="0.16000000000000003" name="O16" />
+  </material>
+  <material id="2" name="2">
+    <density units="g/cm3" value="6.7201927999999995" />
+    <nuclide ao="0.680904" name="Fe56" />
+    <nuclide ao="0.134064" name="Cr52" />
+    <nuclide ao="0.067032" name="Ni58" />
+    <nuclide ao="0.014111999999999998" name="Mn55" />
+    <nuclide ao="2.4023518443314545e-05" name="C0" />
+    <nuclide ao="0.12550849708992615" name="N14" />
+    <nuclide ao="0.03372029262172784" name="O16" />
+    <nuclide ao="4.6998047826880883e-07" name="Ar38" />
+    <nuclide ao="0.0007442241743600525" name="Ar40" />
+    <nuclide ao="2.492615064395463e-06" name="Ar36" />
+  </material>
+  <material id="3" name="3">
+    <density units="g/cm3" value="5.717384838" />
+    <nuclide ao="0.458929296" name="Fe56" />
+    <nuclide ao="0.09035913599999999" name="Cr52" />
+    <nuclide ao="0.045179567999999996" name="Ni58" />
+    <nuclide ao="0.009511487999999998" name="Mn55" />
+    <nuclide ao="0.10432000000000001" name="H1" />
+    <nuclide ao="0.052160000000000005" name="O16" />
+  </material>
+  <material id="4" name="4">
+    <density units="g/cm3" value="5.834853134639243" />
+    <nuclide ao="0.03962103386506171" name="Fe56" />
+    <nuclide ao="0.007801032574468108" name="Cr52" />
+    <nuclide ao="0.003900516287234054" name="Ni58" />
+    <nuclide ao="0.0008211613236282218" name="Mn55" />
+    <nuclide ao="0.032258178544502955" name="H1" />
+    <nuclide ao="0.016129089272251478" name="O16" />
+  </material>
+  <material id="5" name="5">
+    <density units="g/cm3" value="5.526585915923337" />
+    <nuclide ao="0.02736928554703105" name="Fe56" />
+    <nuclide ao="0.005388771247601967" name="Cr52" />
+    <nuclide ao="0.0026943856238009836" name="Ni58" />
+    <nuclide ao="0.0005672390786949439" name="Mn55" />
+    <nuclide ao="7.428632546123467e-06" name="C0" />
+    <nuclide ao="0.03881015632648645" name="N14" />
+    <nuclide ao="0.010427101418372145" name="O16" />
+    <nuclide ao="1.4532893194426881e-07" name="Ar38" />
+    <nuclide ao="0.00023013148287616818" name="Ar40" />
+    <nuclide ao="7.707747487537055e-07" name="Ar36" />
+  </material>
+  <material id="6" name="6">
+    <density units="g/cm3" value="0.998113" />
+    <nuclide ao="2.0" name="H1" />
+    <nuclide ao="1.0" name="O16" />
+  </material>
+  <material depletable="true" id="7" name="7">
+    <density units="g/cm3" value="10.048" />
+    <nuclide name="U233" wo="3.5168e-06" />
+    <nuclide name="U234" wo="0.000222438" />
+    <nuclide name="U235" wo="0.042263144" />
+    <nuclide name="U236" wo="0.000411466" />
+    <nuclide name="U238" wo="0.836299436" />
+    <nuclide name="O16" wo="0.1208" />
+  </material>
+  <material id="8" name="8">
+    <density units="g/cm3" value="8.0" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="9" name="9">
+    <density units="g/cm3" value="3.9" />
+    <nuclide ao="0.4" name="Al27" />
+    <nuclide ao="0.6" name="O16" />
+  </material>
+  <material id="10" name="10">
+    <density units="g/cm3" value="0.000178" />
+    <nuclide ao="0.5" name="H1" />
+    <nuclide ao="0.5" name="He4" />
+  </material>
+  <material id="11" name="11">
+    <density units="g/cm3" value="8.092" />
+    <nuclide ao="0.11944" name="B10" />
+    <nuclide ao="0.88056" name="Fe56" />
+  </material>
+  <material id="12" name="12">
+    <density units="g/cm3" value="0.001205" />
+    <nuclide name="C0" wo="0.000124" />
+    <nuclide name="N14" wo="0.7552679999999999" />
+    <nuclide name="O16" wo="0.23178100000000001" />
+    <nuclide name="Ar38" wo="7.667262798148065e-06" />
+    <nuclide name="Ar40" wo="0.012780805392164559" />
+    <nuclide name="Ar36" wo="3.852734503729188e-05" />
+  </material>
+  <material id="13" name="13">
+    <density units="g/cm3" value="8.0" />
+    <nuclide name="Co59" wo="0.00084" />
+    <nuclide name="Mn55" wo="0.0106" />
+    <nuclide name="Fe54" wo="0.041105547" />
+    <nuclide name="Fe56" wo="0.64526918" />
+    <nuclide name="Fe57" wo="0.014902079" />
+    <nuclide name="Fe58" wo="0.001983193" />
+    <nuclide name="Cr50" wo="0.0080817" />
+    <nuclide name="Cr52" wo="0.15584754" />
+    <nuclide name="Cr53" wo="0.01767186" />
+    <nuclide name="Cr54" wo="0.0043989" />
+    <nuclide name="Ni58" wo="0.065081612" />
+    <nuclide name="Ni60" wo="0.025069188" />
+    <nuclide name="Ni61" wo="0.00108984" />
+    <nuclide name="Ni62" wo="0.003474104" />
+    <nuclide name="Ni64" wo="0.000885256" />
+    <nuclide name="Mo92" wo="0.0002968" />
+    <nuclide name="Mo94" wo="0.000185" />
+    <nuclide name="Mo95" wo="0.0003184" />
+    <nuclide name="Mo96" wo="0.0003336" />
+    <nuclide name="Mo97" wo="0.000191" />
+    <nuclide name="Mo98" wo="0.0004826" />
+    <nuclide name="Mo100" wo="0.0001926" />
+    <nuclide name="Cu63" wo="0.00117589" />
+    <nuclide name="Cu65" wo="0.00052411" />
+  </material>
+  <material id="14" name="14">
+    <density units="g/cm3" value="1.0" />
+    <nuclide ao="0.05735722702146522" name="Fe56" />
+    <nuclide ao="0.011293132781428385" name="Cr52" />
+    <nuclide ao="0.005646566390714192" name="Ni58" />
+    <nuclide ao="0.0011887508190977247" name="Mn55" />
+    <nuclide ao="0.43750973459159465" name="H1" />
+    <nuclide ao="0.43750973459159465" name="He4" />
+  </material>
+  <material id="16" name="16">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="17" name="17">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="18" name="18">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="19" name="19">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="20" name="20">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="21" name="21">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="22" name="22">
+    <density units="sum" />
+    <nuclide name="C0" wo="0.000124" />
+    <nuclide name="N14" wo="0.7552679999999999" />
+    <nuclide name="O16" wo="0.23178100000000001" />
+    <nuclide name="Ar38" wo="7.667262798148065e-06" />
+    <nuclide name="Ar40" wo="0.012780805392164559" />
+    <nuclide name="Ar36" wo="3.852734503729188e-05" />
+  </material>
+  <material id="23" name="23">
+    <density units="sum" />
+    <nuclide ao="0.8106" name="Fe56" />
+    <nuclide ao="0.1596" name="Cr52" />
+    <nuclide ao="0.0798" name="Ni58" />
+    <nuclide ao="0.0168" name="Mn55" />
+    <nuclide ao="0.32000000000000006" name="H1" />
+    <nuclide ao="0.16000000000000003" name="O16" />
+  </material>
+  <material id="24" name="24">
+    <density units="sum" />
+    <nuclide ao="0.680904" name="Fe56" />
+    <nuclide ao="0.134064" name="Cr52" />
+    <nuclide ao="0.067032" name="Ni58" />
+    <nuclide ao="0.014111999999999998" name="Mn55" />
+    <nuclide ao="2.4023518443314545e-05" name="C0" />
+    <nuclide ao="0.12550849708992615" name="N14" />
+    <nuclide ao="0.03372029262172784" name="O16" />
+    <nuclide ao="4.6998047826880883e-07" name="Ar38" />
+    <nuclide ao="0.0007442241743600525" name="Ar40" />
+    <nuclide ao="2.492615064395463e-06" name="Ar36" />
+  </material>
+  <material id="25" name="25">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="26" name="26">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="27" name="27">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="28" name="28">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="29" name="29">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="30" name="30">
+    <density units="sum" />
+    <nuclide ao="0.4" name="Al27" />
+    <nuclide ao="0.6" name="O16" />
+  </material>
+  <material id="31" name="31">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="32" name="32">
+    <density units="sum" />
+    <nuclide ao="2.0" name="H1" />
+    <nuclide ao="1.0" name="O16" />
+  </material>
+  <material id="33" name="33">
+    <density units="sum" />
+    <nuclide name="C0" wo="0.000124" />
+    <nuclide name="N14" wo="0.7552679999999999" />
+    <nuclide name="O16" wo="0.23178100000000001" />
+    <nuclide name="Ar38" wo="7.667262798148065e-06" />
+    <nuclide name="Ar40" wo="0.012780805392164559" />
+    <nuclide name="Ar36" wo="3.852734503729188e-05" />
+  </material>
+  <material id="34" name="34">
+    <density units="sum" />
+    <nuclide ao="0.11944" name="B10" />
+    <nuclide ao="0.88056" name="Fe56" />
+  </material>
+  <material id="35" name="35">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="36" name="36">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="37" name="37">
+    <density units="sum" />
+    <nuclide ao="2.0" name="H1" />
+    <nuclide ao="1.0" name="O16" />
+  </material>
+  <material id="38" name="38">
+    <density units="sum" />
+    <nuclide name="C0" wo="0.000124" />
+    <nuclide name="N14" wo="0.7552679999999999" />
+    <nuclide name="O16" wo="0.23178100000000001" />
+    <nuclide name="Ar38" wo="7.667262798148065e-06" />
+    <nuclide name="Ar40" wo="0.012780805392164559" />
+    <nuclide name="Ar36" wo="3.852734503729188e-05" />
+  </material>
+  <material id="39" name="39">
+    <density units="sum" />
+    <nuclide ao="0.8106" name="Fe56" />
+    <nuclide ao="0.1596" name="Cr52" />
+    <nuclide ao="0.0798" name="Ni58" />
+    <nuclide ao="0.0168" name="Mn55" />
+    <nuclide ao="0.32000000000000006" name="H1" />
+    <nuclide ao="0.16000000000000003" name="O16" />
+  </material>
+  <material id="40" name="40">
+    <density units="sum" />
+    <nuclide ao="0.680904" name="Fe56" />
+    <nuclide ao="0.134064" name="Cr52" />
+    <nuclide ao="0.067032" name="Ni58" />
+    <nuclide ao="0.014111999999999998" name="Mn55" />
+    <nuclide ao="2.4023518443314545e-05" name="C0" />
+    <nuclide ao="0.12550849708992615" name="N14" />
+    <nuclide ao="0.03372029262172784" name="O16" />
+    <nuclide ao="4.6998047826880883e-07" name="Ar38" />
+    <nuclide ao="0.0007442241743600525" name="Ar40" />
+    <nuclide ao="2.492615064395463e-06" name="Ar36" />
+  </material>
+  <material id="41" name="41">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="42" name="42">
+    <density units="sum" />
+    <nuclide ao="0.965" name="Fe56" />
+    <nuclide ao="0.19" name="Cr52" />
+    <nuclide ao="0.095" name="Ni58" />
+    <nuclide ao="0.02" name="Mn55" />
+  </material>
+  <material id="43" name="43">
+    <density units="sum" />
+    <nuclide ao="2.0" name="H1" />
+    <nuclide ao="1.0" name="O16" />
+  </material>
+  <material id="44" name="44">
+    <density units="sum" />
+    <nuclide name="C0" wo="0.000124" />
+    <nuclide name="N14" wo="0.7552679999999999" />
+    <nuclide name="O16" wo="0.23178100000000001" />
+    <nuclide name="Ar38" wo="7.667262798148065e-06" />
+    <nuclide name="Ar40" wo="0.012780805392164559" />
+    <nuclide name="Ar36" wo="3.852734503729188e-05" />
+  </material>
+</materials>

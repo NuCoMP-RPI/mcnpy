@@ -136,6 +136,15 @@ class Material(IDManagerMixin, MaterialBase):
                 self.density_unit = 'A_BCM'
 
     @property
+    def _alt_densities(self):
+        """"""
+        return self._stored_density
+
+    @_alt_densities.setter
+    def _alt_densities(self):
+        """"""
+
+    @property
     def density_unit(self):
         """
         """
