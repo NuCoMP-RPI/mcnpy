@@ -1,6 +1,7 @@
 eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
 # Rebuild wheel
 cd ~/Research/mcnp_api
+python setup.py clean --all
 python setup.py bdist_wheel
 
 # Uninstall mcnpy

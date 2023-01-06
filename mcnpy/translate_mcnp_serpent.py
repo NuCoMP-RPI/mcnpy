@@ -1,10 +1,11 @@
+from logging import root
 import re
 import math
 import numpy as np
 import pathlib
 import serpy as sp
 import mcnpy as mp
-from mcnpy.surface_converter import serpent_surfs_to_mcnp, mcnp_surfs_to_serpent
+from mcnpy.surface_converter_serpent import serpent_surfs_to_mcnp, mcnp_surfs_to_serpent
 
 DEG_RAD = 180. / math.pi
 RAD_DEG = 1 / DEG_RAD
@@ -231,7 +232,7 @@ def apply_mcnp_cell_trans(mcnp_deck):
     #mcnp_deck.remove_unused_surfaces()
 
 def make_serpent_cell(serp_deck, mcnp_cell):
-    """Translate Serpent Cell to MCNP Cell.
+    """Translate MCNP Cell to Serpent Cell.
 
     Parameters
     ----------
@@ -243,7 +244,7 @@ def make_serpent_cell(serp_deck, mcnp_cell):
     Returns
     -------
     serp_cell : serpy.Cell
-        Translated MCNP Cell.
+        Translated Serpent Cell.
     """
     region = make_serpent_region(mcnp_cell.region, serp_deck.surfaces, serp_deck.cells)
     #region = sp.Region.from_expression(str(mcnp_cell.region), serp_deck.surfaces,
@@ -471,15 +472,33 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
 
     print('Translating Universes and Cells...')
     outside_surfs = {}
+    mcnp_universes = {}
+    u_fill = {}
     lat_fill = {}
+    fill_trans = {}
 
+    # Renumber universes.
+    u_name = 0
+    serp_orig_universes = serp_deck.universes.copy().items()
+    for u in serp_orig_universes:
+        universe = serp_deck.universes[u[0]]
+        while str(u_name) in serp_deck.universes or str(u_name) in serp_deck.lattices:
+            u_name = u_name + 1
+        universe.name = str(u_name)
+        if u[0] == serp_deck.root:
+            serp_deck.root = str(u_name)
     for universe in serp_deck.universes.values():
+        u_name = int(universe.name)
         #ui = ui + 1
         #u_map[universe.name] = ui
-        cells = []
+        #cells = []
         for cell in universe.cells.values():
+            #u_name = universe.name
+            if u_name not in mcnp_universes:
+                mcnp_universes[u_name] = []
             cell_trans = make_mcnp_cell(mcnp_deck, cell, int(cell.name),
                                         outside_surfs)
+            mcnp_cell = cell_trans[0]
             if cell.name in serp_deck.transformations_fill:
                 trans = serp_deck.transformations_fill[cell.name].transform
                 if trans.transform.rot_matrix.all() == 0:
@@ -488,13 +507,13 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
                     tr = mp.Transformation(transformation=[trans.transform.displacement, 
                                                         trans.transform.rot_matrix])
                 mcnp_deck += tr
-                cell_trans[0].transformation = tr
-                surfaces = cell_trans[0].region.get_surfaces()
+                #mcnp_cell.transformation = tr
+                surfaces = mcnp_cell.region.get_surfaces()
                 # Test if all surfaces use the same TR card.
                 trcl = True
                 for surf in surfaces.values():
                     if surf.transformation is not None:
-                        if surf.transformation.transformation != cell_trans[0].transformation.transformation:
+                        if surf.transformation.transformation != tr:
                             trcl = False
                             break
                     else:
@@ -502,34 +521,55 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
                         break
                 # If the fill and surfaces use the same TR, remove TR from surfaces and just use an MCNP cell transformation.
                 if trcl == True:
+                    mcnp_cell.transformation = tr
                     for surf in surfaces.values():
                         mcnp_deck -= surf.transformation
                         surf.transformation = None
+                else:
+                    fill_trans[mcnp_cell.name] = tr
             outside_surfs = cell_trans[1]
-            mcnp_deck += cell_trans[0]
+            mcnp_deck += mcnp_cell
             if cell.fill is not None:
                 # Universe fill
-                if cell.fill.name in list(serp_deck.universes.keys()):
-                    uid = int(cell.fill.name)
-                    if uid in mcnp_deck.universes:
-                        cell_trans[0].fill = mcnp_deck.universe[uid]
-                    else:
-                        mcnp_deck.universes[uid] = mp.UniverseList(uid)
+                if cell.fill.name in serp_deck.universes:
+                    mcnp_universes[u_name].append(mcnp_cell)
+                    u_id = int(cell.fill.name)
+                    if u_id not in mcnp_universes:
+                        mcnp_universes[u_id] = []
+                    u_fill[mcnp_cell.name] = u_id
+                        
                 # Lattice fill
                 else:
                     lat_fill[int(cell.name)] = serp_deck.lattices[cell.fill.name]
-            if universe.name != str(serp_deck.root):
-                uid = int(universe.name)
-                if uid in mcnp_deck.universes:
-                    mcnp_deck.universes[uid].add(cell_trans[0])
+            else:
+                mcnp_universes[u_name].append(mcnp_cell)
+            """if universe.name != str(serp_deck.root):
+                u_id = int(universe.name)
+                if u_id in mcnp_deck.universes:
+                    mcnp_deck.universes[u_id].add(cell_trans[0])
                 else:
-                    mp.UniverseList(uid, cell_trans[0])
+                    mp.UniverseList(u_id, cell_trans[0])"""
 
-            cells.append(cell_trans[0])
+            #cells.append(cell_trans[0])
         # Apparently universes must be assigned after cells are added to deck.
         # Appears fine until working with universe refs on lattices.
         # TODO: figure out why this makes such a big difference.
+
+    print('Making Universes...')
+    # Make universes
+    for k in mcnp_universes:
+        if str(k) != serp_deck.root:
+            mp.UniverseList(k, mcnp_universes[k])
     
+    print('Filling Cells...')
+    # Fill cells
+    for k in u_fill:
+        # We need to apply a transformation to the universe.
+        if k in fill_trans:
+            mcnp_deck.cells[k].fill = (mcnp_deck.universes[u_fill[k]], fill_trans[k])
+        else:
+            mcnp_deck.cells[k].fill = mcnp_deck.universes[u_fill[k]]
+
     print('Constructing Lattices...')
     # Lattice
     for k in lat_fill:
@@ -565,7 +605,7 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
     return mcnp_deck
 
 def mcnp_to_serpent(mcnp_deck: mp.Deck):
-    """Translate Serpent Deck to MCNP Deck.
+    """Translate MCNP Deck to Serpent Deck.
     
     Parameters
     ----------

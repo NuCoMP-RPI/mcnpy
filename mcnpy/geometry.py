@@ -142,7 +142,19 @@ class Cell(IDManagerMixin, CellBase):
             _tmp.append(temp)
 
     @fill.setter
-    def fill(self, fill, transform=None, transformation=None):
+    def fill(self, fills):
+        if isinstance(fills, (list, tuple)):
+            fill = fills[0]
+            if isinstance(fills[1], Transformation):
+                transform = None
+                transformation = fills[1]
+            elif isinstance(fills[1], Transform):
+                transform = fills[1]
+                transformation = None
+        else:
+            fill = fills
+            transform = None
+            transformation = None
         _fill = Cell.Fill()
         if isinstance(fill, Lattice):
             _fill.lattice = fill.flatten()

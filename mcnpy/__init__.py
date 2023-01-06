@@ -25,12 +25,13 @@ from mcnpy.mbody_decomp import *
 # Translation
 # Only import OpenMC if available.
 try:
-    import mcnpy.translate_to_openmc
+    import mcnpy.translate_mcnp_openmc
+    import mcnp.surface_converter_openmc
 except ModuleNotFoundError:
     pass
 # Only import if SerPy is available.
 try:
     import mcnpy.translate_mcnp_serpent
-    import mcnpy.surface_converter
+    import mcnpy.surface_converter_serpent
 except ModuleNotFoundError:
     pass
