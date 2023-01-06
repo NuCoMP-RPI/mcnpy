@@ -453,7 +453,7 @@ def mcnp_to_openmc(mcnp_deck: mp.Deck):
                     # it is probably just defined by planes or a cylinder/quadric.
                     # We also assume the Z direction to be axial. 
                     # This should work as long as some sets of planes are axis aligned.
-                    surfs = openmc_cells[j].region.get_surfaces()
+                    surfs = cell.region.get_surfaces()
                     x, y, z = 0, 0, 0
                     xlim = []
                     ylim = []
