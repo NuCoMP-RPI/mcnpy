@@ -118,11 +118,11 @@ class Deck():
     Parameters
     ----------
     cells : dict, optional
-        Dictionary mapping mcnpy.cells.Cell objects by ID.
+        Dictionary mapping `mcnpy.Cell` objects by ID.
     surfaces : dict, optional
-        Dictionary mapping mcnpy.surfaces.Surface objects by ID.
+        Dictionary mapping `mcnpy.Surface` objects by ID.
     materials : dict, optional
-        Dictionary mapping mcnpy.materials.Material objects by ID.
+        Dictionary mapping `mcnpy.Material` objects by ID.
     """
     def __init__(self, cells=None, surfaces=None, materials=None, 
                  geom_settings=None, mat_settings=None, out_settings=None, 

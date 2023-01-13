@@ -95,9 +95,7 @@ def make_openmc_cell(mcnp_cell, openmc_trans, openmc_surfs, openmc_mats,
 
     Parameters
     ----------
-    serp_deck : serpy.Deck
-        Serpent Deck being translated to.
-    mcnp_cell : mcnpy.Cell
+    mcnp_cell : `mcnpy.Cell`
         MCNP Cell being translated.
     openmc_trans : dict
         Dict of OpenMC transformations.
@@ -110,7 +108,7 @@ def make_openmc_cell(mcnp_cell, openmc_trans, openmc_surfs, openmc_mats,
 
     Returns
     -------
-    openmc_cell : openmc.Cell
+    openmc_cell : `openmc.Cell`
         Translated OpenMC Cell.
     u_list : list or None
         List of universes created during lattice conversion.
@@ -242,13 +240,13 @@ def make_openmc_material(material):
 
     Parameters
     ----------
-    material : mcnpy.Material
+    material : `mcnpy.Material`
         MCNP Material to be translated.
 
     Returns
     -------
-    material : serpy.Material
-        Translated Serpent Material.
+    material : `openmc.Material`
+        Translated OpenMC Material.
     """
     openmc_material = openmc.Material()
     nuclides = material.nuclides
@@ -280,14 +278,14 @@ def mcnp_to_openmc(mcnp_deck: mp.Deck):
     
     Parameters
     ----------
-    mcnp_deck : mcnpy.Deck
+    mcnp_deck : `mcnpy.Deck`
         MCNP Deck to be translated.
 
     Returns
     -------
-    geom : openmc.Geometry
+    geom : `openmc.Geometry`
         OpenMC model geometry.
-    mats : openmc.Materials
+    mats : `openmc.Materials`
         OpenMC model materials.
     """
 

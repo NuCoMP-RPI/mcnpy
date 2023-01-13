@@ -29,49 +29,51 @@ class RussianRoulette(RussianRouletteBase, VarianceReductionSetting):
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
 
-class WeightWindowEnergies(WeightWindowEnergiesBase, VarianceReductionSetting):
-    __doc__ = """WWE
-    """
-    __doc__ += WeightWindowEnergiesBase().__doc__
-    
-    def _init(self, **kwargs):
+class WeightWindow():
+    """"""
+    class Energies(WeightWindowEnergiesBase, VarianceReductionSetting):
+        __doc__ = """WWE
         """
-        """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+        __doc__ += WeightWindowEnergiesBase().__doc__
+        
+        def _init(self, **kwargs):
+            """
+            """
+            for k in kwargs:
+                setattr(self, k.lower(), kwargs[k])
 
-class WeightWindowTimes(WeightWindowTimesBase, VarianceReductionSetting):
-    __doc__ = """WWT
-    """
-    __doc__ += WeightWindowTimesBase().__doc__
-    
-    def _init(self, **kwargs):
+    class Times(WeightWindowTimesBase, VarianceReductionSetting):
+        __doc__ = """WWT
         """
-        """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+        __doc__ += WeightWindowTimesBase().__doc__
+        
+        def _init(self, **kwargs):
+            """
+            """
+            for k in kwargs:
+                setattr(self, k.lower(), kwargs[k])
 
-class WeightWindowBounds(WeightWindowBoundsBase, VarianceReductionSetting):
-    __doc__ = """WWN
-    """
-    __doc__ += WeightWindowBoundsBase().__doc__
-    
-    def _init(self, **kwargs):
+    class Bounds(WeightWindowBoundsBase, VarianceReductionSetting):
+        __doc__ = """WWN
         """
-        """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+        __doc__ += WeightWindowBoundsBase().__doc__
+        
+        def _init(self, **kwargs):
+            """
+            """
+            for k in kwargs:
+                setattr(self, k.lower(), kwargs[k])
 
-class WeightWindowParameters(WeightWindowParametersBase, VarianceReductionSetting):
-    __doc__ = """WWP
-    """
-    __doc__ += WeightWindowParametersBase().__doc__
-    
-    def _init(self, **kwargs):
+    class Parameters(WeightWindowParametersBase, VarianceReductionSetting):
+        __doc__ = """WWP
         """
-        """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+        __doc__ += WeightWindowParametersBase().__doc__
+        
+        def _init(self, **kwargs):
+            """
+            """
+            for k in kwargs:
+                setattr(self, k.lower(), kwargs[k])
 
 class WeightWindowGenerator(WeightWindowGeneratorBase, VarianceReductionSetting):
     __doc__ = """WWG
@@ -84,27 +86,27 @@ class WeightWindowGenerator(WeightWindowGeneratorBase, VarianceReductionSetting)
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
 
-class WeightWindowGeneratorEnergies(WeightWindowGeneratorEnergiesBase, VarianceReductionSetting):
-    __doc__ = """WWGE
-    """
-    __doc__ += WeightWindowGeneratorEnergiesBase().__doc__
-    
-    def _init(self, **kwargs):
+    class Energies(WeightWindowGeneratorEnergiesBase, VarianceReductionSetting):
+        __doc__ = """WWGE
         """
-        """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+        __doc__ += WeightWindowGeneratorEnergiesBase().__doc__
+        
+        def _init(self, **kwargs):
+            """
+            """
+            for k in kwargs:
+                setattr(self, k.lower(), kwargs[k])
 
-class WeightWindowGeneratorTimes(WeightWindowGeneratorTimesBase, VarianceReductionSetting):
-    __doc__ = """WWGT
-    """
-    __doc__ += WeightWindowGeneratorTimesBase().__doc__
-    
-    def _init(self, **kwargs):
+    class Times(WeightWindowGeneratorTimesBase, VarianceReductionSetting):
+        __doc__ = """WWGT
         """
-        """
-        for k in kwargs:
-            setattr(self, k.lower(), kwargs[k])
+        __doc__ += WeightWindowGeneratorTimesBase().__doc__
+        
+        def _init(self, **kwargs):
+            """
+            """
+            for k in kwargs:
+                setattr(self, k.lower(), kwargs[k])
 
 class Mesh(MeshBase, VarianceReductionSetting):
     __doc__ = """MESH
@@ -182,6 +184,23 @@ class DeterministicTransport(DeterministicTransportBase, VarianceReductionSettin
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
+    class Sphere(DeterministicTransportSphereBase):
+        __doc__ = DeterministicTransportSphereBase().__doc__
+        
+        def _init(self, x, y, z, ri, ro):
+            self.x = x
+            self.y = y
+            self.z = z
+            self.ri = ri
+            self.ro = ro
+
+        def __str__(self):
+            string = ('(' + str(self.x) + ', ' + str(self.y) + ', ' + str(self.z) 
+                    + str(self.ri) + ', ' + str(self.ro) + ')')
+            return string
+
+        def __repr__(self):
+            return str(self)
 
 class DetectorDiagnostics(DetectorDiagnosticsBase, VarianceReductionSetting):
     __doc__ = """DD
@@ -215,7 +234,6 @@ class CellDeterministicContributions(CellDeterministicContributionsBase, Varianc
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
-
 class BremsstrahlungBiasing(BremsstrahlungBiasingBase, VarianceReductionSetting):
     __doc__ = """BBREM
     """
@@ -278,24 +296,6 @@ class CutoffParams(CutoffParamsBase):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class DeterministicTransportSphere(DeterministicTransportSphereBase):
-    __doc__ = DeterministicTransportSphereBase().__doc__
-    
-    def _init(self, x, y, z, ri, ro):
-        self.x = x
-        self.y = y
-        self.z = z
-        self.ri = ri
-        self.ro = ro
-
-    def __str__(self):
-        string = ('(' + str(self.x) + ', ' + str(self.y) + ', ' + str(self.z) 
-                  + str(self.ri) + ', ' + str(self.ro) + ')')
-        return string
-
-    def __repr__(self):
-        return str(self)
-
 class DXTSpheres(DXTSpheresBase):
     __doc__ = DXTSpheresBase().__doc__
 
@@ -320,3 +320,6 @@ for name, wrapper in overrides.items():
         overrides[name] = override
 
 subclass_overrides(PhotonBias)
+subclass_overrides(WeightWindow)
+subclass_overrides(WeightWindowGenerator)
+subclass_overrides(DeterministicTransport)

@@ -232,15 +232,18 @@ class Halfspace(HalfspaceBase):
 class Surface(SurfaceBase):
     __doc__ = SurfaceBase().__doc__
 
+    __doc__ += """
+    Parameters
+    ----------
+    name : int
+        Numeric ID for `Surface`.
+    boundary_type : mcnpy.BoundaryType
+        Surface boundary condition.
+    
+    """
+
     next_id = 1
     used_ids = set()
-
-    """def _init(self, name=None, boundary_type='vacuum', comment=None):
-        self.name = name
-        if comment is not None:
-            self.comment = comment
-        self.boundary_type = boundary_type
-        self.coefficients = {}"""
 
     def __pos__(self):
         return Halfspace('+', self)
@@ -249,7 +252,6 @@ class Surface(SurfaceBase):
         return Halfspace('-', self)
 
     def __or__(self, other):
-        print('here')
         if isinstance(other, Tally.Bin.SurfaceUnion):
             return Tally.Bin.SurfaceUnion([Tally.Bin.UnarySurfaceBin(self)] 
                                          + [Tally.Bin.UnarySurfaceBin(other[:])])

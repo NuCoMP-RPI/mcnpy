@@ -5,7 +5,7 @@ from .tally import Tally
 from .region import Complement
 from .points import Vector
 from .mixin import IDManagerMixin
-from .variance_reduction import DeterministicTransportSphere as DTS
+from .variance_reduction import DeterministicTransport as Dt
 from .wrap import wrappers, overrides, subclass_overrides
 from .wrap import package as ePackage
 
@@ -53,17 +53,11 @@ class Cell(IDManagerMixin, CellBase):
 
     @property
     def importances(self):
-        """imp = self._e_object.getImportances()
-        _importances = {}
-        for i in imp:
-            _importances[i.importance] = i.particles
-        return _importances"""
         imp = self._e_object.getImportances()
         _importances = {}
         for i in imp:
             for p in i.particles:
                 _importances[p] = i.importance
-            #_importances[i.importance] = i.particles
         return _importances
 
     @property
@@ -380,7 +374,8 @@ class Cell(IDManagerMixin, CellBase):
             if isinstance(s, ):
                 self._e_object.setSphere(s)
             else:
-                self._e_object.setSphere(DTS(str(s[0]), s[1], s[2], s[3], s[4]))
+                self._e_object.setSphere(Dt.Sphere(str(s[0]), s[1], s[2], s[3], 
+                                                      s[4]))
 
     class DetectorContribution(CellDetectorContributionBase):
         __doc__ = CellDetectorContributionBase().__doc__

@@ -16,6 +16,7 @@ from .surfaces import *
 from .tally import Tally
 from .variance_reduction import *
 from .geometry import *
+from .enum_keywords import *
 
 # Custom classes that deviate from the parse tree.
 from mcnpy.deck import *
