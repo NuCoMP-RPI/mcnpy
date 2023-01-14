@@ -16,7 +16,69 @@ class GeometrySetting(ABC):
     """
 
 class Cell(IDManagerMixin, CellBase):
-    __doc__ = CellBase().__doc__
+    """
+    A representation of the model object `Cell`.
+    
+    Parameters
+    ----------
+    name : int
+        Name for `Cell`.
+    material : mcnpy.Material
+        Material for `Cell`.
+    density_unit : mcnpy.DensityUnit
+        DensityUnit for `Cell`.
+    density : float
+        Density for `Cell`.
+    region : mcnpy.Region
+        Region for `Cell`.
+    like : mcnpy.Cell
+        Like for `Cell`.
+    volume : float
+        Volume for `Cell`.
+    photon_weight : float
+        PhotonWeight for `Cell`.
+    no_fission : int
+        NoFission for `Cell`.
+    tmp_i_d : iterable of int
+        TmpID for `Cell`.
+    temperature : iterable of float
+        Temperature for `Cell`.
+    universe : mcnpy.Universe
+        Universe for `Cell`.
+    transform_angle_unit : mcnpy.AngleUnit
+        TransformAngleUnit for `Cell`.
+    transformation : mcnpy.Transformation
+        Transformation for `Cell`.
+    transform : mcnpy.Transform
+        Transform for `Cell`.
+    lattice : str
+        Lattice for `Cell`.
+    cosy_map : int
+        CosyMap for `Cell`.
+    magnetic_field : mcnpy.MagneticField
+        MagneticField for `Cell`.
+    fill : mcnpy.Cell.Fill
+        Fill for `Cell`.
+    importances : iterable of mcnpy.Cell.Importance
+        Importances for `Cell`.
+    exponential_transforms : iterable of mcnpy.Cell.ExponentialTransform
+        ExponentialTransforms for `Cell`.
+    forced_collisions : iterable of mcnpy.Cell.ForcedCollision
+        ForcedCollisions for `Cell`.
+    weight_windows : iterable of mcnpy.Cell.WeightWindow
+        WeightWindows for `Cell`.
+    deterministic_contributions : iterable of mcnpy.Cell.DeterministicContribution
+        DeterministicContributions for `Cell`.
+    detector_contributions : iterable of mcnpy.Cell.DetectorContribution
+        DetectorContributions for `Cell`.
+    energy_cutoffs : iterable of mcnpy.Cell.EnergyCutoff
+        EnergyCutoffs for `Cell`.
+    uncollided_secondaries : iterable of mcnpy.Cell.UncollidedSecondaries
+        UncollidedSecondaries for `Cell`.
+    comment : str
+        Comment for `Cell`.
+    
+    """
 
     next_id = 1
     used_ids = set()
@@ -249,7 +311,17 @@ class Cell(IDManagerMixin, CellBase):
 
     #TODO: Would be nice if particles were automatically added to mode from here.
     class Importance(CellImportanceBase):
-        __doc__ = CellImportanceBase().__doc__
+        """
+        A representation of the model object `Cell.Importance`.
+        
+        Parameters
+        ----------
+        particles : iterable of mcnpy.Particle
+            Particles for `Cell.Importance`.
+        importance : float
+            Importance for `Cell.Importance`.
+        
+        """
 
         def _init(self, importance, particles):
             self.importance = importance
@@ -265,7 +337,33 @@ class Cell(IDManagerMixin, CellBase):
 
 
     class Fill(CellFillBase):
-        __doc__ = CellFillBase().__doc__
+        """
+        A representation of the model object `Cell.Fill`.
+        
+        Parameters
+        ----------
+        unit : mcnpy.AngleUnit
+            Unit for `Cell.Fill`.
+        fill : Object
+            Fill for `Cell.Fill`.
+        transform : mcnpy.Transform
+            Transform for `Cell.Fill`.
+        transformation : mcnpy.Transformation
+            Transformation for `Cell.Fill`.
+        i : iterable of int
+            I for `Cell.Fill`.
+        j : iterable of int
+            J for `Cell.Fill`.
+        k : iterable of int
+            K for `Cell.Fill`.
+        lattice : iterable of Object
+            Lattice for `Cell.Fill`.
+        transforms : iterable of mcnpy.Transform
+            Transforms for `Cell.Fill`.
+        transformations : iterable of mcnpy.Transformation
+            Transformations for `Cell.Fill`.
+        
+        """
 
         def _init(self, fill, unit, transformation, transform, lattice, 
                   i, j, k):
@@ -308,7 +406,21 @@ class Cell(IDManagerMixin, CellBase):
 
 
     class ExponentialTransform(CellExponentialTransformBase):
-        __doc__ = CellExponentialTransformBase().__doc__
+        """
+        A representation of the model object `Cell.ExponentialTransform`.
+        
+        Parameters
+        ----------
+        magnitude : float
+            Magnitude for `Cell.ExponentialTransform`.
+        axis : mcnpy.Axis
+            Axis for `Cell.ExponentialTransform`.
+        vector : mcnpy.Vector
+            Vector for `Cell.ExponentialTransform`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Cell.ExponentialTransform`.
+        
+        """
         
         def _init(self, particles, magnitude, axis=None, vector=None):
             """
@@ -334,7 +446,17 @@ class Cell(IDManagerMixin, CellBase):
                 self._e_object.setVector(Vector(str(v[0]), v[1], v[2], v[3]))
 
     class ForcedCollision(CellForcedCollisionBase):
-        __doc__ = CellForcedCollisionBase().__doc__
+        """
+        A representation of the model object `Cell.ForcedCollision`.
+        
+        Parameters
+        ----------
+        which_particles : iterable of float
+            WhichParticles for `Cell.ForcedCollision`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Cell.ForcedCollision`.
+        
+        """
         
         def _init(self, particles, which_particles):
             """
@@ -343,7 +465,19 @@ class Cell(IDManagerMixin, CellBase):
             self.which_particles = which_particles
 
     class WeightWindow(CellWeightWindowBase):
-        __doc__ = CellWeightWindowBase().__doc__
+        """
+        A representation of the model object `Cell.WeightWindow`.
+        
+        Parameters
+        ----------
+        index : int
+            Index for `Cell.WeightWindow`.
+        weight_window : float
+            WeightWindow for `Cell.WeightWindow`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Cell.WeightWindow`.
+        
+        """
         
         def _init(self, particles, weight_window, index=None):
             """
@@ -353,7 +487,17 @@ class Cell(IDManagerMixin, CellBase):
             self.index = index
 
     class DeterministicContribution(CellDeterministicContributionBase):
-        __doc__ = CellDeterministicContributionBase().__doc__
+        """
+        A representation of the model object `Cell.DeterministicContribution`.
+        
+        Parameters
+        ----------
+        sphere : mcnpy.DeterministicTransport.Sphere
+            Sphere for `Cell.DeterministicContribution`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Cell.DeterministicContribution`.
+        
+        """
         
         def _init(self, particles, sphere):
             """
@@ -378,7 +522,17 @@ class Cell(IDManagerMixin, CellBase):
                                                       s[4]))
 
     class DetectorContribution(CellDetectorContributionBase):
-        __doc__ = CellDetectorContributionBase().__doc__
+        """
+        A representation of the model object `Cell.DetectorContribution`.
+        
+        Parameters
+        ----------
+        tally : mcnpy.Tally
+            Tally for `Cell.DetectorContribution`.
+        probability : float
+            Probability for `Cell.DetectorContribution`.
+        
+        """
         
         def _init(self, tally, probability):
             """
@@ -387,7 +541,17 @@ class Cell(IDManagerMixin, CellBase):
             self.probability = probability
 
     class EnergyCutoff(CellEnergyCutoffBase):
-        __doc__ = CellEnergyCutoffBase().__doc__
+        """
+        A representation of the model object `Cell.EnergyCutoff`.
+        
+        Parameters
+        ----------
+        lower_cutoff : float
+            LowerCutoff for `Cell.EnergyCutoff`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Cell.EnergyCutoff`.
+        
+        """
         
         def _init(self, particles, lower_cutoff):
             """
@@ -396,7 +560,17 @@ class Cell(IDManagerMixin, CellBase):
             self.lower_cutoff = lower_cutoff
 
     class UncollidedSecondaries(CellUncollidedSecondariesBase):
-        __doc__ = CellUncollidedSecondariesBase().__doc__
+        """
+        A representation of the model object `Cell.UncollidedSecondaries`.
+        
+        Parameters
+        ----------
+        uncollided : int
+            Uncollided for `Cell.UncollidedSecondaries`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Cell.UncollidedSecondaries`.
+        
+        """
         
         def _init(self, particles, uncollided):
             """
@@ -442,7 +616,27 @@ class Transformation(IDManagerMixin, TransformationBase, GeometrySetting):
             self._e_object.setTransformation(tr)
 
 class Transform(TransformBase):
-    __doc__ = TransformBase().__doc__
+    """
+    A representation of the model object `Transform`.
+    
+    Parameters
+    ----------
+    disp1 : float
+        Disp1 for `Transform`.
+    j_disp1 : str
+        J_disp1 for `Transform`.
+    disp2 : float
+        Disp2 for `Transform`.
+    j_disp2 : str
+        J_disp2 for `Transform`.
+    disp3 : float
+        Disp3 for `Transform`.
+    j_disp3 : str
+        J_disp3 for `Transform`.
+    rotation : mcnpy.Transform.RotMatrix
+        Rotation for `Transform`.
+    
+    """
 
     def _init(self, displacement, rotation=None, m=None):
         """
@@ -467,7 +661,53 @@ class Transform(TransformBase):
         self.disp3 = disp[2]
 
     class RotMatrix(RotMatrixBase):
-        __doc__ = RotMatrixBase().__doc__
+        """
+        A representation of the model object `Transform.RotMatrix`.
+        
+        Parameters
+        ----------
+        xx : float
+            Xx for `Transform.RotMatrix`.
+        j_xx : str
+            J_xx for `Transform.RotMatrix`.
+        yx : float
+            Yx for `Transform.RotMatrix`.
+        j_yx : str
+            J_yx for `Transform.RotMatrix`.
+        zx : float
+            Zx for `Transform.RotMatrix`.
+        j_zx : str
+            J_zx for `Transform.RotMatrix`.
+        xy : float
+            Xy for `Transform.RotMatrix`.
+        j_xy : str
+            J_xy for `Transform.RotMatrix`.
+        yy : float
+            Yy for `Transform.RotMatrix`.
+        j_yy : str
+            J_yy for `Transform.RotMatrix`.
+        zy : float
+            Zy for `Transform.RotMatrix`.
+        j_zy : str
+            J_zy for `Transform.RotMatrix`.
+        xz : float
+            Xz for `Transform.RotMatrix`.
+        j_xz : str
+            J_xz for `Transform.RotMatrix`.
+        yz : float
+            Yz for `Transform.RotMatrix`.
+        j_yz : str
+            J_yz for `Transform.RotMatrix`.
+        zz : float
+            Zz for `Transform.RotMatrix`.
+        j_zz : str
+            J_zz for `Transform.RotMatrix`.
+        m : float
+            M for `Transform.RotMatrix`.
+        j_m : str
+            J_m for `Transform.RotMatrix`.
+        
+        """
 
         def _init(self, matrix, m=None):
             """`matrix` is a 3x3 numpy array in the form
@@ -514,7 +754,15 @@ class Transform(TransformBase):
                 self.zz = _matrix[2, 2]
 
 class Volumes(VolumesBase, GeometrySetting):
-    __doc__ = VolumesBase().__doc__
+    """
+    A representation of the model object `Volumes`.
+    
+    Parameters
+    ----------
+    mcnpy.Volumes#getVolumesVolumes : iterable of str
+        Volumes for `Volumes`.
+    
+    """
 
     def _init(self, **kwargs):
         """
@@ -523,7 +771,15 @@ class Volumes(VolumesBase, GeometrySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class Areas(AreasBase, GeometrySetting):
-    __doc__ = AreasBase().__doc__
+    """
+    A representation of the model object `Areas`.
+    
+    Parameters
+    ----------
+    mcnpy.Areas#getAreasAreas : iterable of str
+        Areas for `Areas`.
+    
+    """
 
     def _init(self, **kwargs):
         """
@@ -532,7 +788,13 @@ class Areas(AreasBase, GeometrySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class Fills(FillsBase, GeometrySetting):
-    __doc__ = FillsBase().__doc__
+    """
+    A representation of the model object `Fills`.
+    
+    Parameters
+    ----------
+    
+    """
 
     def _init(self, **kwargs):
         """
@@ -541,7 +803,15 @@ class Fills(FillsBase, GeometrySetting):
             setattr(self, k.lower(), kwargs[k])
 
 class StochasticGeometry(StochasticGeometryBase, GeometrySetting):
-    __doc__ = StochasticGeometryBase().__doc__
+    """
+    A representation of the model object `StochasticGeometry`.
+    
+    Parameters
+    ----------
+    stochastic_transformations : iterable of mcnpy.StochasticGeometry.Transformation
+        StochasticTransformations for `StochasticGeometry`.
+    
+    """
 
     def _init(self, **kwargs):
         """
@@ -550,7 +820,21 @@ class StochasticGeometry(StochasticGeometryBase, GeometrySetting):
             setattr(self, k.lower(), kwargs[k])
 
     class Transformation(StochasticGeometryTransformationBase):
-        __doc__ = StochasticGeometryTransformationBase().__doc__
+        """
+        A representation of the model object `StochasticGeometry.Transformation`.
+        
+        Parameters
+        ----------
+        universe : Object
+            Universe for `StochasticGeometry.Transformation`.
+        dx : float
+            Dx for `StochasticGeometry.Transformation`.
+        dy : float
+            Dy for `StochasticGeometry.Transformation`.
+        dz : float
+            Dz for `StochasticGeometry.Transformation`.
+        
+        """
 
         def _init(self, **kwargs):
             """
@@ -562,7 +846,13 @@ class Deterministic(GeometrySetting):
     """
     """
     class Materials(DeterministicMaterialsBase, GeometrySetting):
-        __doc__ = DeterministicMaterialsBase().__doc__
+        """
+        A representation of the model object `Deterministic.Materials`.
+        
+        Parameters
+        ----------
+        
+        """
 
         def _init(self, **kwargs):
             """
@@ -572,7 +862,27 @@ class Deterministic(GeometrySetting):
 
     class WeightWindowGenerator(DeterministicWeightWindowGeneratorBase, 
                                 GeometrySetting):
-        __doc__ = DeterministicWeightWindowGeneratorBase().__doc__
+        """
+        A representation of the model object `Deterministic.WeightWindowGenerator`.
+        
+        Parameters
+        ----------
+        points : int
+            Points for `Deterministic.WeightWindowGenerator`.
+        xsec_library : mcnpy.Library
+            XsecLibrary for `Deterministic.WeightWindowGenerator`.
+        tally : mcnpy.Tally
+            Tally for `Deterministic.WeightWindowGenerator`.
+        block_one : mcnpy.Partisn.BlockOne
+            BlockOne for `Deterministic.WeightWindowGenerator`.
+        block_three : mcnpy.Partisn.BlockThree
+            BlockThree for `Deterministic.WeightWindowGenerator`.
+        block_five : mcnpy.Partisn.BlockFive
+            BlockFive for `Deterministic.WeightWindowGenerator`.
+        block_six : mcnpy.Partisn.BlockSix
+            BlockSix for `Deterministic.WeightWindowGenerator`.
+        
+        """
 
         def _init(self, **kwargs):
             """
@@ -584,7 +894,49 @@ class Embedded(GeometrySetting):
     """
     """
     class Geometry(EmbeddedGeometryBase, GeometrySetting):
-        __doc__ = EmbeddedGeometryBase().__doc__
+        """
+        A representation of the model object `Embedded.Geometry`.
+        
+        Parameters
+        ----------
+        name : int
+            Name for `Embedded.Geometry`.
+        background : mcnpy.Cell
+            Background for `Embedded.Geometry`.
+        sign : iterable of str
+            Sign for `Embedded.Geometry`.
+        materials : iterable of int
+            Materials for `Embedded.Geometry`.
+        cells : iterable of int
+            Cells for `Embedded.Geometry`.
+        mesh_format : mcnpy.Embedded.GeometryMeshFormat
+            MeshFormat for `Embedded.Geometry`.
+        mesh : str
+            Mesh for `Embedded.Geometry`.
+        eeout : str
+            Eeout for `Embedded.Geometry`.
+        eeout_res : str
+            EeoutRes for `Embedded.Geometry`.
+        calculate_volumes : mcnpy.YesNo
+            CalculateVolumes for `Embedded.Geometry`.
+        debug : mcnpy.Embedded.GeometryDebug
+            Debug for `Embedded.Geometry`.
+        filetype : mcnpy.Embedded.GeometryFiletype
+            Filetype for `Embedded.Geometry`.
+        gmv_file : str
+            GmvFile for `Embedded.Geometry`.
+        length_conversion_factor : float
+            LengthConversionFactor for `Embedded.Geometry`.
+        mcnpum_file : str
+            McnpumFile for `Embedded.Geometry`.
+        overlap : mcnpy.Embedded.GeometryOverlap
+            Overlap for `Embedded.Geometry`.
+        overlap_cell : iterable of mcnpy.Embedded.GeometryOverlap
+            OverlapCell for `Embedded.Geometry`.
+        overlap_cells : iterable of mcnpy.Cell
+            OverlapCells for `Embedded.Geometry`.
+        
+        """
 
         def _init(self, **kwargs):
             """
@@ -593,7 +945,37 @@ class Embedded(GeometrySetting):
                 setattr(self, k.lower(), kwargs[k])
 
     class Edit(EmbeddedEditBase, GeometrySetting):
-        __doc__ = EmbeddedEditBase().__doc__
+        """
+        A representation of the model object `Embedded.Edit`.
+        
+        Parameters
+        ----------
+        name : int
+            Name for `Embedded.Edit`.
+        mesh_universe : int
+            MeshUniverse for `Embedded.Edit`.
+        scale_energy : float
+            ScaleEnergy for `Embedded.Edit`.
+        scale_time : float
+            ScaleTime for `Embedded.Edit`.
+        atom_density_flag : mcnpy.YesNo
+            AtomDensityFlag for `Embedded.Edit`.
+        mult_constant : float
+            MultConstant for `Embedded.Edit`.
+        rxn_list : mcnpy.Tally.Bins.Multiplier.RxnLists
+            RxnList for `Embedded.Edit`.
+        material_no : mcnpy.Material
+            MaterialNo for `Embedded.Edit`.
+        mult_type : mcnpy.MTypeOptions
+            MultType for `Embedded.Edit`.
+        errors : mcnpy.YesNo
+            Errors for `Embedded.Edit`.
+        comment : str
+            Comment for `Embedded.Edit`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Embedded.Edit`.
+        
+        """
 
         def _init(self, **kwargs):
             """
@@ -602,7 +984,19 @@ class Embedded(GeometrySetting):
                 setattr(self, k.lower(), kwargs[k])
 
         class EnergyBins(EmbeddedEditEnergyBinsBase, GeometrySetting):
-            __doc__ = EmbeddedEditEnergyBinsBase().__doc__
+            """
+            A representation of the model object `Embedded.Edit.EnergyBins`.
+            
+            Parameters
+            ----------
+            edit : mcnpy.Embedded.Edit
+                Edit for `Embedded.Edit.EnergyBins`.
+            bins : iterable of float
+                Bins for `Embedded.Edit.EnergyBins`.
+            particles : iterable of mcnpy.Particle
+                Particles for `Embedded.Edit.EnergyBins`.
+            
+            """
 
             def _init(self, **kwargs):
                 """
@@ -612,7 +1006,17 @@ class Embedded(GeometrySetting):
 
         class EnergyBinMultipliers(EmbeddedEditEnergyBinMultipliersBase, 
                                    GeometrySetting):
-            __doc__ = EmbeddedEditEnergyBinMultipliersBase().__doc__
+            """
+            A representation of the model object `Embedded.Edit.EnergyBinMultipliers`.
+            
+            Parameters
+            ----------
+            edit : mcnpy.Embedded.Edit
+                Edit for `Embedded.Edit.EnergyBinMultipliers`.
+            multipliers : iterable of float
+                Multipliers for `Embedded.Edit.EnergyBinMultipliers`.
+            
+            """
 
             def _init(self, **kwargs):
                 """
@@ -621,7 +1025,17 @@ class Embedded(GeometrySetting):
                     setattr(self, k.lower(), kwargs[k])
 
         class TimeBins(EmbeddedEditTimeBinsBase, GeometrySetting):
-            __doc__ = EmbeddedEditTimeBinsBase().__doc__
+            """
+            A representation of the model object `Embedded.Edit.TimeBins`.
+            
+            Parameters
+            ----------
+            edit : mcnpy.Embedded.Edit
+                Edit for `Embedded.Edit.TimeBins`.
+            bins : iterable of float
+                Bins for `Embedded.Edit.TimeBins`.
+            
+            """
 
             def _init(self, **kwargs):
                 """
@@ -631,7 +1045,17 @@ class Embedded(GeometrySetting):
 
         class TimeBinMultipliers(EmbeddedEditTimeBinMultipliersBase, 
                                  GeometrySetting):
-            __doc__ = EmbeddedEditTimeBinMultipliersBase().__doc__
+            """
+            A representation of the model object `Embedded.Edit.TimeBinMultipliers`.
+            
+            Parameters
+            ----------
+            edit : mcnpy.Embedded.Edit
+                Edit for `Embedded.Edit.TimeBinMultipliers`.
+            multipliers : iterable of float
+                Multipliers for `Embedded.Edit.TimeBinMultipliers`.
+            
+            """
 
             def _init(self, **kwargs):
                 """
@@ -640,7 +1064,17 @@ class Embedded(GeometrySetting):
                     setattr(self, k.lower(), kwargs[k])
 
         class DoseBins(EmbeddedEditDoseBinsBase, GeometrySetting):
-            __doc__ = EmbeddedEditDoseBinsBase().__doc__
+            """
+            A representation of the model object `Embedded.Edit.DoseBins`.
+            
+            Parameters
+            ----------
+            edit : mcnpy.Embedded.Edit
+                Edit for `Embedded.Edit.DoseBins`.
+            bins : iterable of float
+                Bins for `Embedded.Edit.DoseBins`.
+            
+            """
 
             def _init(self, **kwargs):
                 """
@@ -650,7 +1084,17 @@ class Embedded(GeometrySetting):
 
         class DoseBinMultipliers(EmbeddedEditDoseBinMultipliersBase, 
                                  GeometrySetting):
-            __doc__ = EmbeddedEditDoseBinMultipliersBase().__doc__
+            """
+            A representation of the model object `Embedded.Edit.DoseBinMultipliers`.
+            
+            Parameters
+            ----------
+            edit : mcnpy.Embedded.Edit
+                Edit for `Embedded.Edit.DoseBinMultipliers`.
+            multipliers : iterable of float
+                Multipliers for `Embedded.Edit.DoseBinMultipliers`.
+            
+            """
 
             def _init(self, **kwargs):
                 """
@@ -659,7 +1103,13 @@ class Embedded(GeometrySetting):
                     setattr(self, k.lower(), kwargs[k])
 
 class Lattices(LatticesBase, GeometrySetting):
-    __doc__ = LatticesBase().__doc__
+    """
+    A representation of the model object `Lattices`.
+    
+    Parameters
+    ----------
+    
+    """
 
     def _init(self, **kwargs):
         """
@@ -671,7 +1121,43 @@ class Partisn(GeometrySetting):
     """
     """
     class BlockOne(PartisnBlockOneBase, GeometrySetting):
-        __doc__ = PartisnBlockOneBase().__doc__
+        """
+        A representation of the model object `Partisn.BlockOne`.
+        
+        Parameters
+        ----------
+        group_count : int
+            GroupCount for `Partisn.BlockOne`.
+        sn_order : int
+            SnOrder for `Partisn.BlockOne`.
+        isotope_count : int
+            IsotopeCount for `Partisn.BlockOne`.
+        material_count : int
+            MaterialCount for `Partisn.BlockOne`.
+        quadrature : int
+            Quadrature for `Partisn.BlockOne`.
+        read_composition : int
+            ReadComposition for `Partisn.BlockOne`.
+        suppress_solver : int
+            SuppressSolver for `Partisn.BlockOne`.
+        supress_edit : int
+            SupressEdit for `Partisn.BlockOne`.
+        print_g_e_o_d_s_t : int
+            PrintGEODST for `Partisn.BlockOne`.
+        print_mixing : int
+            PrintMixing for `Partisn.BlockOne`.
+        print_a_s_g_m_a_t : int
+            PrintASGMAT for `Partisn.BlockOne`.
+        print_m_a_c_r_x_s : int
+            PrintMACRXS for `Partisn.BlockOne`.
+        print_s_o_l_i_n_p : int
+            PrintSOLINP for `Partisn.BlockOne`.
+        print_e_d_i_t_i_t : int
+            PrintEDITIT for `Partisn.BlockOne`.
+        print_a_d_j_m_a_c : int
+            PrintADJMAC for `Partisn.BlockOne`.
+        
+        """
 
         def _init(self, **kwargs):
             """
@@ -680,7 +1166,25 @@ class Partisn(GeometrySetting):
                 setattr(self, k, kwargs[k])
 
     class BlockThree(PartisnBlockThreeBase, GeometrySetting):
-        __doc__ = PartisnBlockThreeBase().__doc__
+        """
+        A representation of the model object `Partisn.BlockThree`.
+        
+        Parameters
+        ----------
+        xsec_form : str
+            XsecForm for `Partisn.BlockThree`.
+        xsec_library : str
+            XsecLibrary for `Partisn.BlockThree`.
+        enable_fission_neutrons : int
+            EnableFissionNeutrons for `Partisn.BlockThree`.
+        last_neutron_group_index : int
+            LastNeutronGroupIndex for `Partisn.BlockThree`.
+        xsec_balance : int
+            XsecBalance for `Partisn.BlockThree`.
+        mendf_fission_fraction : int
+            MendfFissionFraction for `Partisn.BlockThree`.
+        
+        """
 
         def _init(self, **kwargs):
             """
@@ -689,7 +1193,79 @@ class Partisn(GeometrySetting):
                 setattr(self, k, kwargs[k])
 
     class BlockFive(PartisnBlockFiveBase, GeometrySetting):
-        __doc__ = PartisnBlockFiveBase().__doc__
+        """
+        A representation of the model object `Partisn.BlockFive`.
+        
+        Parameters
+        ----------
+        calculation_type : int
+            CalculationType for `Partisn.BlockFive`.
+        legendre_order : int
+            LegendreOrder for `Partisn.BlockFive`.
+        adjoint : int
+            Adjoint for `Partisn.BlockFive`.
+        trcor : str
+            Trcor for `Partisn.BlockFive`.
+        left_b_c : int
+            LeftBC for `Partisn.BlockFive`.
+        right_b_c : int
+            RightBC for `Partisn.BlockFive`.
+        top_b_c : int
+            TopBC for `Partisn.BlockFive`.
+        bottom_b_c : int
+            BottomBC for `Partisn.BlockFive`.
+        convergence_precision : float
+            ConvergencePrecision for `Partisn.BlockFive`.
+        max_outer_iterations : int
+            MaxOuterIterations for `Partisn.BlockFive`.
+        inhibit_fission_multiplication : int
+            InhibitFissionMultiplication for `Partisn.BlockFive`.
+        solver_acceleration : mcnpy.PartisnSolverAcceleration
+            SolverAcceleration for `Partisn.BlockFive`.
+        diffusion_solver : str
+            DiffusionSolver for `Partisn.BlockFive`.
+        synthetic_acceleration_sn_order : int
+            SyntheticAccelerationSnOrder for `Partisn.BlockFive`.
+        synthetic_acceleration_convergence : float
+            SyntheticAccelerationConvergence for `Partisn.BlockFive`.
+        max_synthetic_acceleration_iterations : float
+            MaxSyntheticAccelerationIterations for `Partisn.BlockFive`.
+        sytnethic_acceleration_scattering_reduction : float
+            SytnethicAccelerationScatteringReduction for `Partisn.BlockFive`.
+        special_criticality_convergence : int
+            SpecialCriticalityConvergence for `Partisn.BlockFive`.
+        norm : float
+            Norm for `Partisn.BlockFive`.
+        print_xsecs : int
+            PrintXsecs for `Partisn.BlockFive`.
+        print_fission_source_rate : int
+            PrintFissionSourceRate for `Partisn.BlockFive`.
+        print_fission_source : int
+            PrintFissionSource for `Partisn.BlockFive`.
+        print_angular_flux : int
+            PrintAngularFlux for `Partisn.BlockFive`.
+        print_coarse_mesh_balance : int
+            PrintCoarseMeshBalance for `Partisn.BlockFive`.
+        prepare_angular_flux : int
+            PrepareAngularFlux for `Partisn.BlockFive`.
+        prepare_flux_moments : int
+            PrepareFluxMoments for `Partisn.BlockFive`.
+        prepare_xmfluxa : int
+            PrepareXmfluxa for `Partisn.BlockFive`.
+        right_flux : int
+            RightFlux for `Partisn.BlockFive`.
+        left_flux : int
+            LeftFlux for `Partisn.BlockFive`.
+        top_flux : int
+            TopFlux for `Partisn.BlockFive`.
+        bottom_flux : int
+            BottomFlux for `Partisn.BlockFive`.
+        back_flux : int
+            BackFlux for `Partisn.BlockFive`.
+        front_flux : int
+            FrontFlux for `Partisn.BlockFive`.
+        
+        """
 
         def _init(self, **kwargs):
             """
@@ -698,7 +1274,31 @@ class Partisn(GeometrySetting):
                 setattr(self, k, kwargs[k])
 
     class BlockSix(PartisnBlockSixBase, GeometrySetting):
-        __doc__ = PartisnBlockSixBase().__doc__
+        """
+        A representation of the model object `Partisn.BlockSix`.
+        
+        Parameters
+        ----------
+        mass_edits : int
+            MassEdits for `Partisn.BlockSix`.
+        edits_by_fine_mesh : int
+            EditsByFineMesh for `Partisn.BlockSix`.
+        edits_by_zone : int
+            EditsByZone for `Partisn.BlockSix`.
+        print_a_flux : int
+            PrintAFlux for `Partisn.BlockSix`.
+        print_b_flux : int
+            PrintBFlux for `Partisn.BlockSix`.
+        ascii_output : int
+            AsciiOutput for `Partisn.BlockSix`.
+        scale_edits_by_volume : int
+            ScaleEditsByVolume for `Partisn.BlockSix`.
+        adjoint : int
+            Adjoint for `Partisn.BlockSix`.
+        flux_override : int
+            FluxOverride for `Partisn.BlockSix`.
+        
+        """
 
         def _init(self, **kwargs):
             """
@@ -730,32 +1330,6 @@ class Lattice():
         Dictionary mapping Transformation IDs to `mcnpy.Transformation` objects.
         Note that that the values can also be `mcnpy.Transforms` if an appropriate
         ID is used when defining `lattice`.
-
-    Attributes
-    ----------
-    i : iterable of int
-        Indices of innermost lattice dimension.
-    j : iterable of int
-        Indicies of second lattice dimension.
-    k : iterable of int
-        Indicies of outermost lattice dimension.
-    lattice : numpy.array
-        Array of universe IDs, `mcnpy.LatticeElement` objects, or 
-        tuple(universe ID, transformation ID). When providing IDs, `universes` 
-        and `transformations` must be specified. Use `0` for elements with 
-        background fill.
-    type : str, optional
-        Lattice type, 'REC' or 'HEX'
-    universes : dict
-        Dictionary mapping universe IDs to `mcnpy.Univese` objects.
-    transformations : dict, optional
-        Dictionary mapping Transformation IDs to `mcnpy.Transformation` objects.
-        Note that that the values can also be `mcnpy.Transforms` if an appropriate
-        ID is used when defining `lattice`.
-    dims : iterable of int
-        The i, j, k dimensions of the lattice.
-    size : int
-        Number of elements in the lattice.
 
     """
     def __init__(self, i=[], j=[], k=[], lattice=None, type='REC', 
@@ -958,7 +1532,16 @@ class Lattice():
             return string
 
     class Element(LatticeElementBase):
-        __doc__ = LatticeElementBase().__doc__
+        """
+        
+        A representation of the model object `Lattice.Element`.
+
+        Parameters
+        ----------
+        element : list or tuple
+            A `mcnpy.Universe` with optional `mcnpy.Transform` or `mcnpy.Transformation`.
+        
+        """
         
         def _init(self, element):
             """
@@ -1029,7 +1612,25 @@ class Lattice():
                 #self._e_object.setTransformation(None)
 
     class Range(LatticeRangeBase):
-        __doc__ = LatticeRangeBase().__doc__
+        """
+        A representation of the model object `Lattice.Range`.
+        
+        Parameters
+        ----------
+        i0 : mcnpy.Lattice.Range.Int
+            I0 for `Lattice.Range`.
+        i1 : mcnpy.Lattice.Range.Int
+            I1 for `Lattice.Range`.
+        j0 : mcnpy.Lattice.Range.Int
+            J0 for `Lattice.Range`.
+        j1 : mcnpy.Lattice.Range.Int
+            J1 for `Lattice.Range`.
+        k0 : mcnpy.Lattice.Range.Int
+            K0 for `Lattice.Range`.
+        k1 : mcnpy.Lattice.Range.Int
+            K1 for `Lattice.Range`.
+        
+        """
 
         def _init(self, i0, j0, k0, i1=None, j1=None, k1=None):
             if i0 is not None:
@@ -1109,7 +1710,17 @@ class Lattice():
             return string
 
         class Int(RangeIntBase):
-            __doc__ = RangeIntBase().__doc__
+            """
+            A representation of the model object `Lattice.Range.Int`.
+            
+            Parameters
+            ----------
+            sign : str
+                Sign for `Lattice.Range.Int`.
+            value : int
+                Value for `Lattice.Range.Int`.
+            
+            """
 
             def _init(self, value):
                 """
@@ -1140,7 +1751,19 @@ class Lattice():
                     return str(self.value)
 
     class Coordinate(LatticeCoordinateBase):
-        __doc__ = LatticeCoordinateBase().__doc__
+        """
+        A representation of the model object `Lattice.Coordinate`.
+        
+        Parameters
+        ----------
+        i : int
+            I for `Lattice.Coordinate`.
+        j : int
+            J for `Lattice.Coordinate`.
+        k : int
+            K for `Lattice.Coordinate`.
+        
+        """
 
         def _init(self, i, j, k):
             self.i = i
@@ -1163,7 +1786,15 @@ class Lattice():
                     + str(self.k) + ' )')
 
     class Coordinates(LatticeCoordinatesBase):
-        __doc__ = LatticeCoordinatesBase().__doc__
+        """
+        A representation of the model object `Lattice.Coordinates`.
+        
+        Parameters
+        ----------
+        coordinates : iterable of mcnpy.Lattice.Coordinate
+            Coordinates for `Lattice.Coordinates`.
+        
+        """
 
         def _init(self, coordinates:list):
             self.coordinates = coordinates
@@ -1198,7 +1829,15 @@ class Lattice():
             return string
 
     class FlatIndex(LatticeFlatIndexBase):
-        __doc__ = LatticeFlatIndexBase().__doc__
+        """
+        A representation of the model object `Lattice.FlatIndex`.
+        
+        Parameters
+        ----------
+        i : int
+            I for `Lattice.FlatIndex`.
+        
+        """
 
         def _init(self, i):
             self.i = i
@@ -1207,7 +1846,17 @@ class Lattice():
             return str(self.i)
 
     class Index(LatticeIndexBase):
-        __doc__ = LatticeIndexBase().__doc__
+        """
+        A representation of the model object `Lattice.Index`.
+        
+        Parameters
+        ----------
+        index : Object
+            Index for `Lattice.Index`.
+        universe : mcnpy.Universe
+            Universe for `Lattice.Index`.
+        
+        """
 
         def _init(self, index=None, universe=None):
             self.index = index
@@ -1349,7 +1998,17 @@ class UniverseList():
         self.cells[cell.name] = cell
 
 class Universe(UniverseBase):
-    __doc__ = UniverseBase().__doc__
+    """
+    A representation of the model object `Universe`.
+    
+    Parameters
+    ----------
+    sign : str
+        Sign for `Universe`.
+    name : int
+        Name for `Universe`.
+    
+    """
 
     def _init(self, name):
         self.name = name
@@ -1369,7 +2028,13 @@ class Universe(UniverseBase):
         return 'U' + str(self.name)
 
 class Universes(UniversesBase):
-    __doc__ = UniversesBase().__doc__
+    """
+    A representation of the model object `Universes`.
+    
+    Parameters
+    ----------
+    
+    """
 
     def _init(self, **kwargs):
         """

@@ -118,79 +118,211 @@ class Tally():
     """
     """
     class SurfaceCurrent(FTallyABC, TallySurfaceCurrentBase):
+        """
+        A representation of the model object `Tally.SurfaceCurrent`.
+        
+        Parameters
+        ----------
+        unit : mcnpy.CurrentUnit
+            Unit for `Tally.SurfaceCurrent`.
+        name : int
+            Name for `Tally.SurfaceCurrent`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Tally.SurfaceCurrent`.
+        bins : mcnpy.Tally.Bin.SurfaceBins
+            Bins for `Tally.SurfaceCurrent`.
+        total : str
+            Total for `Tally.SurfaceCurrent`.
+        
+        """
+        
         next_id = 1
         increment = 10
 
-        __doc__ = """F1
-        """
-        __doc__ += TallySurfaceCurrentBase().__doc__
-
     class SurfaceFlux(FTallyABC, TallySurfaceFluxBase):
+        """
+        A representation of the model object `Tally.SurfaceFlux`.
+        
+        Parameters
+        ----------
+        unit : mcnpy.FluxUnit
+            Unit for `Tally.SurfaceFlux`.
+        name : int
+            Name for `Tally.SurfaceFlux`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Tally.SurfaceFlux`.
+        bins : mcnpy.Tally.Bin.SurfaceBins
+            Bins for `Tally.SurfaceFlux`.
+        total : str
+            Total for `Tally.SurfaceFlux`.
+        
+        """
+        
         next_id = 2
         increment = 10
 
-        __doc__ = """F2
-        """
-        __doc__ += TallySurfaceFluxBase().__doc__
-
     class CellFlux(FTallyABC, TallyCellFluxBase):
+        """
+        A representation of the model object `Tally.CellFlux`.
+        
+        Parameters
+        ----------
+        unit : mcnpy.FluxUnit
+            Unit for `Tally.CellFlux`.
+        name : int
+            Name for `Tally.CellFlux`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Tally.CellFlux`.
+        bins : mcnpy.Tally.Bin.CellBins
+            Bins for `Tally.CellFlux`.
+        total : str
+            Total for `Tally.CellFlux`.
+        
+        """
+        
         next_id = 4
         increment = 10
 
-        __doc__ = """F4
-        """
-        __doc__ += TallyCellFluxBase().__doc__
-
     class EnergyDeposition(FTallyABC, TallyEnergyDepositionBase):
+        """
+        A representation of the model object `Tally.EnergyDeposition`.
+        
+        Parameters
+        ----------
+        unit : mcnpy.FluxUnit
+            Unit for `Tally.EnergyDeposition`.
+        name : int
+            Name for `Tally.EnergyDeposition`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Tally.EnergyDeposition`.
+        bins : mcnpy.Tally.Bin.CellBins
+            Bins for `Tally.EnergyDeposition`.
+        total : str
+            Total for `Tally.EnergyDeposition`.
+        
+        """
+        
         next_id = 6
         increment = 10
-
-        __doc__ = """F6
-        """
-        __doc__ += TallyEnergyDepositionBase().__doc__
 
     class CollisionHeating(FTallyABC, TallyCollisionHeatingBase):
+        """
+        A representation of the model object `Tally.CollisionHeating`.
+        
+        Parameters
+        ----------
+        name : int
+            Name for `Tally.CollisionHeating`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Tally.CollisionHeating`.
+        bins : mcnpy.Tally.Bin.CellBins
+            Bins for `Tally.CollisionHeating`.
+        total : str
+            Total for `Tally.CollisionHeating`.
+        
+        """
+        
         next_id = 6
         increment = 10
-        
-        __doc__ = """+F6
-        """
-        __doc__ += TallyCollisionHeatingBase().__doc__
 
     class FissionHeating(FTallyABC, TallyFissionHeatingBase):
+        """
+        A representation of the model object `Tally.FissionHeating`.
+        
+        Parameters
+        ----------
+        unit : mcnpy.DepositionUnit
+            Unit for `Tally.FissionHeating`.
+        name : int
+            Name for `Tally.FissionHeating`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Tally.FissionHeating`.
+        bins : mcnpy.Tally.Bin.CellBins
+            Bins for `Tally.FissionHeating`.
+        total : str
+            Total for `Tally.FissionHeating`.
+        
+        """
+        
         next_id = 7
         increment = 10
-
-        __doc__ = """F7
-        """
-        __doc__ += TallyFissionHeatingBase().__doc__
         
     class PulseHeight(FTallyABC, TallyPulseHeightBase):
+        """
+        A representation of the model object `Tally.PulseHeight`.
+        
+        Parameters
+        ----------
+        unit : mcnpy.PulseUnit
+            Unit for `Tally.PulseHeight`.
+        name : int
+            Name for `Tally.PulseHeight`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Tally.PulseHeight`.
+        bins : mcnpy.Tally.Bin.CellBins
+            Bins for `Tally.PulseHeight`.
+        total : str
+            Total for `Tally.PulseHeight`.
+        
+        """
+        
         next_id = 8
         increment = 10
-
-        __doc__ = """F8
-        """
-        __doc__ += TallyPulseHeightBase().__doc__
         
     class ChargeDeposition(FTallyABC, TallyChargeDepositionBase):
+        """
+        A representation of the model object `Tally.ChargeDeposition`.
+        
+        Parameters
+        ----------
+        name : int
+            Name for `Tally.ChargeDeposition`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Tally.ChargeDeposition`.
+        bins : mcnpy.Tally.Bin.CellBins
+            Bins for `Tally.ChargeDeposition`.
+        total : str
+            Total for `Tally.ChargeDeposition`.
+        
+        """
+        
         next_id = 8
         increment = 10
 
-        __doc__ = """+F8
-        """
-        __doc__ += TallyChargeDepositionBase().__doc__
-
     class PointFlux(DetTallyABC, TallyPointFluxBase):
+        """
+        A representation of the model object `Tally.PointFlux`.
+        
+        Parameters
+        ----------
+        detectors : iterable of mcnpy.Tally.PointFluxDetector
+            Detectors for `Tally.PointFlux`.
+        no_direct : str
+            NoDirect for `Tally.PointFlux`.
+        
+        """
+        
         next_id = 5
         increment = 10
 
-        __doc__ = """F5
-        """
-        __doc__ += TallyPointFluxBase().__doc__
-
         class Detector(TallyPointFluxDetectorBase):
-            __doc__ = TallyPointFluxDetectorBase().__doc__
+            """
+            A representation of the model object `Tally.PointFlux.Detector`.
+            
+            Parameters
+            ----------
+            x0 : float
+                X0 for `Tally.PointFlux.Detector`.
+            y0 : float
+                Y0 for `Tally.PointFlux.Detector`.
+            z0 : float
+                Z0 for `Tally.PointFlux.Detector`.
+            mean_free_paths : mcnpy.Boolean
+                MeanFreePaths for `Tally.PointFlux.Detector`.
+            exclusion : float
+                Exclusion for `Tally.PointFlux.Detector`.
+            
+            """
 
             def _init(self, **kwargs):
                 """
@@ -199,15 +331,41 @@ class Tally():
                     setattr(self, k, kwargs[k])
 
     class RingFlux(DetTallyABC, TallyRingFluxBase):
+        """
+        A representation of the model object `Tally.RingFlux`.
+        
+        Parameters
+        ----------
+        axis : mcnpy.Axis
+            Axis for `Tally.RingFlux`.
+        detectors : iterable of mcnpy.Tally.RingFluxDetector
+            Detectors for `Tally.RingFlux`.
+        no_direct : str
+            NoDirect for `Tally.RingFlux`.
+        faxis : mcnpy.fAxis
+            Faxis for `Tally.RingFlux`.
+        
+        """
+        
         next_id = 5
         increment = 10
 
-        __doc__ = """F5
-        """
-        __doc__ += TallyRingFluxBase().__doc__
-
         class Detector(TallyRingFluxDetectorBase):
-            __doc__ = TallyRingFluxDetectorBase().__doc__
+            """
+            A representation of the model object `Tally.RingFlux.Detector`.
+            
+            Parameters
+            ----------
+            distance : float
+                Distance for `Tally.RingFlux.Detector`.
+            radius : float
+                Radius for `Tally.RingFlux.Detector`.
+            mean_free_paths : mcnpy.Boolean
+                MeanFreePaths for `Tally.RingFlux.Detector`.
+            exclusion : float
+                Exclusion for `Tally.RingFlux.Detector`.
+            
+            """
 
             def _init(self, **kwargs):
                 """
@@ -216,12 +374,22 @@ class Tally():
                     setattr(self, k, kwargs[k])
 
     class PinholeImageFlux(RadTallyABC, TallyPinholeImageFluxBase):
+        """
+        A representation of the model object `Tally.PinholeImageFlux`.
+        
+        Parameters
+        ----------
+        collimator_radius : float
+            CollimatorRadius for `Tally.PinholeImageFlux`.
+        pinhole_radius : float
+            PinholeRadius for `Tally.PinholeImageFlux`.
+        distance : float
+            Distance for `Tally.PinholeImageFlux`.
+        
+        """
+        
         next_id = 5
         increment = 10
-
-        __doc__ = """FIP
-        """
-        __doc__ += TallyPinholeImageFluxBase().__doc__
         
         def _init(self, **kwargs):
             """
@@ -230,12 +398,26 @@ class Tally():
                 setattr(self, k.lower(), kwargs[k])
 
     class PlanarImageFlux(RadTallyABC, TallyPlanarImageFluxBase):
+        """
+        A representation of the model object `Tally.PlanarImageFlux`.
+        
+        Parameters
+        ----------
+        scattered_only : mcnpy.Boolean
+            ScatteredOnly for `Tally.PlanarImageFlux`.
+        scattered_value : int
+            ScatteredValue for `Tally.PlanarImageFlux`.
+        field_of_view : float
+            FieldOfView for `Tally.PlanarImageFlux`.
+        centered : mcnpy.Boolean
+            Centered for `Tally.PlanarImageFlux`.
+        centered_value : int
+            CenteredValue for `Tally.PlanarImageFlux`.
+        
+        """
+        
         next_id = 5
         increment = 10
-
-        __doc__ = """FIR
-        """
-        __doc__ += TallyPlanarImageFluxBase().__doc__
         
         def _init(self, **kwargs):
             """
@@ -244,12 +426,26 @@ class Tally():
                 setattr(self, k.lower(), kwargs[k])
 
     class CylindricalImageFlux(RadTallyABC, TallyCylindricalImageFluxBase):
+        """
+        A representation of the model object `Tally.CylindricalImageFlux`.
+        
+        Parameters
+        ----------
+        scattered_only : mcnpy.Boolean
+            ScatteredOnly for `Tally.CylindricalImageFlux`.
+        scattered_value : int
+            ScatteredValue for `Tally.CylindricalImageFlux`.
+        field_of_view : float
+            FieldOfView for `Tally.CylindricalImageFlux`.
+        centered : mcnpy.Boolean
+            Centered for `Tally.CylindricalImageFlux`.
+        centered_value : int
+            CenteredValue for `Tally.CylindricalImageFlux`.
+        
+        """
+        
         next_id = 5
         increment = 10
-
-        __doc__ = """FIC
-        """
-        __doc__ += TallyCylindricalImageFluxBase().__doc__
         
         def _init(self, **kwargs):
             """
@@ -258,12 +454,66 @@ class Tally():
                 setattr(self, k.lower(), kwargs[k])
 
     class FMESH(TallyABC, TallyMeshBase):
+        """
+        A representation of the model object `Tally.FMESH`.
+        
+        Parameters
+        ----------
+        name : int
+            Name for `Tally.FMESH`.
+        geometry : mcnpy.Tally.FMESHGeometry
+            Geometry for `Tally.FMESH`.
+        origin : mcnpy.Point
+            Origin for `Tally.FMESH`.
+        axis : mcnpy.Point
+            Axis for `Tally.FMESH`.
+        vector : mcnpy.Point
+            Vector for `Tally.FMESH`.
+        i_nodes : iterable of float
+            INodes for `Tally.FMESH`.
+        i_subdivisions : iterable of int
+            ISubdivisions for `Tally.FMESH`.
+        j_nodes : iterable of float
+            JNodes for `Tally.FMESH`.
+        j_subdivisions : iterable of int
+            JSubdivisions for `Tally.FMESH`.
+        k_nodes : iterable of float
+            KNodes for `Tally.FMESH`.
+        k_subdivisions : iterable of int
+            KSubdivisions for `Tally.FMESH`.
+        energy_nodes : iterable of float
+            EnergyNodes for `Tally.FMESH`.
+        energy_subdivisions : iterable of int
+            EnergySubdivisions for `Tally.FMESH`.
+        energy_normalization : mcnpy.YesNo
+            EnergyNormalization for `Tally.FMESH`.
+        time_node : iterable of float
+            TimeNode for `Tally.FMESH`.
+        time_subdivisions : iterable of int
+            TimeSubdivisions for `Tally.FMESH`.
+        time_normalization : mcnpy.YesNo
+            TimeNormalization for `Tally.FMESH`.
+        factor : float
+            Factor for `Tally.FMESH`.
+        format : mcnpy.Tally.FMESHFormat
+            Format for `Tally.FMESH`.
+        transformation : mcnpy.Transformation
+            Transformation for `Tally.FMESH`.
+        collision_l : float
+            CollisionL for `Tally.FMESH`.
+        collision_u : float
+            CollisionU for `Tally.FMESH`.
+        type_quantity : mcnpy.TallyQuantityType
+            TypeQuantity for `Tally.FMESH`.
+        kcode_cycles : float
+            KcodeCycles for `Tally.FMESH`.
+        particles : iterable of mcnpy.Particle
+            Particles for `Tally.FMESH`.
+        
+        """
+        
         next_id = 4
         increment = 10
-
-        __doc__ = """FMESH
-        """
-        __doc__ += TallyMeshBase().__doc__
         
         def _init(self, **kwargs):
             """
@@ -275,9 +525,15 @@ class Tally():
     # All of the numbered meshes are their own set of cards/classes.
     #TODO: Work on better combining these cards.
     class SuperimposedTallyMesh(SuperimposedTallyMeshBase):
-        __doc__ = """TMESH
         """
-        __doc__ += SuperimposedTallyMeshBase().__doc__
+        A representation of the model object `Tally.SuperimposedTallyMesh`.
+        
+        Parameters
+        ----------
+        meshes : iterable of mcnpy.Tally.TMESH
+            Meshes for `Tally.SuperimposedTallyMesh`.
+        
+        """
         
         def _init(self, meshes=[]):
             """
@@ -285,7 +541,17 @@ class Tally():
             self.meshes = meshes
 
     class TMESH(TMESHBase):
-        __doc__ = TMESHBase().__doc__
+        """
+        A representation of the model object `Tally.TMESH`.
+        
+        Parameters
+        ----------
+        mesh : mcnpy.Tally.TMESHType
+            Mesh for `Tally.TMESH`.
+        mesh_data : mcnpy.Tally.TMESH.Data
+            MeshData for `Tally.TMESH`.
+        
+        """
 
         def _init(self, mesh=None, mesh_data=None):
             """
@@ -302,7 +568,17 @@ class Tally():
             self._e_object.setMesh(mesh._e_object)
 
         class Data(MeshDataBase):
-            __doc__ = MeshDataBase().__doc__
+            """
+            A representation of the model object `Tally.TMESH.Data`.
+            
+            Parameters
+            ----------
+            options : iterable of mcnpy.Tally.TMESH.Options
+                Options for `Tally.TMESH.Data`.
+            coord : iterable of Object
+                Coord for `Tally.TMESH.Data`.
+            
+            """
 
             def _init(self, coord=[], options=[]):
                 """
@@ -311,10 +587,26 @@ class Tally():
                 self.options = options
 
         class Options(MeshOptionsBase):
-            __doc__ = MeshOptionsBase().__doc__
+            """
+            A representation of the model object `Tally.TMESH.Options`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally.TMESHType
+                Tally for `Tally.TMESH.Options`.
+            
+            """
             
             class MF(MeshMFBase):
-                __doc__ = MeshMFBase().__doc__
+                """
+                A representation of the model object `Tally.TMESH.Options.MF`.
+                
+                Parameters
+                ----------
+                m_fpairs : iterable of mcnpy.Tally.TMESH.Options.MF.EnergyPairs
+                    MFpairs for `Tally.TMESH.Options.MF`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -323,7 +615,17 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
                 class EnergyPairs(energyPairsBase):
-                    __doc__ = energyPairsBase().__doc__
+                    """
+                    A representation of the model object `Tally.TMESH.Options.MF.EnergyPairs`.
+                    
+                    Parameters
+                    ----------
+                    energy1 : float
+                        Energy1 for `Tally.TMESH.Options.MF.EnergyPairs`.
+                    energy2 : float
+                        Energy2 for `Tally.TMESH.Options.MF.EnergyPairs`.
+                    
+                    """
 
                     def _init(self, **kwargs):
                         """
@@ -332,7 +634,21 @@ class Tally():
                             setattr(self, k, kwargs[k])
 
             class Multiplier(MeshMultiplierBase):
-                __doc__ = MeshMultiplierBase().__doc__
+                """
+                A representation of the model object `Tally.TMESH.Options.Multiplier`.
+                
+                Parameters
+                ----------
+                sign : mcnpy.Boolean
+                    Sign for `Tally.TMESH.Options.Multiplier`.
+                bins : Object
+                    Bins for `Tally.TMESH.Options.Multiplier`.
+                total : mcnpy.Boolean
+                    Total for `Tally.TMESH.Options.Multiplier`.
+                cumulative : mcnpy.Boolean
+                    Cumulative for `Tally.TMESH.Options.Multiplier`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -341,7 +657,17 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class EnergyLimits(EnergyLimitsBase):
-                __doc__ = EnergyLimitsBase().__doc__
+                """
+                A representation of the model object `Tally.TMESH.Options.EnergyLimits`.
+                
+                Parameters
+                ----------
+                lower_limit : float
+                    LowerLimit for `Tally.TMESH.Options.EnergyLimits`.
+                upper_limit : float
+                    UpperLimit for `Tally.TMESH.Options.EnergyLimits`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -351,7 +677,17 @@ class Tally():
 
 
         class CORA(CORABase):
-            __doc__ = CORABase().__doc__
+            """
+            A representation of the model object `Tally.TMESH.CORA`.
+            
+            Parameters
+            ----------
+            i_d : mcnpy.Tally.TMESHType
+                ID for `Tally.TMESH.CORA`.
+            coord : iterable of float
+                Coord for `Tally.TMESH.CORA`.
+            
+            """
 
             def _init(self, tmesh=None, coord=None):
                 """
@@ -368,7 +704,17 @@ class Tally():
                 self._e_object.setID(tmesh._e_object)
 
         class CORB(CORBBase):
-            __doc__ = CORBBase().__doc__
+            """
+            A representation of the model object `Tally.TMESH.CORB`.
+            
+            Parameters
+            ----------
+            i_d : mcnpy.Tally.TMESHType
+                ID for `Tally.TMESH.CORB`.
+            coord : iterable of float
+                Coord for `Tally.TMESH.CORB`.
+            
+            """
 
             def _init(self, tmesh=None, coord=None):
                 """
@@ -385,7 +731,17 @@ class Tally():
                 self._e_object.setID(tmesh._e_object)
 
         class CORC(CORCBase):
-            __doc__ = CORCBase().__doc__
+            """
+            A representation of the model object `Tally.TMESH.CORC`.
+            
+            Parameters
+            ----------
+            i_d : mcnpy.Tally.TMESHType
+                ID for `Tally.TMESH.CORC`.
+            coord : iterable of float
+                Coord for `Tally.TMESH.CORC`.
+            
+            """
 
             def _init(self, tmesh=None, coord=None):
                 """
@@ -401,15 +757,41 @@ class Tally():
             def tmesh(self, tmesh):
                 self._e_object.setID(tmesh._e_object)
 
-        class TMESHType(TMESHTypeBase):
-            __doc__ = TMESHTypeBase().__doc__
+        class Type(TMESHTypeBase):
+            """
+            A representation of the model object `Tally.TMESH.Type`.
+            
+            Parameters
+            ----------
+            mesh : mcnpy.MeshType
+                Mesh for `Tally.TMESH.Type`.
+            name : int
+                Name for `Tally.TMESH.Type`.
+            
+            """
 
 
-        class TrackAveraged(TMeshABC, TypeOneBase, TMESHType):
+        class TrackAveraged(TMeshABC, TypeOneBase, Type):
+            """
+            A representation of the model object `Tally.TMESH.TrackAveraged`.
+            
+            Parameters
+            ----------
+            keywords : iterable of mcnpy.Tmesh1
+                Keywords for `Tally.TMESH.TrackAveraged`.
+            dose_params : mcnpy.Tally.TMESH.TrackAveraged.dParams
+                DoseParams for `Tally.TMESH.TrackAveraged`.
+            mfactinfo : iterable of float
+                Mfactinfo for `Tally.TMESH.TrackAveraged`.
+            transfomation : mcnpy.Transformation
+                Transfomation for `Tally.TMESH.TrackAveraged`.
+            particles : iterable of mcnpy.Particle
+                Particles for `Tally.TMESH.TrackAveraged`.
+            
+            """
+            
             next_id = 1
             increment = 10
-
-            __doc__ = TypeOneBase().__doc__
 
             def _init(self, name=None, mesh_type=None, particles=[], 
                       keywords=[], dose=None, mfact=[], transformation=None):
@@ -423,7 +805,21 @@ class Tally():
 
 
             class dParams(dParamsBase):
-                __doc__ = dParamsBase().__doc__
+                """
+                A representation of the model object `Tally.TMESH.TrackAveraged.dParams`.
+                
+                Parameters
+                ----------
+                conv_coeff : int
+                    ConvCoeff for `Tally.TMESH.TrackAveraged.dParams`.
+                interpolation_method : int
+                    InterpolationMethod for `Tally.TMESH.TrackAveraged.dParams`.
+                res_units : int
+                    ResUnits for `Tally.TMESH.TrackAveraged.dParams`.
+                norm_factor : float
+                    NormFactor for `Tally.TMESH.TrackAveraged.dParams`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -431,11 +827,21 @@ class Tally():
                     for k in kwargs:
                         setattr(self, k, kwargs[k])
 
-        class Source(TMeshABC, TypeTwoBase, TMESHType):
+        class Source(TMeshABC, TypeTwoBase, Type):
+            """
+            A representation of the model object `Tally.TMESH.Source`.
+            
+            Parameters
+            ----------
+            particles : iterable of mcnpy.Particle
+                Particles for `Tally.TMESH.Source`.
+            transformation : mcnpy.Transformation
+                Transformation for `Tally.TMESH.Source`.
+            
+            """
+            
             next_id = 2
             increment = 10
-
-            __doc__ = TypeTwoBase().__doc__
 
             def _init(self, name=None, mesh_type=None, particles=[], 
                       transformation=None):
@@ -444,12 +850,24 @@ class Tally():
                 self.particles = particles
                 self.transformation = transformation
 
-        class EnergyDeposition(TypeThreeBase, TMESHType):
+        class EnergyDeposition(TypeThreeBase, Type):
+            """
+            A representation of the model object `Tally.TMESH.EnergyDeposition`.
+            
+            Parameters
+            ----------
+            keywords : iterable of mcnpy.Tmesh3
+                Keywords for `Tally.TMESH.EnergyDeposition`.
+            m_val : iterable of float
+                MVal for `Tally.TMESH.EnergyDeposition`.
+            transformation : mcnpy.Transformation
+                Transformation for `Tally.TMESH.EnergyDeposition`.
+            
+            """
+            
             next_id = 3
             increment = 10
             used_ids = set()
-
-            __doc__ = TypeThreeBase().__doc__
 
             def _init(self, name=None, mesh_type=None, keywords=[], 
                       mfact=[], transformation=None):
@@ -459,11 +877,21 @@ class Tally():
                 self.m_val = mfact
                 self.transformation = transformation
 
-        class DXTRAN(TMeshABC, TypeFourBase, TMESHType):
+        class DXTRAN(TMeshABC, TypeFourBase, Type):
+            """
+            A representation of the model object `Tally.TMESH.DXTRAN`.
+            
+            Parameters
+            ----------
+            transformation : mcnpy.Transformation
+                Transformation for `Tally.TMESH.DXTRAN`.
+            particles : iterable of mcnpy.Particle
+                Particles for `Tally.TMESH.DXTRAN`.
+            
+            """
+            
             next_id = 4
             increment = 10
-
-            __doc__ = TypeFourBase().__doc__
 
             def _init(self, name=None, mesh_type=None, particles=[], 
                       transformation=None):
@@ -498,7 +926,15 @@ class Tally():
                     return Tally.Bin.CellLevels([cp] + [cp2])
 
         class CellBins(CellBinsBase):
-            __doc__ = CellBinsBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.CellBins`.
+            
+            Parameters
+            ----------
+            bins : iterable of Object
+                Bins for `Tally.Bin.CellBins`.
+            
+            """
 
             def _init(self, bins):
                 """
@@ -528,7 +964,15 @@ class Tally():
                                 _bins.append(i)
 
         class CellLevel(CellLevelBase, Level, MutableSequence):
-            __doc__ = CellLevelBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.CellLevel`.
+            
+            Parameters
+            ----------
+            level : iterable of Object
+                Level for `Tally.Bin.CellLevel`.
+            
+            """
 
             def _init(self, level):
                 """
@@ -589,7 +1033,15 @@ class Tally():
                 return str(self)
 
         class CellLevels(CellLevelsBase, MutableSequence):
-            __doc__ = CellLevelsBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.CellLevels`.
+            
+            Parameters
+            ----------
+            levels : iterable of mcnpy.Tally.Bin.CellLevel
+                Levels for `Tally.Bin.CellLevels`.
+            
+            """
 
             def _init(self, levels):
                 """
@@ -666,7 +1118,15 @@ class Tally():
                 return str(self)
 
         class CellUnion(CellUnionBase, Level, MutableSequence):
-            __doc__ = CellUnionBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.CellUnion`.
+            
+            Parameters
+            ----------
+            union : iterable of mcnpy.Tally.Bin.UnaryCellBin
+                Union for `Tally.Bin.CellUnion`.
+            
+            """
 
             def _init(self, union):
                 """
@@ -712,7 +1172,17 @@ class Tally():
                 return '(' + ' | '.join(map(str, self)) + ')'
 
         class FS_halfspace(FS_halfspaceBase):
-            __doc__ = FS_halfspaceBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.FS_halfspace`.
+            
+            Parameters
+            ----------
+            bin : float
+                Bin for `Tally.Bin.FS_halfspace`.
+            hs : mcnpy.Halfspace
+                Hs for `Tally.Bin.FS_halfspace`.
+            
+            """
 
             def _init(self, **kwargs):
                 """
@@ -721,7 +1191,15 @@ class Tally():
                     setattr(self, k, kwargs[k])
 
         class ROCBin(ROCBinBase):
-            __doc__ = ROCBinBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.ROCBin`.
+            
+            Parameters
+            ----------
+            bins : iterable of mcnpy.Tally.Bin.ROCBinRange
+                Bins for `Tally.Bin.ROCBin`.
+            
+            """
 
             def _init(self, **kwargs):
                 """
@@ -730,7 +1208,17 @@ class Tally():
                     setattr(self, k, kwargs[k])
 
         class ROCBinRange(ROCBinRangeBase):
-            __doc__ = ROCBinRangeBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.ROCBinRange`.
+            
+            Parameters
+            ----------
+            lower : int
+                Lower for `Tally.Bin.ROCBinRange`.
+            upper : int
+                Upper for `Tally.Bin.ROCBinRange`.
+            
+            """
 
             def _init(self, **kwargs):
                 """
@@ -739,7 +1227,15 @@ class Tally():
                     setattr(self, k, kwargs[k])
 
         class SurfaceBins(SurfaceBinsBase):
-            __doc__ = SurfaceBinsBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.SurfaceBins`.
+            
+            Parameters
+            ----------
+            bins : iterable of Object
+                Bins for `Tally.Bin.SurfaceBins`.
+            
+            """
 
             def _init(self, bins):
                 """
@@ -768,7 +1264,15 @@ class Tally():
                                 _bins.append(i)
 
         class SurfaceLevel(SurfaceLevelBase, Level, MutableSequence):
-            __doc__ = SurfaceLevelBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.SurfaceLevel`.
+            
+            Parameters
+            ----------
+            level : iterable of Object
+                Level for `Tally.Bin.SurfaceLevel`.
+            
+            """
 
             def _init(self, level):
                 """
@@ -829,7 +1333,17 @@ class Tally():
                 return str(self)
 
         class SurfaceLevels(SurfaceLevelsBase, MutableSequence):
-            __doc__ = SurfaceLevelsBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.SurfaceLevels`.
+            
+            Parameters
+            ----------
+            surface_levels : mcnpy.Tally.Bin.SurfaceLevel
+                Surface_levels for `Tally.Bin.SurfaceLevels`.
+            cell_levels : iterable of mcnpy.Tally.Bin.CellLevel
+                Cell_levels for `Tally.Bin.SurfaceLevels`.
+            
+            """
 
             def _init(self, levels):
                 """
@@ -927,7 +1441,15 @@ class Tally():
                 return str(self)
 
         class SurfaceUnion(SurfaceUnionBase, Level, MutableSequence):
-            __doc__ = SurfaceUnionBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.SurfaceUnion`.
+            
+            Parameters
+            ----------
+            union : iterable of mcnpy.Tally.Bin.UnarySurfaceBin
+                Union for `Tally.Bin.SurfaceUnion`.
+            
+            """
 
             def _init(self, union):
                 """
@@ -973,7 +1495,19 @@ class Tally():
                 return '(' + ' | '.join(map(str, self)) + ')'
 
         class UnaryCellBin(UnaryCellBinBase, Level):
-            __doc__ = UnaryCellBinBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.UnaryCellBin`.
+            
+            Parameters
+            ----------
+            cell : mcnpy.Cell
+                Cell for `Tally.Bin.UnaryCellBin`.
+            index : mcnpy.Lattice.Index
+                Index for `Tally.Bin.UnaryCellBin`.
+            universe : mcnpy.Universe
+                Universe for `Tally.Bin.UnaryCellBin`.
+            
+            """
 
             def _init(self, unary_cell, index=None):
                 """
@@ -1032,7 +1566,17 @@ class Tally():
                 return self
 
         class UnarySurfaceBin(UnarySurfaceBinBase, Level):
-            __doc__ = UnarySurfaceBinBase().__doc__
+            """
+            A representation of the model object `Tally.Bin.UnarySurfaceBin`.
+            
+            Parameters
+            ----------
+            surface : mcnpy.Surface
+                Surface for `Tally.Bin.UnarySurfaceBin`.
+            facets : str
+                Facets for `Tally.Bin.UnarySurfaceBin`.
+            
+            """
 
             def _init(self, surface, facet=None):
                 """
@@ -1086,9 +1630,23 @@ class Tally():
         """
         """
         class Energies(TallyRef, TallyEnergiesBase):
-            __doc__ = """E
             """
-            __doc__ += TallyEnergiesBase().__doc__
+            A representation of the model object `Tally.Bins.Energies`.
+            
+            Parameters
+            ----------
+            particles : iterable of mcnpy.Particle
+                Particles for `Tally.Bins.Energies`.
+            max_energies : iterable of float
+                MaxEnergies for `Tally.Bins.Energies`.
+            no_total : mcnpy.Boolean
+                NoTotal for `Tally.Bins.Energies`.
+            cumulative : mcnpy.Boolean
+                Cumulative for `Tally.Bins.Energies`.
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.Energies`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1097,9 +1655,21 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class Times(TallyRef, TallyTimesBase):
-            __doc__ = """T
             """
-            __doc__ += TallyTimesBase().__doc__
+            A representation of the model object `Tally.Bins.Times`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.Times`.
+            max_times : iterable of float
+                MaxTimes for `Tally.Bins.Times`.
+            no_total : mcnpy.Boolean
+                NoTotal for `Tally.Bins.Times`.
+            cumulative : mcnpy.Boolean
+                Cumulative for `Tally.Bins.Times`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1108,9 +1678,27 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class TimesCyclic(TallyRef, TallyTimesCyclicBase):
-            __doc__ = """T
             """
-            __doc__ += TallyTimesCyclicBase().__doc__
+            A representation of the model object `Tally.Bins.TimesCyclic`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.TimesCyclic`.
+            start : float
+                Start for `Tally.Bins.TimesCyclic`.
+            frequency : float
+                Frequency for `Tally.Bins.TimesCyclic`.
+            dead_time : float
+                DeadTime for `Tally.Bins.TimesCyclic`.
+            alive_time : float
+                AliveTime for `Tally.Bins.TimesCyclic`.
+            subdivisions : float
+                Subdivisions for `Tally.Bins.TimesCyclic`.
+            end : float
+                End for `Tally.Bins.TimesCyclic`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1119,9 +1707,23 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class Angles(TallyRef, TallyAnglesBase):
-            __doc__ = """C
             """
-            __doc__ += TallyAnglesBase().__doc__
+            A representation of the model object `Tally.Bins.Angles`.
+            
+            Parameters
+            ----------
+            unit : mcnpy.AngleUnit
+                Unit for `Tally.Bins.Angles`.
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.Angles`.
+            max_angles : iterable of float
+                MaxAngles for `Tally.Bins.Angles`.
+            total : mcnpy.Boolean
+                Total for `Tally.Bins.Angles`.
+            cumulative : mcnpy.Boolean
+                Cumulative for `Tally.Bins.Angles`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1130,9 +1732,21 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class User(TallyRef, TallyUserBase):
-            __doc__ = """FU
             """
-            __doc__ += TallyUserBase().__doc__
+            A representation of the model object `Tally.Bins.User`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.User`.
+            parameters : iterable of float
+                Parameters for `Tally.Bins.User`.
+            no_total : mcnpy.Boolean
+                NoTotal for `Tally.Bins.User`.
+            cumulative : mcnpy.Boolean
+                Cumulative for `Tally.Bins.User`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1141,9 +1755,23 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
         
         class Multiplier(TallyRef, TallyMultiplierBase):
-            __doc__ = """FM
             """
-            __doc__ += TallyMultiplierBase().__doc__
+            A representation of the model object `Tally.Bins.Multiplier`.
+            
+            Parameters
+            ----------
+            sign : str
+                Sign for `Tally.Bins.Multiplier`.
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.Multiplier`.
+            bins : Object
+                Bins for `Tally.Bins.Multiplier`.
+            total : mcnpy.Boolean
+                Total for `Tally.Bins.Multiplier`.
+            cumulative : mcnpy.Boolean
+                Cumulative for `Tally.Bins.Multiplier`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1152,7 +1780,19 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
             class AttnMatSet(AttnMatSetBase):
-                __doc__ = AttnMatSetBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.AttnMatSet`.
+                
+                Parameters
+                ----------
+                m : mcnpy.Material
+                    M for `Tally.Bins.Multiplier.AttnMatSet`.
+                sign : mcnpy.Boolean
+                    Sign for `Tally.Bins.Multiplier.AttnMatSet`.
+                px : float
+                    Px for `Tally.Bins.Multiplier.AttnMatSet`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1161,7 +1801,17 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class AttnSet(AttnSetBase):
-                __doc__ = AttnSetBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.AttnSet`.
+                
+                Parameters
+                ----------
+                c : float
+                    C for `Tally.Bins.Multiplier.AttnSet`.
+                attenuator : iterable of mcnpy.Tally.Bins.Multiplier.AttnMatSet
+                    Attenuator for `Tally.Bins.Multiplier.AttnSet`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1170,7 +1820,15 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class MultBin(MultBinBase):
-                __doc__ = MultBinBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.MultBin`.
+                
+                Parameters
+                ----------
+                bin : Object
+                    Bin for `Tally.Bins.Multiplier.MultBin`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1179,7 +1837,15 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class MultBinSet(MultBinSetBase):
-                __doc__ = MultBinSetBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.MultBinSet`.
+                
+                Parameters
+                ----------
+                set : iterable of mcnpy.Tally.Bins.Multiplier.MultBin
+                    Set for `Tally.Bins.Multiplier.MultBinSet`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1188,7 +1854,15 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class MultBinSets(MultBinSetsBase):
-                __doc__ = MultBinSetsBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.MultBinSets`.
+                
+                Parameters
+                ----------
+                sets : iterable of mcnpy.Tally.Bins.Multiplier.MultBinSet
+                    Sets for `Tally.Bins.Multiplier.MultBinSets`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1197,7 +1871,19 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class MultSet(MultSetBase):
-                __doc__ = MultSetBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.MultSet`.
+                
+                Parameters
+                ----------
+                c : float
+                    C for `Tally.Bins.Multiplier.MultSet`.
+                m : mcnpy.Material
+                    M for `Tally.Bins.Multiplier.MultSet`.
+                reactions : mcnpy.Tally.Bins.Multiplier.RxnLists
+                    Reactions for `Tally.Bins.Multiplier.MultSet`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1206,7 +1892,17 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class MultSetSpecial(MultSetSpecialBase):
-                __doc__ = MultSetSpecialBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.MultSetSpecial`.
+                
+                Parameters
+                ----------
+                c : float
+                    C for `Tally.Bins.Multiplier.MultSetSpecial`.
+                k : str
+                    K for `Tally.Bins.Multiplier.MultSetSpecial`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1215,7 +1911,15 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class RxnLists(RxnListsBase):
-                __doc__ = RxnListsBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.RxnLists`.
+                
+                Parameters
+                ----------
+                nodes : iterable of mcnpy.Tally.Bins.Multiplier.Rxns
+                    Nodes for `Tally.Bins.Multiplier.RxnLists`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1224,7 +1928,15 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class RxnMult(RxnMultBase):
-                __doc__ = RxnMultBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.RxnMult`.
+                
+                Parameters
+                ----------
+                nodes : iterable of mcnpy.Tally.Bins.Multiplier.RxnNum
+                    Nodes for `Tally.Bins.Multiplier.RxnMult`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1233,7 +1945,17 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class RxnNum(RxnNumBase):
-                __doc__ = RxnNumBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.RxnNum`.
+                
+                Parameters
+                ----------
+                sign : mcnpy.PositiveNegative
+                    Sign for `Tally.Bins.Multiplier.RxnNum`.
+                value : int
+                    Value for `Tally.Bins.Multiplier.RxnNum`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1242,7 +1964,12 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class Rxns(RxnsBase):
-                __doc__ = RxnsBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.Rxns`.
+                
+                Parameters
+                ----------
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1251,7 +1978,15 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
             class RxnSum(RxnSumBase):
-                __doc__ = RxnSumBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.Multiplier.RxnSum`.
+                
+                Parameters
+                ----------
+                nodes : iterable of mcnpy.Tally.Bins.Multiplier.RxnMult
+                    Nodes for `Tally.Bins.Multiplier.RxnSum`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1260,9 +1995,23 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
         class Segments(TallyRef, TallySegmentsBase):
-                __doc__ = """FS
                 """
-                __doc__ += TallySegmentsBase().__doc__
+                A representation of the model object `Tally.Bins.Segments`.
+                
+                Parameters
+                ----------
+                tally : mcnpy.Tally
+                    Tally for `Tally.Bins.Segments`.
+                particles : iterable of mcnpy.Particle
+                    Particles for `Tally.Bins.Segments`.
+                halfspaces : iterable of mcnpy.Tally.Bin.FS_halfspace
+                    Halfspaces for `Tally.Bins.Segments`.
+                total : mcnpy.Boolean
+                    Total for `Tally.Bins.Segments`.
+                cumulative : mcnpy.Boolean
+                    Cumulative for `Tally.Bins.Segments`.
+                
+                """
                 
                 def _init(self, **kwargs):
                     """
@@ -1271,9 +2020,17 @@ class Tally():
                         setattr(self, k.lower(), kwargs[k])
 
         class AngleMultiplier(TallyRef, AngleMultiplierBase):
-            __doc__ = """CM
             """
-            __doc__ += AngleMultiplierBase().__doc__
+            A representation of the model object `Tally.Bins.AngleMultiplier`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.AngleMultiplier`.
+            multipliers : iterable of float
+                Multipliers for `Tally.Bins.AngleMultiplier`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1282,9 +2039,17 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class FlagCells(TallyRef, FlagCellsBase):
-            __doc__ = """CF
             """
-            __doc__ += FlagCellsBase().__doc__
+            A representation of the model object `Tally.Bins.FlagCells`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.FlagCells`.
+            cells : iterable of mcnpy.Cell
+                Cells for `Tally.Bins.FlagCells`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1293,9 +2058,47 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class Fluctuation(TallyRef, TallyFluctuationBase):
-            __doc__ = """TF
             """
-            __doc__ += TallyFluctuationBase().__doc__
+            A representation of the model object `Tally.Bins.Fluctuation`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.Fluctuation`.
+            geometry : int
+                Geometry for `Tally.Bins.Fluctuation`.
+            direct : int
+                Direct for `Tally.Bins.Fluctuation`.
+            user : int
+                User for `Tally.Bins.Fluctuation`.
+            segment : int
+                Segment for `Tally.Bins.Fluctuation`.
+            multiplier : int
+                Multiplier for `Tally.Bins.Fluctuation`.
+            angle : int
+                Angle for `Tally.Bins.Fluctuation`.
+            energy : int
+                Energy for `Tally.Bins.Fluctuation`.
+            time : int
+                Time for `Tally.Bins.Fluctuation`.
+            j_geometry : str
+                J_geometry for `Tally.Bins.Fluctuation`.
+            j_direct : str
+                J_direct for `Tally.Bins.Fluctuation`.
+            j_user : str
+                J_user for `Tally.Bins.Fluctuation`.
+            j_segment : str
+                J_segment for `Tally.Bins.Fluctuation`.
+            j_multiplier : str
+                J_multiplier for `Tally.Bins.Fluctuation`.
+            j_angle : str
+                J_angle for `Tally.Bins.Fluctuation`.
+            j_energy : str
+                J_energy for `Tally.Bins.Fluctuation`.
+            j_time : str
+                J_time for `Tally.Bins.Fluctuation`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1304,9 +2107,79 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class FluctuationROC(TallyRef, TallyFluctuationROCBase):
-            __doc__ = """FT
             """
-            __doc__ += TallyFluctuationROCBase().__doc__
+            A representation of the model object `Tally.Bins.FluctuationROC`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.FluctuationROC`.
+            geometry1 : mcnpy.Tally.Bin.ROCBin
+                Geometry1 for `Tally.Bins.FluctuationROC`.
+            direct1 : mcnpy.Tally.Bin.ROCBin
+                Direct1 for `Tally.Bins.FluctuationROC`.
+            user1 : mcnpy.Tally.Bin.ROCBin
+                User1 for `Tally.Bins.FluctuationROC`.
+            segment1 : mcnpy.Tally.Bin.ROCBin
+                Segment1 for `Tally.Bins.FluctuationROC`.
+            multiplier1 : mcnpy.Tally.Bin.ROCBin
+                Multiplier1 for `Tally.Bins.FluctuationROC`.
+            angle1 : mcnpy.Tally.Bin.ROCBin
+                Angle1 for `Tally.Bins.FluctuationROC`.
+            energy1 : mcnpy.Tally.Bin.ROCBin
+                Energy1 for `Tally.Bins.FluctuationROC`.
+            time1 : mcnpy.Tally.Bin.ROCBin
+                Time1 for `Tally.Bins.FluctuationROC`.
+            geometry2 : mcnpy.Tally.Bin.ROCBin
+                Geometry2 for `Tally.Bins.FluctuationROC`.
+            direct2 : mcnpy.Tally.Bin.ROCBin
+                Direct2 for `Tally.Bins.FluctuationROC`.
+            user2 : mcnpy.Tally.Bin.ROCBin
+                User2 for `Tally.Bins.FluctuationROC`.
+            segment2 : mcnpy.Tally.Bin.ROCBin
+                Segment2 for `Tally.Bins.FluctuationROC`.
+            multiplier2 : mcnpy.Tally.Bin.ROCBin
+                Multiplier2 for `Tally.Bins.FluctuationROC`.
+            angle2 : mcnpy.Tally.Bin.ROCBin
+                Angle2 for `Tally.Bins.FluctuationROC`.
+            energy2 : mcnpy.Tally.Bin.ROCBin
+                Energy2 for `Tally.Bins.FluctuationROC`.
+            time2 : mcnpy.Tally.Bin.ROCBin
+                Time2 for `Tally.Bins.FluctuationROC`.
+            j_geometry1 : str
+                J_geometry1 for `Tally.Bins.FluctuationROC`.
+            j_direct1 : str
+                J_direct1 for `Tally.Bins.FluctuationROC`.
+            j_user1 : str
+                J_user1 for `Tally.Bins.FluctuationROC`.
+            j_segment1 : str
+                J_segment1 for `Tally.Bins.FluctuationROC`.
+            j_multiplier1 : str
+                J_multiplier1 for `Tally.Bins.FluctuationROC`.
+            j_angle1 : str
+                J_angle1 for `Tally.Bins.FluctuationROC`.
+            j_energy1 : str
+                J_energy1 for `Tally.Bins.FluctuationROC`.
+            j_time1 : str
+                J_time1 for `Tally.Bins.FluctuationROC`.
+            j_geometry2 : str
+                J_geometry2 for `Tally.Bins.FluctuationROC`.
+            j_direct2 : str
+                J_direct2 for `Tally.Bins.FluctuationROC`.
+            j_user2 : str
+                J_user2 for `Tally.Bins.FluctuationROC`.
+            j_segment2 : str
+                J_segment2 for `Tally.Bins.FluctuationROC`.
+            j_multiplier2 : str
+                J_multiplier2 for `Tally.Bins.FluctuationROC`.
+            j_angle2 : str
+                J_angle2 for `Tally.Bins.FluctuationROC`.
+            j_energy2 : str
+                J_energy2 for `Tally.Bins.FluctuationROC`.
+            j_time2 : str
+                J_time2 for `Tally.Bins.FluctuationROC`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1315,9 +2188,19 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class Treatments(TallyRef, TallyTreatmentsBase):
-                __doc__ = """FT
                 """
-                __doc__ += TallyTreatmentsBase().__doc__
+                A representation of the model object `Tally.Bins.Treatments`.
+                
+                Parameters
+                ----------
+                tally : mcnpy.Tally
+                    Tally for `Tally.Bins.Treatments`.
+                keyword : mcnpy.TTreatment
+                    Keyword for `Tally.Bins.Treatments`.
+                treatment_vals : iterable of float
+                    TreatmentVals for `Tally.Bins.Treatments`.
+                
+                """
                 
                 def _init(self, **kwargs):
                     """
@@ -1326,9 +2209,19 @@ class Tally():
                         setattr(self, k.lower(), kwargs[k])
 
         class DoseEnergy(TallyRef, DoseEnergyBase):
-            __doc__ = """DE
             """
-            __doc__ += DoseEnergyBase().__doc__
+            A representation of the model object `Tally.Bins.DoseEnergy`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.DoseEnergy`.
+            interpolation : mcnpy.Interpolation
+                Interpolation for `Tally.Bins.DoseEnergy`.
+            energies : iterable of float
+                Energies for `Tally.Bins.DoseEnergy`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1337,9 +2230,19 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class DoseTable(TallyRef, DoseTableBase):
-            __doc__ = """DF
             """
-            __doc__ += DoseTableBase().__doc__
+            A representation of the model object `Tally.Bins.DoseTable`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.DoseTable`.
+            interpolation : mcnpy.Interpolation
+                Interpolation for `Tally.Bins.DoseTable`.
+            doses : iterable of float
+                Doses for `Tally.Bins.DoseTable`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1348,9 +2251,23 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class DoseFunction(TallyRef, DoseFunctionBase):
-            __doc__ = """DF
             """
-            __doc__ += DoseFunctionBase().__doc__
+            A representation of the model object `Tally.Bins.DoseFunction`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.DoseFunction`.
+            unit : str
+                Unit for `Tally.Bins.DoseFunction`.
+            normalize : mcnpy.Tally.Bins.DoseFunction.Normalization
+                Normalize for `Tally.Bins.DoseFunction`.
+            function : str
+                Function for `Tally.Bins.DoseFunction`.
+            interpolation : mcnpy.Interpolation
+                Interpolation for `Tally.Bins.DoseFunction`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1359,7 +2276,17 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
             class Normalization(DoseNormalizationBase):
-                __doc__ = DoseNormalizationBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.DoseFunction.Normalization`.
+                
+                Parameters
+                ----------
+                fac : str
+                    Fac for `Tally.Bins.DoseFunction.Normalization`.
+                user_fac : float
+                    UserFac for `Tally.Bins.DoseFunction.Normalization`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1368,9 +2295,17 @@ class Tally():
                         setattr(self, k, kwargs[k])
 
         class TimeMultiplier(TallyRef, TimeMultiplierBase):
-            __doc__ = """TM
             """
-            __doc__ += TimeMultiplierBase().__doc__
+            A representation of the model object `Tally.Bins.TimeMultiplier`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.TimeMultiplier`.
+            multipliers : iterable of float
+                Multipliers for `Tally.Bins.TimeMultiplier`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1379,9 +2314,17 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class EnergyMultiplier(TallyRef, EnergyMultiplierBase):
-            __doc__ = """EM
             """
-            __doc__ += EnergyMultiplierBase().__doc__
+            A representation of the model object `Tally.Bins.EnergyMultiplier`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.EnergyMultiplier`.
+            multipliers : iterable of float
+                Multipliers for `Tally.Bins.EnergyMultiplier`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1390,9 +2333,17 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class FlagSurfaces(TallyRef, FlagSurfacesBase):
-            __doc__ = """SF
             """
-            __doc__ += FlagSurfacesBase().__doc__
+            A representation of the model object `Tally.Bins.FlagSurfaces`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.FlagSurfaces`.
+            surfaces : iterable of mcnpy.Surface
+                Surfaces for `Tally.Bins.FlagSurfaces`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1401,9 +2352,19 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
         
         class SegmentDivisors(TallyRef, TallySegmentDivisorsBase):
-            __doc__ = """SD
             """
-            __doc__ += TallySegmentDivisorsBase().__doc__
+            A representation of the model object `Tally.Bins.SegmentDivisors`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Bins.SegmentDivisors`.
+            tally_divisors : iterable of mcnpy.Tally.Bins.SegmentDivisors.Divisor
+                TallyDivisors for `Tally.Bins.SegmentDivisors`.
+            tally_divisor : mcnpy.Tally.Bins.SegmentDivisors.Divisor
+                TallyDivisor for `Tally.Bins.SegmentDivisors`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1412,7 +2373,15 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
             class Divisor(TallyDivisorBase):
-                __doc__ = TallyDivisorBase().__doc__
+                """
+                A representation of the model object `Tally.Bins.SegmentDivisors.Divisor`.
+                
+                Parameters
+                ----------
+                quantities : iterable of float
+                    Quantities for `Tally.Bins.SegmentDivisors.Divisor`.
+                
+                """
 
                 def _init(self, **kwargs):
                     """
@@ -1422,9 +2391,17 @@ class Tally():
 
     class Setting(ABC):
         class Comment(TallyRef, TallySettingABC, TallyCommentBase):
-            __doc__ = """TC
             """
-            __doc__ += TallyCommentBase().__doc__
+            A representation of the model object `Tally.Setting.Comment`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Setting.Comment`.
+            comment : iterable of str
+                Comment for `Tally.Setting.Comment`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1433,9 +2410,17 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class Print(TallyRef, TallySettingABC, TallyPrintBase):
-            __doc__ = """FQ
             """
-            __doc__ += TallyPrintBase().__doc__
+            A representation of the model object `Tally.Setting.Print`.
+            
+            Parameters
+            ----------
+            tally : mcnpy.Tally
+                Tally for `Tally.Setting.Print`.
+            order : iterable of mcnpy.TallyQuantity
+                Order for `Tally.Setting.Print`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1454,12 +2439,36 @@ class Tally():
                     setattr(self, k.lower(), kwargs[k])
 
         class Perturbation(IDManagerMixin, TallySettingABC, PerturbationBase):
+            """
+            A representation of the model object `Tally.Setting.Perturbation`.
+            
+            Parameters
+            ----------
+            name : int
+                Name for `Tally.Setting.Perturbation`.
+            cells : iterable of mcnpy.Cell
+                Cells for `Tally.Setting.Perturbation`.
+            material : mcnpy.Material
+                Material for `Tally.Setting.Perturbation`.
+            density : float
+                Density for `Tally.Setting.Perturbation`.
+            method : int
+                Method for `Tally.Setting.Perturbation`.
+            min_energy : float
+                MinEnergy for `Tally.Setting.Perturbation`.
+            max_energy : float
+                MaxEnergy for `Tally.Setting.Perturbation`.
+            sign : iterable of str
+                Sign for `Tally.Setting.Perturbation`.
+            reactions : iterable of int
+                Reactions for `Tally.Setting.Perturbation`.
+            particles : iterable of mcnpy.Particle
+                Particles for `Tally.Setting.Perturbation`.
+            
+            """
+            
             next_id = 1
             used_ids = set()
-
-            __doc__ = """PERT
-            """
-            __doc__ += PerturbationBase().__doc__
             
             def _init(self, **kwargs):
                 """
@@ -1469,12 +2478,34 @@ class Tally():
 
         class ReactivityPerturbation(IDManagerMixin, TallySettingABC, 
                                      ReactivityPerturbationBase):
+            """
+            A representation of the model object `Tally.Setting.ReactivityPerturbation`.
+            
+            Parameters
+            ----------
+            name : int
+                Name for `Tally.Setting.ReactivityPerturbation`.
+            cells : iterable of mcnpy.Cell
+                Cells for `Tally.Setting.ReactivityPerturbation`.
+            materials : iterable of mcnpy.Material
+                Materials for `Tally.Setting.ReactivityPerturbation`.
+            densities : iterable of float
+                Densities for `Tally.Setting.ReactivityPerturbation`.
+            nuclides : iterable of str
+                Nuclides for `Tally.Setting.ReactivityPerturbation`.
+            sign : iterable of str
+                Sign for `Tally.Setting.ReactivityPerturbation`.
+            reactions : iterable of int
+                Reactions for `Tally.Setting.ReactivityPerturbation`.
+            energy_bins : iterable of float
+                EnergyBins for `Tally.Setting.ReactivityPerturbation`.
+            linear : mcnpy.YesNo
+                Linear for `Tally.Setting.ReactivityPerturbation`.
+            
+            """
+            
             next_id = 1
             used_ids = set()
-
-            __doc__ = """KPERT
-            """
-            __doc__ += ReactivityPerturbationBase().__doc__
             
             def _init(self, **kwargs):
                 """
@@ -1484,12 +2515,39 @@ class Tally():
 
         class CriticalitySensitivity(IDManagerMixin, TallySettingABC, 
                                      CriticalitySensitivityBase):
+            
+            """
+            A representation of the model object `Tally.Setting.CriticalitySensitivity`.
+            
+            Parameters
+            ----------
+            name : int
+                Name for `Tally.Setting.CriticalitySensitivity`.
+            type : mcnpy.Tally.Setting.CriticalitySensitivityType
+                Type for `Tally.Setting.CriticalitySensitivity`.
+            nuclides : iterable of str
+                Nuclides for `Tally.Setting.CriticalitySensitivity`.
+            sabnuclides : iterable of mcnpy.SabNuclide
+                Sabnuclides for `Tally.Setting.CriticalitySensitivity`.
+            sign : iterable of str
+                Sign for `Tally.Setting.CriticalitySensitivity`.
+            reactions : iterable of int
+                Reactions for `Tally.Setting.CriticalitySensitivity`.
+            energy_bins : iterable of float
+                EnergyBins for `Tally.Setting.CriticalitySensitivity`.
+            incoming_energy_bins : iterable of float
+                IncomingEnergyBins for `Tally.Setting.CriticalitySensitivity`.
+            moment : iterable of int
+                Moment for `Tally.Setting.CriticalitySensitivity`.
+            angles : iterable of float
+                Angles for `Tally.Setting.CriticalitySensitivity`.
+            normalize : mcnpy.YesNo
+                Normalize for `Tally.Setting.CriticalitySensitivity`.
+            
+            """
+            
             next_id = 1
             used_ids = set()
-
-            __doc__ = """KSEN
-            """
-            __doc__ += CriticalitySensitivityBase().__doc__
             
             def _init(self, **kwargs):
                 """
@@ -1499,9 +2557,15 @@ class Tally():
 
         class LatticeSpeedTallyEnhancement(NoIDMixin, TallySettingABC, 
                                            LatticeSpeedTallyEnhancementBase):
-            __doc__ = """SPDTL
             """
-            __doc__ += LatticeSpeedTallyEnhancementBase().__doc__
+            A representation of the model object `Tally.Setting.LatticeSpeedTallyEnhancement`.
+            
+            Parameters
+            ----------
+            enabled : mcnpy.ForceOff
+                Enabled for `Tally.Setting.LatticeSpeedTallyEnhancement`.
+            
+            """
             
             def _init(self, **kwargs):
                 """
@@ -1518,3 +2582,4 @@ subclass_overrides(Tally, ignore=[Tally.Bin, Tally.Bins, Tally.Setting])
 subclass_overrides(Tally.Bin, ignore=[Tally.Bin.Level])
 subclass_overrides(Tally.Bins)
 subclass_overrides(Tally.Setting)
+subclass_overrides(Tally.TMESH)

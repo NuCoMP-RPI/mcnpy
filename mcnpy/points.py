@@ -3,7 +3,19 @@ from .wrap import wrappers, overrides
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
 class Point(PointBase):
-    __doc__ = PointBase().__doc__
+    """
+    A representation of the model object `Point`.
+    
+    Parameters
+    ----------
+    x : float
+        X for `Point`.
+    y : float
+        Y for `Point`.
+    z : float
+        Z for `Point`.
+    
+    """
 
     def _init(self, x, y, z):
         self.x = x
@@ -27,7 +39,17 @@ class Point(PointBase):
         return 'Point: ' + str(self)
 
 class PPoint(PPointBase):
-    __doc__ = PPointBase().__doc__
+    """
+    A representation of the model object `PPoint`.
+    
+    Parameters
+    ----------
+    d : float
+        D for `PPoint`.
+    r : float
+        R for `PPoint`.
+    
+    """
     
     def _init(self, d:float, r:float):
         self.d = d
@@ -50,7 +72,21 @@ class PPoint(PPointBase):
         return 'PPoint: ' + str(self)
 
 class Vector(VectorBase):
-    __doc__ = VectorBase().__doc__
+    """
+    A representation of the model object `Vector`.
+    
+    Parameters
+    ----------
+    name : int
+        Name for `Vector`.
+    x : float
+        X for `Vector`.
+    y : float
+        Y for `Vector`.
+    z : float
+        Z for `Vector`.
+    
+    """
     
     def _init(self, name, x, y, z):
         self.name = name
@@ -67,7 +103,19 @@ class Vector(VectorBase):
         return 'V' + self.name
 
 class Point_WS(Point_WSBase):
-    __doc__ = Point_WSBase().__doc__
+    """
+    A representation of the model object `Point_WS`.
+    
+    Parameters
+    ----------
+    x : float
+        X for `Point_WS`.
+    y : float
+        Y for `Point_WS`.
+    z : float
+        Z for `Point_WS`.
+    
+    """
 
     def _init(self, **kwargs):
         """

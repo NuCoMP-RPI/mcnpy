@@ -10,7 +10,57 @@ class MaterialSetting(ABC):
     """
 
 class Material(IDManagerMixin, MaterialBase):
-    __doc__ = MaterialBase().__doc__
+    """
+    A representation of the model object `Material`.
+    
+    Parameters
+    ----------
+    name : int
+        Name for `Material`.
+    nuclides : iterable of mcnpy.Nuclide
+        Nuclides for `Material`.
+    gas : int
+        Gas for `Material`.
+    electron_substep_count : int
+        ElectronSubstepCount for `Material`.
+    heavy_ion_substep_count : int
+        HeavyIonSubstepCount for `Material`.
+    neutron_library : mcnpy.Library
+        NeutronLibrary for `Material`.
+    photoatomic_library : mcnpy.Library
+        PhotoatomicLibrary for `Material`.
+    photonuclear_library : mcnpy.Library
+        PhotonuclearLibrary for `Material`.
+    electron_library : mcnpy.Library
+        ElectronLibrary for `Material`.
+    proton_library : mcnpy.Library
+        ProtonLibrary for `Material`.
+    conductor : float
+        Conductor for `Material`.
+    a : float
+        A for `Material`.
+    b : float
+        B for `Material`.
+    c : float
+        C for `Material`.
+    d : float
+        D for `Material`.
+    b1 : float
+        B1 for `Material`.
+    c1 : float
+        C1 for `Material`.
+    b2 : float
+        B2 for `Material`.
+    c2 : float
+        C2 for `Material`.
+    b3 : float
+        B3 for `Material`.
+    c3 : float
+        C3 for `Material`.
+    comment : str
+        Comment for `Material`.
+    
+    """
 
     next_id = 1
     used_ids = set()
@@ -173,7 +223,21 @@ class Material(IDManagerMixin, MaterialBase):
                 _nucides.addUnique(nuclides)
 
 class Nuclide(NuclideBase):
-    __doc__ = NuclideBase().__doc__
+    """
+    A representation of the model object `Nuclide`.
+    
+    Parameters
+    ----------
+    name : int
+        Name for `Nuclide`.
+    library : mcnpy.Library
+        Library for `Nuclide`.
+    unit : mcnpy.FractionUnit
+        Unit for `Nuclide`.
+    fraction : float
+        Fraction for `Nuclide`.
+    
+    """
     
     def _init(self, name, fraction, unit='ATOM', library=None):
         self.name = name
@@ -239,7 +303,13 @@ class Nuclide(NuclideBase):
         return str(self)
 
 class Library(LibraryBase):
-    __doc__ = LibraryBase().__doc__
+    """
+    A representation of the model object `Library`.
+    
+    Parameters
+    ----------
+    
+    """
     
     def _init(self, library, quantity=None):
 
@@ -275,7 +345,17 @@ class Library(LibraryBase):
             self._e_object.setLibrary(str(lib))
 
 class Sab(SabBase, MaterialSetting):
-    __doc__ = SabBase().__doc__
+    """
+    A representation of the model object `Sab`.
+    
+    Parameters
+    ----------
+    material : mcnpy.Material
+        Material for `Sab`.
+    libraries : iterable of mcnpy.SabLibrary
+        Libraries for `Sab`.
+    
+    """
     
     def _init(self, material, libraries):
         self.material = material
@@ -306,7 +386,17 @@ class Sab(SabBase, MaterialSetting):
         material._s_alpha_beta = self
 
 class SabLibrary(SabLibraryBase):
-    __doc__ = SabLibraryBase().__doc__
+    """
+    A representation of the model object `SabLibrary`.
+    
+    Parameters
+    ----------
+    nuclide : mcnpy.SabNuclide
+        Nuclide for `SabLibrary`.
+    library : mcnpy.Sablib
+        Library for `SabLibrary`.
+    
+    """
     
     def _init(self, nuclide, library=None):
         self.nuclide = nuclide
@@ -325,7 +415,17 @@ class SabLibrary(SabLibraryBase):
             self._e_object.setLibrary(Sablib(lib))
 
 class Sablib(SablibBase):
-    __doc__ = SablibBase().__doc__
+    """
+    A representation of the model object `Sablib`.
+    
+    Parameters
+    ----------
+    lib : str
+        Lib for `Sablib`.
+    t : str
+        T for `Sablib`.
+    
+    """
     
     def _init(self, lib):
         self.lib = lib
@@ -349,7 +449,19 @@ class Sablib(SablibBase):
                 self._e_object.setLib(_lib)
 
 class NuclideSubstitution(NuclideSubstitutionBase, MaterialSetting):
-    __doc__ = NuclideSubstitutionBase().__doc__
+    """
+    A representation of the model object `NuclideSubstitution`.
+    
+    Parameters
+    ----------
+    material : mcnpy.Material
+        Material for `NuclideSubstitution`.
+    nuclides : iterable of str
+        Nuclides for `NuclideSubstitution`.
+    particles : iterable of mcnpy.Particle
+        Particles for `NuclideSubstitution`.
+    
+    """
     
     def _init(self, **kwargs):
         """
@@ -358,7 +470,19 @@ class NuclideSubstitution(NuclideSubstitutionBase, MaterialSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class PhotonuclearNuclideSelection(PhotonuclearNuclideSelectionBase, MaterialSetting):
-    __doc__ = PhotonuclearNuclideSelectionBase().__doc__
+    """
+    A representation of the model object `PhotonuclearNuclideSelection`.
+    
+    Parameters
+    ----------
+    material : mcnpy.Material
+        Material for `PhotonuclearNuclideSelection`.
+    zaids : iterable of str
+        Zaids for `PhotonuclearNuclideSelection`.
+    particles : iterable of mcnpy.Particle
+        Particles for `PhotonuclearNuclideSelection`.
+    
+    """
     
     def _init(self, **kwargs):
         """
@@ -367,7 +491,15 @@ class PhotonuclearNuclideSelection(PhotonuclearNuclideSelectionBase, MaterialSet
             setattr(self, k.lower(), kwargs[k])
 
 class OnTheFlyDopplerBroadening(OnTheFlyDopplerBroadeningBase, MaterialSetting):
-    __doc__ = OnTheFlyDopplerBroadeningBase().__doc__
+    """
+    A representation of the model object `OnTheFlyDopplerBroadening`.
+    
+    Parameters
+    ----------
+    zaids : iterable of str
+        Zaids for `OnTheFlyDopplerBroadening`.
+    
+    """
     
     def _init(self, **kwargs):
         """
@@ -376,7 +508,15 @@ class OnTheFlyDopplerBroadening(OnTheFlyDopplerBroadeningBase, MaterialSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class TotalFission(TotalFissionBase, MaterialSetting):
-    __doc__ = TotalFissionBase().__doc__
+    """
+    A representation of the model object `TotalFission`.
+    
+    Parameters
+    ----------
+    prompt_only : mcnpy.Boolean
+        PromptOnly for `TotalFission`.
+    
+    """
     
     def _init(self, **kwargs):
         """
@@ -385,7 +525,15 @@ class TotalFission(TotalFissionBase, MaterialSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class FissionTurnoff(FissionTurnoffBase, MaterialSetting):
-    __doc__ = FissionTurnoffBase().__doc__
+    """
+    A representation of the model object `FissionTurnoff`.
+    
+    Parameters
+    ----------
+    options : iterable of str
+        Options for `FissionTurnoff`.
+    
+    """
     
     def _init(self, **kwargs):
         """
@@ -394,7 +542,19 @@ class FissionTurnoff(FissionTurnoffBase, MaterialSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class AtomicWeight(AtomicWeightBase, MaterialSetting):
-    __doc__ = AtomicWeightBase().__doc__
+    """
+    A representation of the model object `AtomicWeight`.
+    
+    Parameters
+    ----------
+    nuclides : iterable of str
+        Nuclides for `AtomicWeight`.
+    library : iterable of mcnpy.Library
+        Library for `AtomicWeight`.
+    ratios : iterable of float
+        Ratios for `AtomicWeight`.
+    
+    """
     
     def _init(self, **kwargs):
         """
@@ -403,7 +563,21 @@ class AtomicWeight(AtomicWeightBase, MaterialSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class CrossSectionFile(CrossSectionFileBase, MaterialSetting):
-    __doc__ = CrossSectionFileBase().__doc__
+    """
+    A representation of the model object `CrossSectionFile`.
+    
+    Parameters
+    ----------
+    name : int
+        Name for `CrossSectionFile`.
+    nuclides : mcnpy.Nuclide
+        Nuclides for `CrossSectionFile`.
+    x_s_file : str
+        XSFile for `CrossSectionFile`.
+    entries : iterable of float
+        Entries for `CrossSectionFile`.
+    
+    """
     
     def _init(self, **kwargs):
         """
@@ -412,7 +586,15 @@ class CrossSectionFile(CrossSectionFileBase, MaterialSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class Void(VoidBase, MaterialSetting):
-    __doc__ = VoidBase().__doc__
+    """
+    A representation of the model object `Void`.
+    
+    Parameters
+    ----------
+    cells : iterable of mcnpy.Cell
+        Cells for `Void`.
+    
+    """
     
     def _init(self, **kwargs):
         """
@@ -421,7 +603,29 @@ class Void(VoidBase, MaterialSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class MultigroupTransport(MultigroupTransportBase, MaterialSetting):
-    __doc__ = MultigroupTransportBase().__doc__
+    """
+    A representation of the model object `MultigroupTransport`.
+    
+    Parameters
+    ----------
+    mode : mcnpy.MultigroupTransportMode
+        Mode for `MultigroupTransport`.
+    combined_electron_photon_xsecs : str
+        CombinedElectronPhotonXsecs for `MultigroupTransport`.
+    energy_group_count : int
+        EnergyGroupCount for `MultigroupTransport`.
+    importances : str
+        Importances for `MultigroupTransport`.
+    adjoint_biasing : str
+        AdjointBiasing for `MultigroupTransport`.
+    reference_cell : mcnpy.Cell
+        ReferenceCell for `MultigroupTransport`.
+    weight_window_normalization : float
+        WeightWindowNormalization for `MultigroupTransport`.
+    compression_limit : str
+        CompressionLimit for `MultigroupTransport`.
+    
+    """
     
     def _init(self, **kwargs):
         """
@@ -430,7 +634,17 @@ class MultigroupTransport(MultigroupTransportBase, MaterialSetting):
             setattr(self, k.lower(), kwargs[k])
 
 class DiscreteReactionCrossSection(DiscreteReactionCrossSectionBase, MaterialSetting):
-    __doc__ = DiscreteReactionCrossSectionBase().__doc__
+    """
+    A representation of the model object `DiscreteReactionCrossSection`.
+    
+    Parameters
+    ----------
+    nuclides : iterable of str
+        Nuclides for `DiscreteReactionCrossSection`.
+    library : iterable of mcnpy.Library
+        Library for `DiscreteReactionCrossSection`.
+    
+    """
     
     def _init(self, **kwargs):
         """

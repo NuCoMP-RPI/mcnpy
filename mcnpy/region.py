@@ -8,7 +8,12 @@ import mcnpy
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
 class Region(RegionBase, ABC):
-    __doc__ = RegionBase().__doc__
+    """
+    A representation of the model object `Region`.
+    
+    Parameters
+    ----------
+    """
 
     def __and__(self, other):
         return Intersection((self, other))
@@ -215,7 +220,15 @@ class Region(RegionBase, ABC):
         return output[0]
 
 class Intersection(IntersectionBase, Region, MutableSequence):
-    __doc__ = IntersectionBase().__doc__
+    """
+    A representation of the model object `Intersection`.
+    
+    Parameters
+    ----------
+    nodes : iterable of mcnpy.Region
+        Nodes for `Intersection`.
+    
+    """
 
     def _init(self, nodes):
         self.nodes = nodes
@@ -253,7 +266,15 @@ class Intersection(IntersectionBase, Region, MutableSequence):
         return '(' + ' '.join(map(str, self)) + ')'
 
 class Union(UnionBase, Region, MutableSequence):
-    __doc__ = UnionBase().__doc__
+    """
+    A representation of the model object `Union`.
+    
+    Parameters
+    ----------
+    nodes : iterable of mcnpy.Region
+        Nodes for `Union`.
+    
+    """
 
     def _init(self, nodes):
         self.nodes = nodes
@@ -291,7 +312,17 @@ class Union(UnionBase, Region, MutableSequence):
         return '(' + ' | '.join(map(str, self)) + ')'
 
 class Complement(ComplementBase, Region):
-    __doc__ = ComplementBase().__doc__
+    """
+    A representation of the model object `Complement`.
+    
+    Parameters
+    ----------
+    cell : mcnpy.Cell
+        Cell for `Complement`.
+    node : mcnpy.Region
+        Node for `Complement`.
+    
+    """
 
     def _init(self, node):
         if isinstance(node, mcnpy.Cell):

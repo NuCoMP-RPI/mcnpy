@@ -152,7 +152,21 @@ def convert_surface(p_surf):
     return surf
 
 class Halfspace(HalfspaceBase):
-    __doc__ = HalfspaceBase().__doc__
+    """
+    A representation of the model object `Halfspace`.
+    
+    Parameters
+    ----------
+    side : mcnpy.PositiveNegative
+        Side for `Halfspace`.
+    pseudo_cell : int
+        PseudoCell for `Halfspace`.
+    surface : mcnpy.Surface
+        Surface for `Halfspace`.
+    facets : str
+        Facets for `Halfspace`.
+    
+    """
 
     def _init(self, side, surface):
         self.side = side
@@ -230,15 +244,16 @@ class Halfspace(HalfspaceBase):
             self.surface = surf
 
 class Surface(SurfaceBase):
-    __doc__ = SurfaceBase().__doc__
-
-    __doc__ += """
+    """
+    A representation of the model object `Surface`.
+    
     Parameters
     ----------
+    
     name : int
         Numeric ID for `Surface`.
     boundary_type : mcnpy.BoundaryType
-        Surface boundary condition.
+        Boundary condition for `Surface`.
     
     """
 
@@ -386,9 +401,24 @@ class Macrobody(ABC):
 # Macrobodies
 
 class Sphere(IDManagerMixin, SphereBase, Surface):
-    __doc__ = """Sphere defined by origin `(x0, y0, z0)` and radius `r`.
     """
-    __doc__ += SphereBase().__doc__
+    Sphere defined by origin `(x0, y0, z0)` and radius `r`.
+    A representation of the model object `Sphere`.
+    
+    Parameters
+    ----------
+    x0 : float
+        X0 for `Sphere`.
+    y0 : float
+        Y0 for `Sphere`.
+    z0 : float
+        Z0 for `Sphere`.
+    r : float
+        R for `Sphere`.
+    comment : str
+        Comment for `Sphere`.
+    
+    """
 
     def _init(self, name=None, x0=0.0, y0=0.0, z0=0.0, r=1.0, 
               boundary_type='VACUUM', comment=None):
@@ -414,10 +444,29 @@ class Sphere(IDManagerMixin, SphereBase, Surface):
         return self.print_surface()
 
 class RectangularPrism(IDManagerMixin, RectangularPrismBase, Surface, Macrobody):
-    __doc__ = """A rectangular parallelpiped defined by X, Y, and Z limits.
-    Can be infinite in 1 dimension if upper and lower bounds are equal.
     """
-    __doc__ += RectangularPrismBase().__doc__
+    A rectangular parallelpiped defined by X, Y, and Z limits.
+    Can be infinite in 1 dimension if upper and lower bounds are equal.
+    A representation of the model object `RectangularPrism`.
+    
+    Parameters
+    ----------
+    x0 : float
+        X0 for `RectangularPrism`.
+    x1 : float
+        X1 for `RectangularPrism`.
+    y0 : float
+        Y0 for `RectangularPrism`.
+    y1 : float
+        Y1 for `RectangularPrism`.
+    z0 : float
+        Z0 for `RectangularPrism`.
+    z1 : float
+        Z1 for `RectangularPrism`.
+    comment : str
+        Comment for `RectangularPrism`.
+    
+    """
 
     def _init(self, name=None, x0=0.0, x1=0.0, y0=0.0, y1=0.0, z0=0.0, 
               z1=0.0, boundary_type='VACUUM', comment=None):
@@ -448,9 +497,20 @@ class RectangularPrism(IDManagerMixin, RectangularPrismBase, Surface, Macrobody)
         return self.print_surface()
 
 class Box(IDManagerMixin, BoxBase, Surface, Macrobody):
-    __doc__ = """A Box defined by a corner and 2 or 3 vectors.
     """
-    __doc__ += BoxBase().__doc__
+    A Box defined by a corner and 2 or 3 vectors.
+    A representation of the model object `Box`.
+    
+    Parameters
+    ----------
+    corner : mcnpy.Point
+        Corner for `Box`.
+    vectors : iterable of mcnpy.Point
+        Vectors for `Box`.
+    comment : str
+        Comment for `Box`.
+    
+    """
 
     def _init(self, name=None, corner=Point(), vectors=[], boundary_type='VACUUM', 
               comment=None):
@@ -473,10 +533,23 @@ class Box(IDManagerMixin, BoxBase, Surface, Macrobody):
         return self.print_surface()
 
 class CircularCylinder(IDManagerMixin, CircularCylinderBase, Surface, Macrobody):
-    __doc__ = """A right circular cylinder defined by the center of its `base`, an `axis` 
-    vector, and radius `r`.
     """
-    __doc__ += CircularCylinderBase().__doc__
+    A right circular cylinder defined by the center of its `base`, an `axis` 
+    vector, and radius `r`.
+    A representation of the model object `CircularCylinder`.
+    
+    Parameters
+    ----------
+    base : mcnpy.Point
+        Base for `CircularCylinder`.
+    axis : mcnpy.Point
+        Axis for `CircularCylinder`.
+    r : float
+        R for `CircularCylinder`.
+    comment : str
+        Comment for `CircularCylinder`.
+    
+    """
 
     def _init(self, name=None, base=Point(), axis=Point(), r=1.0, 
               boundary_type='VACUUM', comment=None):
@@ -501,11 +574,28 @@ class CircularCylinder(IDManagerMixin, CircularCylinderBase, Surface, Macrobody)
         return self.print_surface()
 
 class HexagonalPrism(IDManagerMixin, HexagonalPrismBase, Surface, Macrobody):
-    __doc__ = """Right Hexagonal Prism defined by a `base` point, `height` vector, and 
+    """
+    Right Hexagonal Prism defined by a `base` point, `height` vector, and 
     facet vectors `facet1`, `facet2`, and `facet3`. The second and third facet 
     vectors are optional.
+    A representation of the model object `HexagonalPrism`.
+    
+    Parameters
+    ----------
+    base : mcnpy.Point
+        Base for `HexagonalPrism`.
+    height : mcnpy.Point
+        Height for `HexagonalPrism`.
+    facet1 : mcnpy.Point
+        Facet1 for `HexagonalPrism`.
+    facet2 : mcnpy.Point
+        Facet2 for `HexagonalPrism`.
+    facet3 : mcnpy.Point
+        Facet3 for `HexagonalPrism`.
+    comment : str
+        Comment for `HexagonalPrism`.
+    
     """
-    __doc__ += HexagonalPrismBase().__doc__
 
     def _init(self, name=None, base=Point(), height=Point(), facet1=Point(), facet2=None, 
               facet3=None, boundary_type='VACUUM', comment=None):
@@ -534,11 +624,28 @@ class HexagonalPrism(IDManagerMixin, HexagonalPrismBase, Surface, Macrobody):
         return self.print_surface()
 
 class EllipticalCylinder(IDManagerMixin, EllipticalCylinderBase, Surface, Macrobody):
-    __doc__ = """Right Elliptical Cylinder defined by a `base` point, `axis` height 
+    """
+    Right Elliptical Cylinder defined by a `base` point, `axis` height 
     vector, ellipse major axis vector `v1`, and ellipse minor axis vector `v1` 
     or radius `r`.
+    A representation of the model object `EllipticalCylinder`.
+    
+    Parameters
+    ----------
+    base : mcnpy.Point
+        Base for `EllipticalCylinder`.
+    axis : mcnpy.Point
+        Axis for `EllipticalCylinder`.
+    v1 : mcnpy.Point
+        V1 for `EllipticalCylinder`.
+    v2 : mcnpy.Point
+        V2 for `EllipticalCylinder`.
+    rm : float
+        Rm for `EllipticalCylinder`.
+    comment : str
+        Comment for `EllipticalCylinder`.
+    
     """
-    __doc__ += EllipticalCylinderBase().__doc__
 
     def _init(self, name=None, base=Point(), axis=Point(), v1=Point(), v2=None, rm=None, 
               boundary_type='VACUUM', comment=None):
@@ -567,10 +674,25 @@ class EllipticalCylinder(IDManagerMixin, EllipticalCylinderBase, Surface, Macrob
         return self.print_surface()
 
 class TruncatedCone(IDManagerMixin, TruncatedConeBase, Surface, Macrobody):
-    __doc__ = """Truncated Right Angle Cone defined by a `base` point, `axis` height 
-    vector, radius of the lower cone `r0`, and radius of the upper cone `r1`.
     """
-    __doc__ += TruncatedConeBase().__doc__
+    Truncated Right Angle Cone defined by a `base` point, `axis` height 
+    vector, radius of the lower cone `r0`, and radius of the upper cone `r1`.
+    A representation of the model object `TruncatedCone`.
+    
+    Parameters
+    ----------
+    base : mcnpy.Point
+        Base for `TruncatedCone`.
+    axis : mcnpy.Point
+        Axis for `TruncatedCone`.
+    r0 : float
+        R0 for `TruncatedCone`.
+    r1 : float
+        R1 for `TruncatedCone`.
+    comment : str
+        Comment for `TruncatedCone`.
+    
+    """
 
     def _init(self, name=None, base=Point(), axis=Point(), r0=0.0, r1=1.0, 
               boundary_type='VACUUM', comment=None):
@@ -597,10 +719,23 @@ class TruncatedCone(IDManagerMixin, TruncatedConeBase, Surface, Macrobody):
         return self.print_surface()
 
 class Wedge(IDManagerMixin, WedgeBase, Surface, Macrobody):
-    __doc__ = """A Wedge defined by a `vertex`, 2 `vectors` for sides of the triangular 
-    base, and an `axis` height vector.
     """
-    __doc__ += WedgeBase().__doc__
+    A Wedge defined by a `vertex`, 2 `vectors` for sides of the triangular 
+    base, and an `axis` height vector.
+    A representation of the model object `Wedge`.
+    
+    Parameters
+    ----------
+    vertex : mcnpy.Point
+        Vertex for `Wedge`.
+    vectors : iterable of mcnpy.Point
+        Vectors for `Wedge`.
+    axis : mcnpy.Point
+        Axis for `Wedge`.
+    comment : str
+        Comment for `Wedge`.
+    
+    """
 
     def _init(self, name=None, vertex=Point(), axis=Point(), vectors=[], 
               boundary_type='VACUUM', comment=None):
@@ -625,9 +760,22 @@ class Wedge(IDManagerMixin, WedgeBase, Surface, Macrobody):
         return self.print_surface()
 
 class Ellipsoid(IDManagerMixin, EllipsoidBase, Surface, Macrobody):
-    __doc__ = """An Ellipsoid defined by a 2 points/vectors and a radius. By default, `rm` is the major radius and `v1` and `v2` are the coordinates of the first and second focii. If `rm < 0` (meaning `rm` is now the minor radius), then `v1` is the coordinates of the ellipsoid's center and `v2` is its major axis vector.
     """
-    __doc__ += EllipsoidBase().__doc__
+    An Ellipsoid defined by a 2 points/vectors and a radius. By default, `rm` is the major radius and `v1` and `v2` are the coordinates of the first and second focii. If `rm < 0` (meaning `rm` is now the minor radius), then `v1` is the coordinates of the ellipsoid's center and `v2` is its major axis vector.
+    A representation of the model object `Ellipsoid`.
+    
+    Parameters
+    ----------
+    v1 : mcnpy.Point
+        V1 for `Ellipsoid`.
+    v2 : mcnpy.Point
+        V2 for `Ellipsoid`.
+    rm : float
+        Rm for `Ellipsoid`.
+    comment : str
+        Comment for `Ellipsoid`.
+    
+    """
 
     def _init(self, name=None, v1=Point(), v2=Point(), rm=1.0, boundary_type='VACUUM', 
               comment=None):
@@ -652,9 +800,20 @@ class Ellipsoid(IDManagerMixin, EllipsoidBase, Surface, Macrobody):
         return self.print_surface()
 
 class Polyhedron(IDManagerMixin, PolyhedronBase, Surface, Macrobody):
-    __doc__ = """An Arbitrary Polyhedron. There must be eight triplets of entries input for the ARB to describe the (x,y,z) of the corners, although some may not be used (just use triplets of zeros). These are followed by six more entries, ni, which follow a prescribed convention: each entry is a four-digit integer that defines a side of the ARB in terms of the corners for the side. For example, the entry 1278 would define this plane surface to be bounded by the first, second, seventh, and eighth triplets (or equivalently, corners). Since three points are sufficient to determine the plane, only the first, second, and seventh corners would be used in this example to determine the plane. The distance from the plane to the fourth corner (corner 8 in the example) is determined by MCNP6. If the absolute value of this distance is greater than 1.0E-6, an error message is given and the distance is printed in the OUTP file along with the (x,y,z) that would lie on the plane. If the fourth digit is zero, the fourth point is ignored. For a four-sided ARB, four non-zero four-digit integers (last digit is zero for four-sided since there are only three corners for each side) are required to define the sides. For a five-sided ARB, five non-zero four-digit integers are required, and six non-zero four-digit integers are required for a six-sided ARB. Since there must be 30 entries altogether for an ARB (or MCNP6 gives an error message), the last two integers are zero for the four-sided ARB and the last integer is zero for a five-sided ARB.
     """
-    __doc__ += PolyhedronBase().__doc__
+    An Arbitrary Polyhedron. There must be eight triplets of entries input for the ARB to describe the (x,y,z) of the corners, although some may not be used (just use triplets of zeros). These are followed by six more entries, ni, which follow a prescribed convention: each entry is a four-digit integer that defines a side of the ARB in terms of the corners for the side. For example, the entry 1278 would define this plane surface to be bounded by the first, second, seventh, and eighth triplets (or equivalently, corners). Since three points are sufficient to determine the plane, only the first, second, and seventh corners would be used in this example to determine the plane. The distance from the plane to the fourth corner (corner 8 in the example) is determined by MCNP6. If the absolute value of this distance is greater than 1.0E-6, an error message is given and the distance is printed in the OUTP file along with the (x,y,z) that would lie on the plane. If the fourth digit is zero, the fourth point is ignored. For a four-sided ARB, four non-zero four-digit integers (last digit is zero for four-sided since there are only three corners for each side) are required to define the sides. For a five-sided ARB, five non-zero four-digit integers are required, and six non-zero four-digit integers are required for a six-sided ARB. Since there must be 30 entries altogether for an ARB (or MCNP6 gives an error message), the last two integers are zero for the four-sided ARB and the last integer is zero for a five-sided ARB.
+    A representation of the model object `Polyhedron`.
+    
+    Parameters
+    ----------
+    corners : iterable of mcnpy.Point
+        Corners for `Polyhedron`.
+    sides : iterable of int
+        Sides for `Polyhedron`.
+    comment : str
+        Comment for `Polyhedron`.
+    
+    """
 
     def _init(self, name=None, corners=[], sides=[], boundary_type='VACUUM', 
               comment=None):
@@ -716,9 +875,24 @@ class Polyhedron(IDManagerMixin, PolyhedronBase, Surface, Macrobody):
 #TODO: Add transformation functions for tori and X, Y, Z surfaces.
 
 class Plane(IDManagerMixin, PlaneBase, Surface):
-    __doc__ = """A plane defined by Ax + By + Cz - D = 0.
     """
-    __doc__ += PlaneBase().__doc__
+    A plane defined by Ax + By + Cz - D = 0.
+    A representation of the model object `Plane`.
+    
+    Parameters
+    ----------
+    a : float
+        A for `Plane`.
+    b : float
+        B for `Plane`.
+    c : float
+        C for `Plane`.
+    d : float
+        D for `Plane`.
+    comment : str
+        Comment for `Plane`.
+    
+    """
 
     def _init(self, name=None, a=0.0, b=0.0, c=0.0, d=0.0, 
               boundary_type='VACUUM', comment=None):
@@ -762,9 +936,16 @@ class Plane(IDManagerMixin, PlaneBase, Surface):
         return self.print_surface()
 
 class XPlane(IDManagerMixin, XPlaneBase, Surface):
-    __doc__ = """A plane defined by x - x0 = 0.
     """
-    __doc__ += XPlaneBase().__doc__
+    A plane defined by x - x0 = 0.
+    A representation of the model object `XPlane`.
+    
+    Parameters
+    ----------
+    x0 : float
+        X0 for `XPlane`.
+    
+    """
 
     def _init(self, name=None, x0=0.0, boundary_type='VACUUM', comment=None):
         self.name = name
@@ -801,9 +982,16 @@ class XPlane(IDManagerMixin, XPlaneBase, Surface):
         return self.print_surface()
 
 class YPlane(IDManagerMixin, YPlaneBase, Surface):
-    __doc__ = """A plane defined by y - y0 = 0.
     """
-    __doc__ += YPlaneBase().__doc__
+    A plane defined by y - y0 = 0.
+    A representation of the model object `YPlane`.
+    
+    Parameters
+    ----------
+    y0 : float
+        Y0 for `YPlane`.
+    
+    """
 
     def _init(self, name=None, y0=0.0, boundary_type='VACUUM', comment=None):
         self.name = name
@@ -840,9 +1028,16 @@ class YPlane(IDManagerMixin, YPlaneBase, Surface):
         return self.print_surface()
 
 class ZPlane(IDManagerMixin, ZPlaneBase, Surface):
-    __doc__ = """A plane defined by z - z0 = 0.
     """
-    __doc__ += ZPlaneBase().__doc__
+    A plane defined by z - z0 = 0.
+    A representation of the model object `ZPlane`.
+    
+    Parameters
+    ----------
+    z0 : float
+        Z0 for `ZPlane`.
+    
+    """
 
     def _init(self, name=None, z0=0.0, boundary_type='VACUUM', comment=None):
         self.name = name
@@ -879,9 +1074,22 @@ class ZPlane(IDManagerMixin, ZPlaneBase, Surface):
         return self.print_surface()
 
 class XCylinder(IDManagerMixin, XCylinderBase, Surface):
-    __doc__ = """A cylinder parallel to the x-axis.
     """
-    __doc__ += XCylinderBase().__doc__
+    A cylinder parallel to the x-axis.
+    A representation of the model object `XCylinder`.
+    
+    Parameters
+    ----------
+    y0 : float
+        Y0 for `XCylinder`.
+    z0 : float
+        Z0 for `XCylinder`.
+    r : float
+        R for `XCylinder`.
+    comment : str
+        Comment for `XCylinder`.
+    
+    """
 
     def _init(self, name=None, y0=0.0, z0=0.0, r=1.0, boundary_type='VACUUM', 
               comment=None):
@@ -923,9 +1131,22 @@ class XCylinder(IDManagerMixin, XCylinderBase, Surface):
         return self.print_surface()
 
 class YCylinder(IDManagerMixin, YCylinderBase, Surface):
-    __doc__ = """A cylinder parallel to the y-axis.
     """
-    __doc__ += YCylinderBase().__doc__
+    A cylinder parallel to the y-axis.
+    A representation of the model object `YCylinder`.
+    
+    Parameters
+    ----------
+    x0 : float
+        X0 for `YCylinder`.
+    z0 : float
+        Z0 for `YCylinder`.
+    r : float
+        R for `YCylinder`.
+    comment : str
+        Comment for `YCylinder`.
+    
+    """
 
     def _init(self, name=None, x0=0.0, z0=0.0, r=1.0, boundary_type='VACUUM', 
               comment=None):
@@ -967,9 +1188,22 @@ class YCylinder(IDManagerMixin, YCylinderBase, Surface):
         return self.print_surface()
 
 class ZCylinder(IDManagerMixin, ZCylinderBase, Surface):
-    __doc__ = """A cylinder parallel to the z-axis.
     """
-    __doc__ += ZCylinderBase().__doc__
+    A cylinder parallel to the z-axis.
+    A representation of the model object `ZCylinder`.
+    
+    Parameters
+    ----------
+    x0 : float
+        X0 for `ZCylinder`.
+    y0 : float
+        Y0 for `ZCylinder`.
+    r : float
+        R for `ZCylinder`.
+    comment : str
+        Comment for `ZCylinder`.
+    
+    """
 
     def _init(self, name=None, x0=0.0, y0=0.0, r=1.0, boundary_type='VACUUM', 
               comment=None):
@@ -1011,9 +1245,26 @@ class ZCylinder(IDManagerMixin, ZCylinderBase, Surface):
         return self.print_surface()
 
 class XCone(IDManagerMixin, XConeBase, Surface):
-    __doc__ = """A cone parallel to the x-axis. `sheet` can be `+/-1`.
     """
-    __doc__ += XConeBase().__doc__
+    A cone parallel to the x-axis. `sheet` can be `+/-1`.
+    A representation of the model object `XCone`.
+    
+    Parameters
+    ----------
+    x0 : float
+        X0 for `XCone`.
+    y0 : float
+        Y0 for `XCone`.
+    z0 : float
+        Z0 for `XCone`.
+    r2 : float
+        R2 for `XCone`.
+    sheet : mcnpy.Sheet
+        Sheet for `XCone`.
+    comment : str
+        Comment for `XCone`.
+    
+    """
 
     def _init(self, name=None, x0=0.0, y0=0.0, z0=0.0, r2=1.0, sheet=None, 
               boundary_type='VACUUM', 
@@ -1063,9 +1314,26 @@ class XCone(IDManagerMixin, XConeBase, Surface):
         return self.print_surface()
 
 class YCone(IDManagerMixin, YConeBase, Surface):
-    __doc__ = """A cone parallel to the y-axis. `sheet` can be `+/-1`.
     """
-    __doc__ += YConeBase().__doc__
+    A cone parallel to the y-axis. `sheet` can be `+/-1`.
+    A representation of the model object `YCone`.
+    
+    Parameters
+    ----------
+    x0 : float
+        X0 for `YCone`.
+    y0 : float
+        Y0 for `YCone`.
+    z0 : float
+        Z0 for `YCone`.
+    r2 : float
+        R2 for `YCone`.
+    sheet : mcnpy.Sheet
+        Sheet for `YCone`.
+    comment : str
+        Comment for `YCone`.
+    
+    """
 
     def _init(self, name=None, x0=0.0, y0=0.0, z0=0.0, r2=1.0, sheet=None, 
               boundary_type='VACUUM', 
@@ -1115,9 +1383,26 @@ class YCone(IDManagerMixin, YConeBase, Surface):
         return self.print_surface()
 
 class ZCone(IDManagerMixin, ZConeBase, Surface):
-    __doc__ = """A cone parallel to the z-axis. `sheet` can be `+/-1`.
     """
-    __doc__ += ZConeBase().__doc__
+    A cone parallel to the z-axis. `sheet` can be `+/-1`.
+    A representation of the model object `ZCone`.
+    
+    Parameters
+    ----------
+    x0 : float
+        X0 for `ZCone`.
+    y0 : float
+        Y0 for `ZCone`.
+    z0 : float
+        Z0 for `ZCone`.
+    r2 : float
+        R2 for `ZCone`.
+    sheet : mcnpy.Sheet
+        Sheet for `ZCone`.
+    comment : str
+        Comment for `ZCone`.
+    
+    """
 
     def _init(self, name=None, x0=0.0, y0=0.0, z0=0.0, r2=1.0, sheet=None, 
               boundary_type='VACUUM', 
@@ -1167,9 +1452,36 @@ class ZCone(IDManagerMixin, ZConeBase, Surface):
         return self.print_surface()
 
 class Quadric(IDManagerMixin, QuadricBase, Surface):
-    __doc__ = """Quadric (GQ) with axes not parallel to x-, y-, or z-axis.
     """
-    __doc__ += QuadricBase().__doc__
+    Quadric (GQ) with axes not parallel to x-, y-, or z-axis.
+    A representation of the model object `Quadric`.
+    
+    Parameters
+    ----------
+    a : float
+        A for `Quadric`.
+    b : float
+        B for `Quadric`.
+    c : float
+        C for `Quadric`.
+    d : float
+        D for `Quadric`.
+    e : float
+        E for `Quadric`.
+    f : float
+        F for `Quadric`.
+    g : float
+        G for `Quadric`.
+    h : float
+        H for `Quadric`.
+    j : float
+        J for `Quadric`.
+    k : float
+        K for `Quadric`.
+    comment : str
+        Comment for `Quadric`.
+    
+    """
 
     def _init(self, name=None, a=1, b=0, c=0, d=0, e=0, f=0, g=0, h=0, j=0, k=1, 
               boundary_type='VACUUM', comment=None):
@@ -1214,9 +1526,20 @@ class Quadric(IDManagerMixin, QuadricBase, Surface):
         return self.print_surface()
 
 class XYZQuadric(IDManagerMixin, XYZQuadricBase, Surface):
-    __doc__ = """Quadric (SQ) with axes parallel to x-, y-, or z-axis.
     """
-    __doc__ += XYZQuadricBase().__doc__
+    Quadric (SQ) with axes parallel to x-, y-, or z-axis.
+    A representation of the model object `XYZQuadric`.
+    
+    Parameters
+    ----------
+    x : float
+        X for `XYZQuadric`.
+    y : float
+        Y for `XYZQuadric`.
+    z : float
+        Z for `XYZQuadric`.
+    
+    """
 
     def _init(self, name=None, a=1, b=0, c=0, d=0, e=0, f=0, g=0, x=0, y=0, z=1, 
               boundary_type='VACUUM', comment=None):
@@ -1274,9 +1597,28 @@ class XYZQuadric(IDManagerMixin, XYZQuadricBase, Surface):
         return self.print_surface()
 
 class XTorus(IDManagerMixin, XTorusBase, Surface):
-    __doc__ = """Torus parallel to x-axis.
     """
-    __doc__ += XTorusBase().__doc__
+    Torus parallel to x-axis.
+    A representation of the model object `XTorus`.
+    
+    Parameters
+    ----------
+    x0 : float
+        X0 for `XTorus`.
+    y0 : float
+        Y0 for `XTorus`.
+    z0 : float
+        Z0 for `XTorus`.
+    a : float
+        A for `XTorus`.
+    b : float
+        B for `XTorus`.
+    c : float
+        C for `XTorus`.
+    comment : str
+        Comment for `XTorus`.
+    
+    """
 
     def _init(self, name=None, x0=0.0, y0=0.0, z0=0.0, a=0.0, b=0.0, 
               c=0.0, boundary_type='VACUUM', comment=None):
@@ -1306,9 +1648,28 @@ class XTorus(IDManagerMixin, XTorusBase, Surface):
         return self.print_surface()
 
 class YTorus(IDManagerMixin, YTorusBase, Surface):
-    __doc__ = """Torus parallel to y-axis.
     """
-    __doc__ += YTorusBase().__doc__
+    Torus parallel to y-axis.
+    A representation of the model object `YTorus`.
+    
+    Parameters
+    ----------
+    x0 : float
+        X0 for `YTorus`.
+    y0 : float
+        Y0 for `YTorus`.
+    z0 : float
+        Z0 for `YTorus`.
+    a : float
+        A for `YTorus`.
+    b : float
+        B for `YTorus`.
+    c : float
+        C for `YTorus`.
+    comment : str
+        Comment for `YTorus`.
+    
+    """
 
     def _init(self, name=None, x0=0.0, y0=0.0, z0=0.0, a=0.0, b=0.0, 
               c=0.0, boundary_type='VACUUM', comment=None):
@@ -1338,9 +1699,28 @@ class YTorus(IDManagerMixin, YTorusBase, Surface):
         return self.print_surface()
 
 class ZTorus(IDManagerMixin, ZTorusBase, Surface):
-    __doc__ = """Torus parallel to z-axis.
     """
-    __doc__ += ZTorusBase().__doc__
+    Torus parallel to z-axis.
+    A representation of the model object `ZTorus`.
+    
+    Parameters
+    ----------
+    x0 : float
+        X0 for `ZTorus`.
+    y0 : float
+        Y0 for `ZTorus`.
+    z0 : float
+        Z0 for `ZTorus`.
+    a : float
+        A for `ZTorus`.
+    b : float
+        B for `ZTorus`.
+    c : float
+        C for `ZTorus`.
+    comment : str
+        Comment for `ZTorus`.
+    
+    """
 
     def _init(self, name=None, x0=0.0, y0=0.0, z0=0.0, a=0.0, b=0.0, 
               c=0.0, boundary_type='VACUUM', comment=None):
@@ -1370,9 +1750,18 @@ class ZTorus(IDManagerMixin, ZTorusBase, Surface):
         return self.print_surface()
 
 class PPoints(IDManagerMixin, PPointsBase, Surface):
-    __doc__ = """Plane defined by 3 points
     """
-    __doc__ += PPointsBase().__doc__
+    Plane defined by 3 points
+    A representation of the model object `PPoints`.
+    
+    Parameters
+    ----------
+    points : iterable of mcnpy.Point
+        Points for `PPoints`.
+    comment : str
+        Comment for `PPoints`.
+    
+    """
 
     def _init(self, name=None, points=[], boundary_type='VACUUM', comment=None):
         self.name = name
@@ -1418,9 +1807,16 @@ class PPoints(IDManagerMixin, PPointsBase, Surface):
         return self.print_surface()
 
 class XPoints(IDManagerMixin, XPointsBase, Surface):
-    __doc__ = """X symmetric surface defined by points
     """
-    __doc__ += XPointsBase().__doc__
+    X symmetric surface defined by points
+    A representation of the model object `XPoints`.
+    
+    Parameters
+    ----------
+    points : iterable of mcnpy.PPoint
+        Points for `XPoints`.
+    
+    """
 
     def _init(self, name=None, points=[], boundary_type='VACUUM', comment=None):
         self.name = name
@@ -1457,9 +1853,18 @@ class XPoints(IDManagerMixin, XPointsBase, Surface):
             _points.append(PPoint.aspoint(p))
             
 class YPoints(IDManagerMixin, YPointsBase, Surface):
-    __doc__ = """Y symmetric surface defined by points
     """
-    __doc__ += YPointsBase().__doc__
+    Y symmetric surface defined by points
+    A representation of the model object `YPoints`.
+    
+    Parameters
+    ----------
+    points : iterable of mcnpy.PPoint
+        Points for `YPoints`.
+    comment : str
+        Comment for `YPoints`.
+    
+    """
 
     def _init(self, name=None, points=[], boundary_type='VACUUM', comment=None):
         self.name = name
@@ -1496,9 +1901,18 @@ class YPoints(IDManagerMixin, YPointsBase, Surface):
             _points.append(PPoint.aspoint(p))
 
 class ZPoints(IDManagerMixin, ZPointsBase, Surface):
-    __doc__ = """Z symmetric surface defined by points
     """
-    __doc__ += ZPointsBase().__doc__
+    Z symmetric surface defined by points
+    A representation of the model object `ZPoints`.
+    
+    Parameters
+    ----------
+    points : iterable of mcnpy.PPoint
+        Points for `ZPoints`.
+    comment : str
+        Comment for `ZPoints`.
+    
+    """
 
     def _init(self, name=None, points=[], boundary_type='VACUUM', comment=None):
         self.name = name
@@ -1535,7 +1949,17 @@ class ZPoints(IDManagerMixin, ZPointsBase, Surface):
             _points.append(PPoint.aspoint(p))
 
 class Sheet(SheetBase):
-    __doc__ = SheetBase().__doc__
+    """
+    A representation of the model object `Sheet`.
+    
+    Parameters
+    ----------
+    side : mcnpy.PositiveNegative
+        Side for `Sheet`.
+    value : int
+        Value for `Sheet`.
+    
+    """
 
     def _init(self, side='+'):
         if isinstance(side, str):
