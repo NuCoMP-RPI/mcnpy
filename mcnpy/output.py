@@ -221,7 +221,7 @@ class InteractivePlot(InteractivePlotBase, OutputSetting):
         BinNum for `InteractivePlot`.
     setvar : iterable of mcnpy.FixedVariable
         Setvar for `InteractivePlot`.
-    allowed_value : mcnpy.Tally.Bins.FluctuationList
+    allowed_value : mcnpy.TallyFluctuationList
         AllowedValue for `InteractivePlot`.
     keff_val : int
         KeffVal for `InteractivePlot`.

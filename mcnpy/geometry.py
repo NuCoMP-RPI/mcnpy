@@ -759,7 +759,7 @@ class Volumes(VolumesBase, GeometrySetting):
     
     Parameters
     ----------
-    mcnpy.Volumes#getVolumesVolumes : iterable of str
+    volumes : iterable of str
         Volumes for `Volumes`.
     
     """
@@ -776,7 +776,7 @@ class Areas(AreasBase, GeometrySetting):
     
     Parameters
     ----------
-    mcnpy.Areas#getAreasAreas : iterable of str
+    areas : iterable of str
         Areas for `Areas`.
     
     """
@@ -909,7 +909,7 @@ class Embedded(GeometrySetting):
             Materials for `Embedded.Geometry`.
         cells : iterable of int
             Cells for `Embedded.Geometry`.
-        mesh_format : mcnpy.Embedded.GeometryMeshFormat
+        mesh_format : mcnpy.EmbeddedGeometryMeshFormat
             MeshFormat for `Embedded.Geometry`.
         mesh : str
             Mesh for `Embedded.Geometry`.
@@ -919,9 +919,9 @@ class Embedded(GeometrySetting):
             EeoutRes for `Embedded.Geometry`.
         calculate_volumes : mcnpy.YesNo
             CalculateVolumes for `Embedded.Geometry`.
-        debug : mcnpy.Embedded.GeometryDebug
+        debug : mcnpy.EmbeddedGeometryDebug
             Debug for `Embedded.Geometry`.
-        filetype : mcnpy.Embedded.GeometryFiletype
+        filetype : mcnpy.EmbeddedGeometryFiletype
             Filetype for `Embedded.Geometry`.
         gmv_file : str
             GmvFile for `Embedded.Geometry`.
@@ -929,9 +929,9 @@ class Embedded(GeometrySetting):
             LengthConversionFactor for `Embedded.Geometry`.
         mcnpum_file : str
             McnpumFile for `Embedded.Geometry`.
-        overlap : mcnpy.Embedded.GeometryOverlap
+        overlap : mcnpy.EmbeddedGeometryOverlap
             Overlap for `Embedded.Geometry`.
-        overlap_cell : iterable of mcnpy.Embedded.GeometryOverlap
+        overlap_cell : iterable of mcnpy.EmbeddedGeometryOverlap
             OverlapCell for `Embedded.Geometry`.
         overlap_cells : iterable of mcnpy.Cell
             OverlapCells for `Embedded.Geometry`.
@@ -1318,7 +1318,7 @@ class Lattice():
     k : iterable of int
         Indicies of outermost lattice dimension.
     lattice : numpy.array
-        Array of universe IDs, `mcnpy.LatticeElement` objects, or 
+        Array of universe IDs, `mcnpy.Lattice.Element` objects, or 
         tuple(universe ID, transformation ID). When providing IDs, `universes` 
         and `transformations` must be specified. Use `0` for elements with 
         background fill.

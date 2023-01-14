@@ -16,7 +16,7 @@ class Random(RandomBase, MiscSetting):
     ----------
     generator : str
         Generator for `Random`.
-    seed : mcnpy.long
+    seed : int
         Seed for `Random`.
     stride : int
         Stride for `Random`.
@@ -400,9 +400,9 @@ class Files(FilesBase, MiscSetting):
             Name for `Files.File`.
         filename : int
             Filename for `Files.File`.
-        access : mcnpy.Files.FileAccess
+        access : mcnpy.FileAccess
             Access for `Files.File`.
-        format : mcnpy.Files.FileFormat
+        format : mcnpy.FileFormat
             Format for `Files.File`.
         record_length : int
             RecordLength for `Files.File`.
@@ -447,7 +447,7 @@ class Vertical(ABC):
         ----------
         cell_keywords : iterable of mcnpy.Vertical.Cell.Keyword
             CellKeywords for `Vertical.Cell`.
-        parameters : iterable of mcnpy.Vertical.CellEntry
+        parameters : iterable of mcnpy.Vertical.Cell.Entry
             Parameters for `Vertical.Cell`.
         jump : iterable of str
             Jump for `Vertical.Cell`.
@@ -468,7 +468,7 @@ class Vertical(ABC):
             ----------
             i_d : mcnpy.Cell
                 ID for `Vertical.Cell.Entry`.
-            parameters : iterable of mcnpy.Vertical.CellValue
+            parameters : iterable of mcnpy.Vertical.Cell.Value
                 Parameters for `Vertical.Cell.Entry`.
             
             """
@@ -567,7 +567,7 @@ class Vertical(ABC):
         
         Parameters
         ----------
-        areas : iterable of mcnpy.Vertical.SurfaceEntry
+        areas : iterable of mcnpy.Vertical.Surface.Entry
             Areas for `Vertical.Surface`.
         jump : iterable of str
             Jump for `Vertical.Surface`.
@@ -775,7 +775,7 @@ class Continue(ABC):
             Materials for `Continue.EmbeddedGeometry`.
         cells : iterable of int
             Cells for `Continue.EmbeddedGeometry`.
-        mesh_format : mcnpy.Embedded.GeometryMeshFormat
+        mesh_format : mcnpy.EmbeddedGeometryMeshFormat
             MeshFormat for `Continue.EmbeddedGeometry`.
         mesh : str
             Mesh for `Continue.EmbeddedGeometry`.
@@ -785,9 +785,9 @@ class Continue(ABC):
             EeoutRes for `Continue.EmbeddedGeometry`.
         calculate_volumes : mcnpy.YesNo
             CalculateVolumes for `Continue.EmbeddedGeometry`.
-        debug : mcnpy.Embedded.GeometryDebug
+        debug : mcnpy.EmbeddedGeometryDebug
             Debug for `Continue.EmbeddedGeometry`.
-        filetype : mcnpy.Embedded.GeometryFiletype
+        filetype : mcnpy.EmbeddedGeometryFiletype
             Filetype for `Continue.EmbeddedGeometry`.
         gmv_file : str
             GmvFile for `Continue.EmbeddedGeometry`.
@@ -795,9 +795,9 @@ class Continue(ABC):
             LengthConversionFactor for `Continue.EmbeddedGeometry`.
         mcnpum_file : str
             McnpumFile for `Continue.EmbeddedGeometry`.
-        overlap_all : mcnpy.Embedded.GeometryOverlap
+        overlap_all : mcnpy.EmbeddedGeometryOverlap
             OverlapAll for `Continue.EmbeddedGeometry`.
-        overlap_cell : iterable of mcnpy.Embedded.GeometryOverlap
+        overlap_cell : iterable of mcnpy.EmbeddedGeometryOverlap
             OverlapCell for `Continue.EmbeddedGeometry`.
         
         """
