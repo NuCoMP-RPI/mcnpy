@@ -322,6 +322,14 @@ def mcnp_to_openmc(mcnp_deck: mp.Deck):
         OpenMC model materials.
     """
 
+    # MCNP deck decomposition and processing.
+    print('Decomposing Geometry...')
+    decompose_mcnp(mcnp_deck)
+    print('Cleaning Up MCNP Surface Cards...')
+    mcnp_deck.remove_redundant_surfaces()
+    mcnp_deck.remove_unused_surfaces()
+    print('Translating MCNP => OpenMC\n')
+
     # Storage for creating the openmc objects.
     openmc_materials = {}
     openmc_surfaces = {}
@@ -835,16 +843,8 @@ def translate_file(file_name: str, materials=None, settings=None):
     ext = pathlib.Path(file_name).suffix.lower()
 
     if ext == '.mcnp':
-        deck = mp.Deck().read(filename=file_name, renumber=True)
-        print('Decomposing Geometry...')
-        decompose_mcnp(deck)
-        print('Cleaning Up MCNP Surface Cards...')
-        deck.remove_redundant_surfaces()
-        deck.remove_unused_surfaces()
-        print('Translating MCNP => OpenMC\n')
-
         # Tuple with geometry and materials.
-        model = mcnp_to_openmc(deck)
+        model = mcnp_to_openmc(mp.Deck().read(filename=file_name, renumber=True))
         model[1].export_to_xml(file_name.replace(ext, '.materials.xml')) # materials
         model[0].export_to_xml(file_name.replace(ext, '.geometry.xml')) # geometry
 
