@@ -23,7 +23,7 @@ def run_mcnp(input, exe='mcnp6', exe_op='IXR', inp=True, mcnp_path=None,
     """Initiate MCNP simulation. Also supports calling the plotter.
 
     Parameters
-    ==========
+    ----------
     input : str
         Name of the MCNP textual input file.
     exe : str

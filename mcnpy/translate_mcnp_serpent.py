@@ -11,8 +11,23 @@ DEG_RAD = 180. / math.pi
 RAD_DEG = 1 / DEG_RAD
 
 def decompose_mcnp_transformation(transform, angle='COSINES'):
+    """Decompose MCNP Transformation into displacement and rotation.
+
+    Parameters
+    ----------
+    transform : mcnpy.Transform
+        Transform being translated.
+    angle : str
+        Angle unit for `transform`.
+
+    Returns
+    -------
+    vector : list
+        Displacement vector.
+    rot_matrix : numpy.array
+        Rotation matrix.
     """
-    """
+
     #TODO: Consider angle units and other options.
     #TODO: decomposed transformations should be stored for reuse.
     vector = [transform.disp1, transform.disp2, transform.disp3]
@@ -44,6 +59,23 @@ def decompose_mcnp_transformation(transform, angle='COSINES'):
     return (vector, rot_matrix)
 
 def make_serpent_region(region, surf_serp, serp_cell):
+    """Translate MCNP Region to Serpent Region.
+    
+    Parameters
+    ----------
+    region : mcnpy.Region or mcnpy.Halfspace
+        Region or halfspace being translated.
+    surf_serp : dict
+        Dict of Serpent surfaces by ID.
+    serp_cell : dict
+        Dict of Serpent cells by ID.
+
+    Returns
+    -------
+    serp_region : serpy.Region
+        Serpent Region.
+    """
+
     if isinstance(region, mp.surfaces.Halfspace):
         surf = surf_serp[str(region.surface.name)]
         if str(region.side) == '-':
@@ -75,15 +107,15 @@ def make_serpent_material(material, name=None):
 
     Parameters
     ----------
-    material : `mcnpy.Material`
+    material : mcnpy.Material
         MCNP Material to be translated.
 
-    name : `str` (Optional)
+    name : str (Optional)
         Name for Serpent material.
 
     Returns
     -------
-    material : `serpy.Material`
+    material : serpy.Material
         Translated Serpent Material.
     """
     nuclides = []
@@ -102,14 +134,14 @@ def make_mcnp_material(material, id):
 
     Parameters
     ----------
-    material : `serpy.Material`
+    material : serpy.Material
         Serpent Material to be translated.
     id : int
         Material ID.
 
     Returns
     -------
-    material : `mcnpy.Material`
+    material : mcnpy.Material
         Translated MCNP Material.
     """
     nuclides = []
@@ -122,18 +154,18 @@ def make_mcnp_cell(mcnp_deck, serp_cell, id, outside_surfs):
 
     Parameters
     ----------
-    mcnp_deck : `mcnpy.Deck`
+    mcnp_deck : mcnpy.Deck
         MCNP Deck being translated to.
-    serp_cell : `serpy.Cell`
+    serp_cell : serpy.Cell
         Serpent Cell being translated.
-    id : `int`
+    id : int
         New MCNP Cell ID.
     outside_surfs : dict
         Dict of Serpent Surfaces that have 'outside' fill.
 
     Returns
     -------
-    mcnp_cell : `mcnpy.Cell`
+    mcnp_cell : mcnpy.Cell
         Translated MCNP Cell.
     outside_surfs : dict
         Dict of Serpent Surfaces that have 'outside' fill.
@@ -178,7 +210,7 @@ def apply_mcnp_cell_trans(mcnp_deck):
 
     Parameters
     ----------
-    mcnp_deck : `mcnpy.Deck`
+    mcnp_deck : mcnpy.Deck
         MCNP deck being translated.
     
     Returns
@@ -186,6 +218,7 @@ def apply_mcnp_cell_trans(mcnp_deck):
     fill_trans : dict
         Dict mapping TR cards to cell IDs.
     """
+
     fill_trans = {}
     for cell in mcnp_deck.cells.values():
         trcl = cell.transformation
@@ -236,16 +269,17 @@ def make_serpent_cell(serp_deck, mcnp_cell):
 
     Parameters
     ----------
-    serp_deck : `serpy.Deck`
+    serp_deck : serpy.Deck
         Serpent Deck being translated to.
-    mcnp_cell : `mcnpy.Cell`
+    mcnp_cell : mcnpy.Cell
         MCNP Cell being translated.
 
     Returns
     -------
-    serp_cell : `serpy.Cell`
+    serp_cell : serpy.Cell
         Translated Serpent Cell.
     """
+
     region = make_serpent_region(mcnp_cell.region, serp_deck.surfaces, serp_deck.cells)
     #region = sp.Region.from_expression(str(mcnp_cell.region), serp_deck.surfaces,
     #                                   serp_deck.cells)
@@ -289,11 +323,11 @@ def make_mcnp_lattice(serp_lattice, mcnp_universes):
 
     Returns
     -------
-    mcnp_lat : `mcnpy.Lattice`
+    mcnp_lat : mcnpy.Lattice
         Translated MCNP Lattice.
-    element : `mcnpy.Surface`
+    element : mcnpy.Surface
         Surface boundary of the lattice element.
-    transformation : `mcnpy.Transformation` or None
+    transformation : mcnpy.Transformation or None
         TR card to re-center lattice or None if not required.
     """
 
@@ -349,15 +383,16 @@ def make_serpent_lattice(mcnp_cell, serp_universes):
     """
     Parameters
     ----------
-    mcnp_cell : `mcnpy.Cell`
+    mcnp_cell : mcnpy.Cell
         MCNP Cell with lattice fill.
     serp_universes : dict
         Dict of Serpent Universes.
 
     Returns
     -------
-    lat : `serpy.Full3DLattice` or `serpy.LatticeType`
+    lat : serpy.Full3DLattice or serpy.LatticeType
     """
+
     mcnp_lattice = mcnp_cell.fill
     shape = mcnp_lattice.lattice.shape
     lattice = np.empty(shape, dtype='str')
@@ -427,9 +462,10 @@ def serpent_to_mcnp(serp_deck:sp.Deck):
 
     Returns
     -------
-    mcnp_deck : `mcnpy.Deck`
+    mcnp_deck : mcnpy.Deck
         Translated MCNP Deck.
     """
+
     print('Translating Serpent => MCNP\n')
     mcnp_deck = mp.Deck()
 
@@ -609,14 +645,15 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
     
     Parameters
     ----------
-    mcnp_deck : `mcnpy.Deck`
+    mcnp_deck : mcnpy.Deck
         MCNP Deck to be translated.
 
     Returns
     -------
-    serp_deck : `serpy.Deck`
+    serp_deck : serpy.Deck
         Translated Serpent Deck.
     """
+
     print('Translating MCNP => Serpent\n')
     serp_deck = sp.Deck()
     bc_type = 1
@@ -742,12 +779,12 @@ def translate_file(file_name: str):
 
     Parameters
     ----------
-    file_name : `str`
+    file_name : str
         Name of file to translate.
 
     Returns
     -------
-    trans_deck : `mcnpy.Deck` or `serpy.Deck`
+    trans_deck : mcnpy.Deck or serpy.Deck
     """
 
     ext = pathlib.Path(file_name).suffix.lower()

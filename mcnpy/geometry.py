@@ -1307,7 +1307,7 @@ class Partisn(GeometrySetting):
                 setattr(self, k, kwargs[k])
 
 class Lattice():
-    """Rectangular or hexagonal lattice structure of repeated universes.
+    """Class for lattices. Defined by max indicies `i`, `j`, `k`, and a 3D array `lattice`. The array should be defined using `numpy.array()` where `k` indicies are your outermost dimension followed by `j` and `i`. Elements of `lattice` can be `LatticeElement` objects, universe IDs, tuple(universe ID, transformation ID), or 0. When using IDs, `universes` and `transformations` must include the key value pair of ID and object. Using `Transforms` instead of `Transformations` is also allowed.
     
     Parameters
     ----------
@@ -1332,6 +1332,7 @@ class Lattice():
         ID is used when defining `lattice`.
 
     """
+    
     def __init__(self, i=[], j=[], k=[], lattice=None, type='REC', 
                  universes=None, transformations=None):
         """Class for lattices. Defined by max indicies `i`, `j`, `k`, and a 3D array `lattice`. The array should be defined using `numpy.array()` where `k` indicies are your outermost dimension followed by `j` and `i`. Elements of `lattice` can be `LatticeElement` objects, universe IDs, tuple(universe ID, transformation ID), or 0. When using IDs, `universes` and `transformations` must include the key value pair of ID and object. Using `Transforms` instead of `Transformations` is also allowed.

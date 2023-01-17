@@ -9,11 +9,24 @@ from mcnpy.surface_converter_openmc import mcnp_surfs_to_openmc, openmc_surfs_to
 DEG_RAD = 180. / math.pi
 RAD_DEG = 1 / DEG_RAD
 
-"""Translate MCNP to OpenMC.
-"""
 def decompose_mcnp_transformation(transform, angle='COSINES'):
+    """Decompose MCNP Transformation into displacement and rotation.
+
+    Parameters
+    ----------
+    transform : mcnpy.Transform
+        Transform being translated.
+    angle : str
+        Angle unit for `transform`.
+
+    Returns
+    -------
+    vector : list
+        Displacement vector.
+    rot_matrix : numpy.array
+        Rotation matrix.
     """
-    """
+
     #TODO: Consider angle units and other options.
     #TODO: decomposed transformations should be stored for reuse.
     vector = [transform.disp1, transform.disp2, transform.disp3]
@@ -57,7 +70,13 @@ def plane_distance(p1, p2):
 
 def decompose_mcnp(deck):
     """Decompose cell complements and macrobodies.
+
+    Parameters
+    ----------
+    deck : mcnpy.Deck
+        Deck being decomposed.
     """
+
     new_surfaces = {}
     mbodies = {}
     # Define simple surface cards for macrobodies.
@@ -95,7 +114,7 @@ def make_openmc_cell(mcnp_cell, openmc_trans, openmc_surfs, openmc_mats,
 
     Parameters
     ----------
-    mcnp_cell : `mcnpy.Cell`
+    mcnp_cell : mcnpy.Cell
         MCNP Cell being translated.
     openmc_trans : dict
         Dict of OpenMC transformations.
@@ -108,7 +127,7 @@ def make_openmc_cell(mcnp_cell, openmc_trans, openmc_surfs, openmc_mats,
 
     Returns
     -------
-    openmc_cell : `openmc.Cell`
+    openmc_cell : openmc.Cell
         Translated OpenMC Cell.
     u_list : list or None
         List of universes created during lattice conversion.
@@ -240,14 +259,15 @@ def make_openmc_material(material):
 
     Parameters
     ----------
-    material : `mcnpy.Material`
+    material : mcnpy.Material
         MCNP Material to be translated.
 
     Returns
     -------
-    material : `openmc.Material`
+    material : openmc.Material
         Translated OpenMC Material.
     """
+
     openmc_material = openmc.Material()
     nuclides = material.nuclides
     for i in range(len(nuclides)):
@@ -268,6 +288,19 @@ def make_openmc_material(material):
     return openmc_material
 
 def openmc_mat_density_units(unit):
+    """Unit conversion between MCNP and OpenMC.
+
+    Parameters
+    ----------
+    unit : str
+        MCNP density unit.
+
+    Returns
+    -------
+    openmc_unit : str
+        OpenMC density unit.
+    """
+
     if unit == '-':
         return 'g/cm3'
     else:
@@ -278,14 +311,14 @@ def mcnp_to_openmc(mcnp_deck: mp.Deck):
     
     Parameters
     ----------
-    mcnp_deck : `mcnpy.Deck`
+    mcnp_deck : mcnpy.Deck
         MCNP Deck to be translated.
 
     Returns
     -------
-    geom : `openmc.Geometry`
+    geom : openmc.Geometry
         OpenMC model geometry.
-    mats : `openmc.Materials`
+    mats : openmc.Materials
         OpenMC model materials.
     """
 
@@ -531,6 +564,19 @@ def mcnp_to_openmc(mcnp_deck: mp.Deck):
     return(geom, mats)
 
 def make_mcnp_material(material: openmc.Material):
+    """Translate OpenMC Material to MCNP Material.
+
+    Parameters
+    ----------
+    material : openmc.Material
+        OpenMC Material to be translated.
+
+    Returns
+    -------
+    material : mcnpy.Material
+        Translated MCNP Material.
+    """
+
     nuclides = []
     for nuclide in material.nuclides:
         if nuclide.percent_type == 'wo':
@@ -546,8 +592,21 @@ def make_mcnp_material(material: openmc.Material):
         return mp.Material(name=material.id, nuclides=nuclides)@material.density
 
 def make_mcnp_cell(mcnp_deck, openmc_cell):
+    """Translate OpenMC Cell to MCNP Cell.
+
+    Parameters
+    ----------
+    mcnp_deck : mcnpy.Deck
+        MCNP Deck being translated to.
+    openmc_cell : openmc.Cell
+        OpenMC Cell being translated.
+
+    Returns
+    -------
+    material : mcnpy.Material
+        Translated MCNP Material.
     """
-    """
+
     reg = str(openmc_cell.region)
     region = mp.Region.from_expression(reg, mcnp_deck.surfaces, mcnp_deck.cells)
     mcnp_cell = mp.Cell(name=openmc_cell.id, region=region)
@@ -560,8 +619,27 @@ def make_mcnp_cell(mcnp_deck, openmc_cell):
     return mcnp_cell
 
 def make_mcnp_lattice(openmc_lat, mcnp_universes):
+    """Translate OpenMC Lattice to MCNP Lattice.
+
+    Parameters
+    ----------
+    openmc_lat : openmc.RectLattice
+        OpenMC lattice being translated.
+
+    Returns
+    -------
+    mcnp_lat : mcnpy.Lattice
+        MCNP Lattice translated to.
+    element : mcnpy.Surface
+        Surface bounding MCNP lattice element.
+    lat_disp : list
+        Lattice displacement.
+    lat_u : list
+        Universes in lattice.
+    transformation : mcnpy.Transformation or None
+        Transfprmation to reposition lattice.
     """
-    """
+
     lat_u = []
     if isinstance(openmc_lat, openmc.RectLattice):
         shape = openmc_lat.shape[::-1] #z,y,x order
@@ -622,11 +700,24 @@ def make_mcnp_lattice(openmc_lat, mcnp_universes):
             return (mcnp_lat, element, lat_disp, lat_u, 
                     mp.Transformation(transformation=[trans]))
 
-
 def openmc_to_mcnp(openmc_geometry: openmc.Geometry, 
                    openmc_materials: openmc.Materials,
                    openmc_settings=None):
-    """
+    """Translate OpenMC Model to MCNP Deck.
+
+    Parameters
+    ----------
+    openmc_geometry : openmc.Geometry
+        OpenMC Geometry.
+    openmc_materials : openmc.Materials
+        OpenMC Materials.
+    openmc_settings : openmc.Settings or None
+        OpenMC Settings.
+
+    Returns
+    -------
+    mcnp_deck : mcnpy.Deck
+        Translated MCNP Deck.
     """
     mcnp_deck = mp.Deck()
     openmc_surfaces = openmc_geometry.get_all_surfaces()
@@ -724,9 +815,6 @@ def openmc_to_mcnp(openmc_geometry: openmc.Geometry,
 
     print('\nDone!\n')
     return mcnp_deck
-
-
-
 
 def translate_file(file_name: str, materials=None, settings=None):
     """Parse file and translate MCNP to OpenMC.
