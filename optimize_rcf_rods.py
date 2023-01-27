@@ -1,6 +1,20 @@
-def make_deck(h:float):
+def make_deck(h:float, **kwargs):
     """Create RCF model with at rod height `h`.
+
+    Parameters
+    ----------
+    h : float
+        RCF control rod bank height.
+    **kwargs : dict
+        Additional keyword arguments.
+
+    Returns
+    -------
+    filename : str
+        Name of the serialized MCNP deck.
+
     """
+    
     name = 'rcf_rods_' + str(h) + '.mcnp'
     rcf = mp.RCF(name, 68, h)
     rcf.deck += mp.PrintDump(print_mctal=1)
@@ -12,148 +26,24 @@ def make_deck(h:float):
     # Return name of deck file
     return filename
 
-def get_keff(file:str):
-    """Get final keff from an MCTAL file.
-    """
-    m = Mctal(file)
-    kc = m.GetKcode()
-    keff = MctalKcode.AVG_COMBINED_KEFF
-    keff_std = MctalKcode.AVG_COMBINED_KEFF_STD
-
-    return (kc.GetValue(keff, kc.GetCycles()-1), kc.GetValue(keff_std, kc.GetCycles()-1))
-
 def run_mcnp(file:str):
     """Run MCNP from script.
     """
-    path = r'/home/peter/MCNP620/scripts/'
-
-    with Popen(['bash', path + 'execute.sh', file], stdin=PIPE, stdout=PIPE, bufsize=1, universal_newlines=True) as p:
-        for line in p.stdout:
-            """print(line, end='') # process line here"""
-
-    if p.returncode != 0:
-        raise CalledProcessError(p.returncode, p.args)
-
-def _search_keff(guess, target, make_deck, print_iterations,
-                 guesses, results):
-    """Function which will actually create our model, run the calculation, and
-    obtain the result. This function will be passed to the root finding
-    algorithm
-
-    Parameters
-    ----------
-    guess : Real
-        Current guess for the parameter to be searched in `model_builder`.
-    target_keff : Real
-        Value to search for
-    model_builder : collections.Callable
-        Callable function which builds a model according to a passed
-        parameter. This function must return an openmc.model.Model object.
-    model_args : dict
-        Keyword-based arguments to pass to the `model_builder` method.
-    print_iterations : bool
-        Whether or not to print the guess and the resultant keff during the
-        iteration process.
-    print_output : bool
-        Whether or not to print the OpenMC output during the iterations.
-    guesses : Iterable of Real
-        Running list of guesses thus far, to be updated during the execution of
-        this function.
-    results : Iterable of Real
-        Running list of results thus far, to be updated during the execution of
-        this function.
-
-    Returns
-    -------
-    float
-        Value of the model for the current guess compared to the target value.
-
-    """
-
-    # Build the model
-    print('Building')
-    filename = make_deck(float(guess))
-
-    # Run the model and obtain keff
-    print('Running')
-    start = time.time()
-    run_mcnp(filename)
-    run_time = (time.time()-start) / 60
-    keff = get_keff(filename + 'm')
-
-    # Record the history
-    guesses.append(guess)
-    results.append(keff)
-
-    if print_iterations:
-        text = 'Iteration: {}; Guess of {:.5e} produced a keff of ' + \
-            '{:1.5f} +/- {:1.5f} in {:1.2f} minutes'
-        print(text.format(len(guesses), guess, keff[0], keff[1], run_time))
-
-    return keff[0] - target
-
-
-def search_for_keff(make_deck, initial_guess=None, target=1.0,
-                    bracket=None, tol=None,
-                    bracketed_method='bisect', print_iterations=False):
-
-    # Set the iteration data storage variables
-    guesses = []
-    results = []
-
-    # Set the searching function (for easy replacement should a later
-    # generic function be added.
-    search_function = _search_keff
-
-    if bracket is not None:
-        # Generate our arguments
-        args = {'f': search_function, 'a': bracket[0], 'b': bracket[1]}
-        if tol is not None:
-            args['xtol'] = tol
-
-        # Set the root finding method
-        if bracketed_method == 'brentq':
-            root_finder = sopt.brentq
-        elif bracketed_method == 'brenth':
-            root_finder = sopt.brenth
-        elif bracketed_method == 'ridder':
-            root_finder = sopt.ridder
-        elif bracketed_method == 'bisect':
-            root_finder = sopt.bisect
-
-    elif initial_guess is not None:
-
-        # Generate our arguments
-        args = {'func': search_function, 'x0': initial_guess}
-        if tol is not None:
-            args['tol'] = tol
-
-        # Set the root finding method
-        root_finder = sopt.newton
-
-    else:
-        raise ValueError("Either the 'bracket' or 'initial_guess' parameters "
-                         "must be set")
-
-    # Add information to be passed to the searching function
-    args['args'] = (target, make_deck, print_iterations,
-                    guesses, results)
-
-    # Perform the search
-    zero_value = root_finder(**args)
-
-    return zero_value, guesses, results
-
+    script = r'/home/peter/MCNP620/scripts/execute.sh'
+    exe = 'bash'
+    mp.run_script(script, exe, file, lineout=False)
 
 if __name__ == '__main__':
-    import sys, time
-    import scipy.optimize as sopt
+    import sys
     import mcnpy as mp
-    from mcnptools import Mctal, MctalKcode
-    from subprocess import Popen, PIPE, CalledProcessError
+    from mcnpy.search import search_for_keff, get_keff
 
-    #crit_radius, guesses, keffs = search_for_keff(make_deck, initial_guess=float(sys.argv[1]), tol=float(sys.argv[2]), print_iterations=True)
-    crit_height, guesses, keffs = search_for_keff(make_deck, bracket=[float(sys.argv[1]), float(sys.argv[2])], tol=float(sys.argv[3]), print_iterations=True, bracketed_method='brentq')
+    crit_height, guesses, keffs = search_for_keff(make_deck, run_mcnp, get_keff, 
+                                                  bracket=[float(sys.argv[1]), 
+                                                           float(sys.argv[2])], 
+                                                  tol=float(sys.argv[3]), 
+                                                  print_iterations=True, 
+                                                  bracketed_method='brentq')
 
     output = open('optimization/crit_search_ref_rods.tex', 'w')
     text = 'CRITICAL HEIGHT: ' + str(crit_height) + '\n'

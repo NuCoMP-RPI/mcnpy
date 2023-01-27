@@ -1,6 +1,7 @@
 import metapy
 
 import mcnpy.mixin
+import mcnpy.search
 # All of the automatic wrappers.
 from mcnpy.wrap import *
 # All of the custom wrappers.
@@ -27,7 +28,7 @@ from mcnpy.mbody_decomp import *
 # Only import OpenMC if available.
 try:
     import mcnpy.translate_mcnp_openmc
-    import mcnp.surface_converter_openmc
+    import mcnpy.surface_converter_openmc
 except ModuleNotFoundError:
     pass
 # Only import if SerPy is available.
