@@ -138,7 +138,7 @@ class RCF():
         from mcnpy import CircularCylinder as RCC
         from mcnpy import RectangularPrism as RPP
         from mcnpy import Plane, PPoints
-        from mcnpy.elements import U, O, FE, CR, NI, MN, AL, H, HE, C, N, AR
+        from mcnpy.elements import U, O, FE, CR, NI, MN, AL, H, HE, C, N, AR, MO, CU, CO, B
 
         """
         A. Pin Anatomy (bottom to top):
