@@ -1,4 +1,4 @@
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, CalledProcessError
 from os.path import isfile, join
 import os
 from collections import OrderedDict, defaultdict
@@ -16,10 +16,10 @@ from .variance_reduction import VarianceReductionSetting
 from .tally import TallyABC, TallySettingABC
 from ._deck import Deck as _Deck
 from metapy.gateway import load_file, deck_resource, print_deck
-from .deck_formatter import formatter, preprocessor, deck_cleanup
+from .deck_formatter import formatter, preprocessor
 
 def run_mcnp(input, exe='mcnp6', exe_op='IXR', inp=True, mcnp_path=None, 
-        data_path=None, ics_path=None, options=[], **kwargs):
+        data_path=None, ics_path=None, options=[], lineout=True, **kwargs):
     """Initiate MCNP simulation. Also supports calling the plotter.
 
     Parameters
@@ -40,6 +40,8 @@ def run_mcnp(input, exe='mcnp6', exe_op='IXR', inp=True, mcnp_path=None,
         The path to ISC data.
     options : iterable of str
         A list of other options that require no arguments.
+    lineout : bool
+        Set to True to print MCNP output to terminal.
     **kwargs : str
         Keyword arguments for MCNP.
     """
@@ -98,18 +100,46 @@ def run_mcnp(input, exe='mcnp6', exe_op='IXR', inp=True, mcnp_path=None,
     with Popen(cmd, stdin=PIPE, stdout=PIPE, bufsize=1, 
                 universal_newlines=True) as p:
         for line in p.stdout:
-            print(line, end='') # process line here
-        #print(p.returncode)
-        """if p.returncode != 0:
-            raise CalledProcessError(p.returncode, p.args)"""
+            if lineout:
+                print(line, end='') # process line here
+    
+    if p.returncode != 0:
+        raise CalledProcessError(p.returncode, p.args)
 
-def run_script(script, exe, *args, **kwargs):
-    cmd = [exe, script, args]
+def run_script(script, exe, *args, lineout=True, **kwargs):
+    """Run a custom script.
+
+    Parameters
+    ----------
+    script : str
+        The run script (e.g. `run_mcnp.sh`).
+    exe : str
+        The executable which runs the script (e.g. `python`, `bash`)
+    *args : str
+        Arguments passed to the script 
+    lineout : bool
+        Set to True to print script output to terminal.
+    **kwargs : str
+        Keyword arguments passed to the script.
+    
+    """
+
+    cmd = [exe, script]
+
+    for k in args:
+        cmd.append(k)
 
     for k in kwargs:
         cmd.append(k + '=' + str(kwargs[k]))
     
-    proc = Popen(cmd)
+    with Popen(cmd, stdin=PIPE, stdout=PIPE, bufsize=1, 
+                universal_newlines=True) as p:
+        for line in p.stdout:
+            if lineout:
+                print(line, end='') # process line here
+
+    if p.returncode != 0:
+        raise CalledProcessError(p.returncode, p.args)
 
 class Deck():
     """An object containing dicts for cells, surfaces, and materials. Most other 
