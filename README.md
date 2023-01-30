@@ -1,4 +1,4 @@
-# mcnpy2.0
+# MCNPy: The Python API for MCNP
 Newer version of `mcnpy` with dynamic wrapping.
 
 # Dependencies
