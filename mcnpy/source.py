@@ -1,6 +1,7 @@
 from abc import ABC
 from enum import Enum
 from .wrap import wrappers, overrides, subclass_overrides
+from .wrap import package as ePackage
 from metapy.zaid_helper import element_to_zaid, zaid_to_element
 from .points import Point
 import mcnpy
@@ -58,8 +59,24 @@ PARTICLE = {
 	'HEAVY_IONS' : '#'
 }
 
+def _list_to_dist(values):
+    """Function to convert lists into Distributions"""
+    return Distributions(distributions=values)
+
+def _dist_to_list(dist):
+    """Function to convert Distributions to lists"""
+    if dist is not None:
+        return dist.distributions
+    else:
+        return None
+
 class SourceSetting(ABC):
     """
+    """
+
+class Distribution(DistributionBase):
+    """
+    A representation of the model object `Distribution`.
     """
     
 class CriticalitySource(CriticalitySourceBase, SourceSetting):
@@ -198,127 +215,127 @@ class Source(SourceBase, SourceSetting):
     Parameters
     ----------
     dependent_cel : mcnpy.DependentDistributionPos
-        DependentCel for `Source`.
+        The `cells` distribution is a function of `dependent_cel`.
     cells : iterable of mcnpy.SourceCell
         Cells for `Source`.
     dependent_sur : mcnpy.DependentDistributionPos
-        DependentSur for `Source`.
+        The `surfaces` distribution is a function of `dependent_sur`.
     surface : mcnpy.Tally.Bin.UnarySurfaceBin
         Surface for `Source`.
     surfaces : mcnpy.Distributions
-        Surfaces for `Source`.
+        Surface distribution for `Source`.
     dependent_erg : mcnpy.DependentDistribution
-        DependentErg for `Source`.
+        The `energies` distribution is a function of `dependent_erg`.
     energy : float
-        Energy for `Source`.
+        Kinetic energy for `Source`.
     energies : mcnpy.Distributions
-        Energies for `Source`.
+        Energy distribution for `Source`.
     dependent_tme : mcnpy.DependentDistribution
-        DependentTme for `Source`.
+        The `times` distribution is a function of `dependent_tme`.
     time : float
-        Time for `Source`.
+        Time (in shakes) for `Source`.
     times : mcnpy.Distributions
-        Times for `Source`.
+        Time distribution for `Source`.
     dependent_dir : mcnpy.DependentDistribution
-        DependentDir for `Source`.
+        The `cosines` distribution is a function of `dependent_dir`.
     cosine : float
-        Cosine for `Source`.
+        Cosine of the angle between `vector` and the particle's direction of flight.
     cosines : mcnpy.Distributions
-        Cosines for `Source`.
+        Cosine (angular) distribution for `Source`.
     dependent_vec : mcnpy.DependentDistribution
-        DependentVec for `Source`.
+        The `vectors` distribution is a function of `dependent_vec`.
     vector : mcnpy.Point
-        Vector for `Source`.
+        Reference vector for `cosine`.
     vectors : mcnpy.Distributions
         Vectors for `Source`.
     dependent_nrm : mcnpy.DependentDistribution
-        DependentNrm for `Source`.
+        The `directions` distribution is a function of `dependent_nrm`.
     direction : float
-        Direction for `Source`.
+        Sign of the surface normal.
     directions : mcnpy.Distributions
-        Directions for `Source`.
+        Distribution of surface normals for `Source`.
     dependent_pos : mcnpy.DependentDistributionPos
-        DependentPos for `Source`.
+        The `positions` distribution is a function of `dependent_pos`.
     position : mcnpy.Point
-        Position for `Source`.
+        Position reference point.
     points : mcnpy.Distributions
-        Points for `Source`.
+        Position distribution for `Source`.
     volumer : str
         Volumer for `Source`.
     dependent_rad : mcnpy.DependentDistributionPos
-        DependentRad for `Source`.
+        The `radial_distances` distribution is a function of `dependent_rad`.
     radial_distance : float
-        RadialDistance for `Source`.
+        Radial distance of the position from `position` or `axis`.
     radial_distances : mcnpy.Distributions
         RadialDistances for `Source`.
     dependent_ext : mcnpy.DependentDistributionPos
-        DependentExt for `Source`.
+        The `extents` distribution is a function of `dependent_ext`.
     extent : float
-        Extent for `Source`.
+        For a volume source, the distance from `position` along `axis`. For a surface source, the cosine of angle from `axis`.
     extents : mcnpy.Distributions
-        Extents for `Source`.
+        Distribution of extents for `Source`.
     dependent_axs : mcnpy.DependentDistributionPos
-        DependentAxs for `Source`.
+        The `axes` distribution is a function of `dependent_axs`.
     axis : mcnpy.Point
-        Axis for `Source`.
+        Reference vector for `extent` and `radial_distance`.
     axes : mcnpy.Distributions
-        Axes for `Source`.
+        Distribution of axes for `Source`.
     dependent_x : mcnpy.DependentDistributionPos
-        DependentX for `Source`.
+        The `x_coords` distribution is a function of `dependent_x`.
     x_coord : float
-        XCoord for `Source`.
+        X-coordinate of the position.
     x_coords : mcnpy.Distributions
-        XCoords for `Source`.
+        Distribution of x-coordinates.
     dependent_y : mcnpy.DependentDistributionPos
-        DependentY for `Source`.
+        The `y_coords` distribution is a function of `dependent_y`.
     y_coord : float
-        YCoord for `Source`.
+        Y-coordinate of the position.
     y_coords : mcnpy.Distributions
-        YCoords for `Source`.
+        Distribution of y-coordinates.
     dependent_z : mcnpy.DependentDistributionPos
-        DependentZ for `Source`.
+        The `z_coords` distribution is a function of `dependent_z`.
     z_coord : float
-        ZCoord for `Source`.
+        Z-coordinate of the position.
     z_coords : mcnpy.Distributions
-        ZCoords for `Source`.
+        Distribution of z-coordinates.
     dependent_ccc : mcnpy.DependentDistributionPos
-        DependentCcc for `Source`.
+        The `cookie_cutter_cells` distribution is a function of `dependent_ccc`.
     cookie_cutter_cell : mcnpy.Cell
         CookieCutterCell for `Source`.
     cookie_cutter_cells : mcnpy.Distributions
-        CookieCutterCells for `Source`.
+        Distribution of CookieCutterCells for `Source`.
     dependent_ara : mcnpy.DependentDistribution
-        DependentAra for `Source`.
+        The `areas` distribution is a function of `dependent_ara`.
     area : float
-        Area for `Source`.
+        Area of surface.
     areas : mcnpy.Distributions
-        Areas for `Source`.
+        Distribution of surface areas for `Source`.
     dependent_wgt : mcnpy.DependentDistribution
-        DependentWgt for `Source`.
+        The `weights` distribution is a function of `dependent_wgt`.
     weight : float
-        Weight for `Source`.
+        Particle weight for `Source`.
     weights : mcnpy.Distributions
-        Weights for `Source`.
+        Distribution of particle weights for `Source`.
     dependent_tr : mcnpy.DependentDistribution
-        DependentTr for `Source`.
+        The `transformations` distribution is a function of `dependent_tr`.
     transformation : mcnpy.Transformation
-        Transformation for `Source`.
+        Source particle transformation for `Source`.
     transformations : mcnpy.Distributions
-        Transformations for `Source`.
+        Distribution of source particle transformations for `Source`.
     dependent_eff : mcnpy.DependentDistribution
-        DependentEff for `Source`.
+        The `rejection_efficiencies` distribution is a function of `dependent_eff`.
     rejection_efficiency : float
-        RejectionEfficiency for `Source`.
+        Rejection efficiency for `Source`.
     rejection_efficiencies : mcnpy.Distributions
-        RejectionEfficiencies for `Source`.
+        Distribution of rejection efficiencies for `Source`.
     dependent_par : mcnpy.DependentDistribution
-        DependentPar for `Source`.
+        The `particles` distribution is a function of `dependent_par`.
     particles : mcnpy.Distributions
-        Particles for `Source`.
-    normalize : mcnpy.Boolean
-        Normalize for `Source`.
-    particle : mcnpy.SourceParticle
-        Particle for `Source`.
+        Distribution of source particles for `Source`.
+    normalize : boolean
+        Source particle weight normalization.
+    particle : mcnpy.SourceParticleCategory or mcnpy.SourceParticle
+        Source particle for `Source`. Refer to `mcnpy.SourceParticleCategory` for a list of accepted particle types. Heavy ions may also be specified symbolically or by ZAID. E.g. uranium-235 could be specified as `"u235"`, `"U235"`, or `92235`. `U[235]` is also valid if `U` from `mcnpy.elements` has been imported.
     month : int
         Month for `Source`.
     day : int
@@ -421,6 +438,449 @@ class Source(SourceBase, SourceSetting):
             else:
                 setattr(self, k.lower(), kwargs[k])
 
+    @property
+    def cells(self):
+        """"""
+        return _dist_to_list(self._e_object.getCells())
+
+    @cells.setter
+    def cells(self, value):
+        if isinstance(value, list):
+            self._e_object.setCells(_list_to_dist(value))
+        else:
+            self._e_object.setCells(value)
+
+    @property
+    def energy(self):
+        """"""
+        return self._e_object.getEnergy()
+
+    @energy.setter
+    def energy(self, value):
+        """"""
+        self._e_object.setEnergy(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__ENERGIES)
+
+    @property
+    def energies(self):
+        return _dist_to_list(self._e_object.getEnergies())
+
+    @energies.setter
+    def energies(self, value):
+        if isinstance(value, list):
+            self._e_object.setEnergies(_list_to_dist(value))
+        else:
+            self._e_object.setEnergies(value)
+        self._e_object.eUnset(ePackage.SOURCE__ENERGY)
+
+    @property
+    def surface(self):
+        """"""
+        return self._e_object.getSurface()
+
+    @surface.setter
+    def surface(self, value):
+        """"""
+        self._e_object.setSurface(value)
+        self._e_object.eUnset(ePackage.SOURCE__SURFACES)
+
+    @property
+    def surfaces(self):
+        return _dist_to_list(self._e_object.getSurfaces())
+
+    @surfaces.setter
+    def surfaces(self, value):
+        if isinstance(value, list):
+            self._e_object.setSurfaces(_list_to_dist(value))
+        else:
+            self._e_object.setSurfaces(value)
+        self._e_object.eUnset(ePackage.SOURCE__SURFACE)
+
+    @property
+    def transformation(self):
+        """"""
+        return self._e_object.getTransformation()
+
+    @transformation.setter
+    def transformation(self, value):
+        """"""
+        self._e_object.setTransformation(value)
+        self._e_object.eUnset(ePackage.SOURCE__TRANSFORMATIONS)
+
+    @property
+    def transformations(self):
+        return _dist_to_list(self._e_object.getTransformations())
+
+    @transformations.setter
+    def transformations(self, value):
+        if isinstance(value, list):
+            self._e_object.setTransformations(_list_to_dist(value))
+        else:
+            self._e_object.setTransformations(value)
+        self._e_object.eUnset(ePackage.SOURCE__TRANSFORMATION)
+
+    @property
+    def particle(self):
+        """"""
+        return self._e_object.getParticle().particle
+
+    @particle.setter
+    def particle(self, value):
+        """"""
+        if isinstance(value, SourceParticle):
+            self._e_object.setParticle(value)
+        else:
+            self._e_object.setParticle(SourceParticle(value))
+        self._e_object.eUnset(ePackage.SOURCE__PARTICLES)
+
+    @property
+    def particles(self):
+        return _dist_to_list(self._e_object.getParticles())
+
+    @particles.setter
+    def particles(self, value):
+        if isinstance(value, list):
+            self._e_object.setParticles(_list_to_dist(value))
+        else:
+            self._e_object.setParticles(value)
+        self._e_object.eUnset(ePackage.SOURCE__PARTICLE)
+
+    @property
+    def time(self):
+        """"""
+        return self._e_object.getTime()
+
+    @time.setter
+    def time(self, value):
+        """"""
+        self._e_object.setTime(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__TIMES)
+
+    @property
+    def times(self):
+        return _dist_to_list(self._e_object.getTimes())
+
+    @times.setter
+    def times(self, value):
+        if isinstance(value, list):
+            self._e_object.setTimes(_list_to_dist(value))
+        else:
+            self._e_object.setTimes(value)
+        self._e_object.eUnset(ePackage.SOURCE__TIME)
+
+    @property
+    def cosine(self):
+        """"""
+        return self._e_object.getCosine()
+
+    @cosine.setter
+    def cosine(self, value):
+        """"""
+        self._e_object.setCosine(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__COSINES)
+
+    @property
+    def cosines(self):
+        return _dist_to_list(self._e_object.getCosines())
+
+    @cosines.setter
+    def cosines(self, value):
+        if isinstance(value, list):
+            self._e_object.setCosines(_list_to_dist(value))
+        else:
+            self._e_object.setCosines(value)
+        self._e_object.eUnset(ePackage.SOURCE__COSINE)
+
+    @property
+    def vector(self):
+        """"""
+        return self._e_object.getVector().aslist()
+
+    @vector.setter
+    def vector(self, value):
+        """"""
+        if isinstance(value, Point):
+            self._e_object.setVector(value)
+        else:
+            self._e_object.setVector(Point.aspoint(value))
+        self._e_object.eUnset(ePackage.SOURCE__VECTORS)
+
+    @property
+    def vectors(self):
+        return _dist_to_list(self._e_object.getVectors())
+
+    @vectors.setter
+    def vectors(self, value):
+        if isinstance(value, list):
+            self._e_object.setVectors(_list_to_dist(value))
+        else:
+            self._e_object.setVectors(value)
+        self._e_object.eUnset(ePackage.SOURCE__VECTOR)
+
+    @property
+    def direction(self):
+        """"""
+        return self._e_object.getDirection()
+
+    @direction.setter
+    def direction(self, value):
+        """"""
+        if value >= 0:
+            value = 1
+        else:
+            value = -1
+        self._e_object.setDirection(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__DIRECTIONS)
+
+    @property
+    def directions(self):
+        return _dist_to_list(self._e_object.getDirections())
+
+    @directions.setter
+    def directions(self, value):
+        if isinstance(value, list):
+            self._e_object.setDirections(_list_to_dist(value))
+        else:
+            self._e_object.setDirections(value)
+        self._e_object.eUnset(ePackage.SOURCE__DIRECTION)
+
+    @property
+    def position(self):
+        """"""
+        return self._e_object.getPosition().aslist()
+
+    @position.setter
+    def position(self, value):
+        """"""
+        if isinstance(value, Point):
+            self._e_object.setPosition(value)
+        else:
+            self._e_object.setPosition(Point.aspoint(value))
+        self._e_object.eUnset(ePackage.SOURCE__POINTS)
+
+    @property
+    def points(self):
+        return _dist_to_list(self._e_object.getPoints())
+
+    @points.setter
+    def points(self, value):
+        if isinstance(value, list):
+            self._e_object.setPoints(_list_to_dist(value))
+        else:
+            self._e_object.setPoints(value)
+        self._e_object.eUnset(ePackage.SOURCE__POSITION)
+
+    @property
+    def radial_distance(self):
+        """"""
+        return self._e_object.getTime()
+
+    @radial_distance.setter
+    def radial_distance(self, value):
+        """"""
+        self._e_object.setRadialDistance(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__RADIAL_DISTANCES)
+
+    @property
+    def radial_distances(self):
+        return _dist_to_list(self._e_object.getRadialDistances())
+
+    @radial_distances.setter
+    def radial_distances(self, value):
+        if isinstance(value, list):
+            self._e_object.setRadialDistances(_list_to_dist(value))
+        else:
+            self._e_object.setRadialDistances(value)
+        self._e_object.eUnset(ePackage.SOURCE__RADIAL_DISTANCE)
+
+    @property
+    def extent(self):
+        """"""
+        return self._e_object.getExtent()
+
+    @extent.setter
+    def extent(self, value):
+        """"""
+        self._e_object.setExtent(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__EXTENTS)
+
+    @property
+    def extents(self):
+        return _dist_to_list(self._e_object.getExtents())
+
+    @extents.setter
+    def extents(self, value):
+        if isinstance(value, list):
+            self._e_object.setExtents(_list_to_dist(value))
+        else:
+            self._e_object.setExtents(value)
+        self._e_object.eUnset(ePackage.SOURCE__EXTENT)
+
+    @property
+    def axis(self):
+        """"""
+        return self._e_object.getAxis().aslist()
+
+    @axis.setter
+    def axis(self, value):
+        """"""
+        if isinstance(value, Point):
+            self._e_object.setAxis(value)
+        else:
+            self._e_object.setAxis(Point.aspoint(value))
+        self._e_object.eUnset(ePackage.SOURCE__AXES)
+
+    @property
+    def axes(self):
+        return _dist_to_list(self._e_object.getAxes())
+
+    @axes.setter
+    def axes(self, value):
+        if isinstance(value, list):
+            self._e_object.setAxes(_list_to_dist(value))
+        else:
+            self._e_object.setAxes(value)
+        self._e_object.eUnset(ePackage.SOURCE__AXIS)
+
+    @property
+    def x_coord(self):
+        """"""
+        return self._e_object.getXCoord()
+
+    @x_coord.setter
+    def x_coord(self, value):
+        """"""
+        self._e_object.setXCoord(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__X_COORDS)
+
+    @property
+    def x_coords(self):
+        return _dist_to_list(self._e_object.getXCoords())
+
+    @x_coords.setter
+    def x_coords(self, value):
+        if isinstance(value, list):
+            self._e_object.setXCoords(_list_to_dist(value))
+        else:
+            self._e_object.setXCoords(value)
+        self._e_object.eUnset(ePackage.SOURCE__X_COORD)
+
+    @property
+    def y_coord(self):
+        """"""
+        return self._e_object.getYCoord()
+
+    @y_coord.setter
+    def y_coord(self, value):
+        """"""
+        self._e_object.setYCoord(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__Y_COORDS)
+
+    @property
+    def y_coords(self):
+        return _dist_to_list(self._e_object.getYCoords())
+
+    @y_coords.setter
+    def y_coords(self, value):
+        if isinstance(value, list):
+            self._e_object.setYCoords(_list_to_dist(value))
+        else:
+            self._e_object.setYCoords(value)
+        self._e_object.eUnset(ePackage.SOURCE__Y_COORD)
+
+    @property
+    def z_coord(self):
+        """"""
+        return self._e_object.getZCoord()
+
+    @z_coord.setter
+    def z_coord(self, value):
+        """"""
+        self._e_object.setZCoord(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__Z_COORDS)
+
+    @property
+    def z_coords(self):
+        return _dist_to_list(self._e_object.getZCoords())
+
+    @z_coords.setter
+    def z_coords(self, value):
+        if isinstance(value, list):
+            self._e_object.setZCoords(_list_to_dist(value))
+        else:
+            self._e_object.setZCoords(value)
+        self._e_object.eUnset(ePackage.SOURCE__Z_COORD)
+
+    @property
+    def area(self):
+        """"""
+        return self._e_object.getArea()
+
+    @area.setter
+    def area(self, value):
+        """"""
+        self._e_object.setArea(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__AREAS)
+
+    @property
+    def areas(self):
+        return _dist_to_list(self._e_object.getAreas())
+
+    @areas.setter
+    def areas(self, value):
+        if isinstance(value, list):
+            self._e_object.setAreas(_list_to_dist(value))
+        else:
+            self._e_object.setAreas(value)
+        self._e_object.eUnset(ePackage.SOURCE__AREA)
+
+    @property
+    def weight(self):
+        """"""
+        return self._e_object.getWeight()
+
+    @weight.setter
+    def weight(self, value):
+        """"""
+        self._e_object.setWeight(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__WEIGHTS)
+
+    @property
+    def weights(self):
+        return _dist_to_list(self._e_object.getWeights())
+
+    @weights.setter
+    def weights(self, value):
+        if isinstance(value, list):
+            self._e_object.setWeights(_list_to_dist(value))
+        else:
+            self._e_object.setWeights(value)
+        self._e_object.eUnset(ePackage.SOURCE__WEIGHT)
+
+    @property
+    def rejection_efficiency(self):
+        """"""
+        return self._e_object.getRejectionEfficiency()
+
+    @rejection_efficiency.setter
+    def rejection_efficiency(self, value):
+        """"""
+        self._e_object.setRejectionEfficiency(float(value))
+        self._e_object.eUnset(ePackage.SOURCE__REJECTION_EFFICIENCIES)
+
+    @property
+    def rejection_efficiencies(self):
+        return _dist_to_list(self._e_object.getRejectionEfficiencies())
+
+    @rejection_efficiencies.setter
+    def rejection_efficiencies(self, value):
+        if isinstance(value, list):
+            self._e_object.setRejectionEfficiencies(_list_to_dist(value))
+        else:
+            self._e_object.setRejectionEfficiencies(value)
+        self._e_object.eUnset(ePackage.SOURCE__REJECTION_EFFICIENCY)
+
+
         """def __str__(self):
             string = 
 
@@ -445,30 +905,36 @@ class SourceParticle(SourceParticleBase):
     def _init(self, par):
         """
         """
-        # For when an enum is used.
-        if str(par).upper() in PARTICLE.keys() or str(par).upper() in PARTICLE.values():
-            self.particle = par
-        # For when a ZAID is used.
-        else:
-            self.ion = int(element_to_zaid(str(par)))
+        self.particle = par
 
     @property
     def particle(self):
-        return self._e_object.getParticle()
+        if self._e_object.eIsSet(ePackage.SOURCE_PARTICLE__ION):
+            return zaid_to_element(self._e_object.getIon())
+        else:
+            return mcnpy.SourceParticleCategory(self._e_object.getParticle().getLiteral()).name
 
     @particle.setter
     def particle(self, par):
-        ePackage = mcnpy.wrap.package
+        attr = self.eClass().getEStructuralFeatures()[0].getEAttributeType()
         if isinstance(par, Enum):
-            self._e_object.setParticle(par)
-            self.ion = None
+            value = attr.getEEnumLiteralByLiteral(par.value).getInstance()
+            self._e_object.setParticle(value)
+            self._e_object.eUnset(ePackage.SOURCE_PARTICLE__ION)
         elif isinstance(par, str):
             if par.upper() in PARTICLE or par.upper() in PARTICLE.values():
-                self._e_object.setParticle(par)
+                value = attr.getEEnumLiteralByLiteral(par).getInstance()
+                self._e_object.setParticle(value)
                 self._e_object.eUnset(ePackage.SOURCE_PARTICLE__ION)
+            else:
+                self._e_object.eUnset(ePackage.SOURCE_PARTICLE__PARTICLE)
+                self._e_object.setIon(element_to_zaid(par))
+        elif hasattr(par, 'zaid'):
+            self._e_object.eUnset(ePackage.SOURCE_PARTICLE__PARTICLE)
+            self._e_object.setIon(element_to_zaid(par.zaid()))
         else:
             self._e_object.eUnset(ePackage.SOURCE_PARTICLE__PARTICLE)
-            self._e_object.setIon(int(element_to_zaid(str(par))))
+            self._e_object.setIon(element_to_zaid(str(par)))
 
     @property
     def ion(self):
@@ -476,7 +942,6 @@ class SourceParticle(SourceParticleBase):
 
     @ion.setter
     def ion(self, par):
-        ePackage = mcnpy.wrap.package
         self._e_object.setIon(int(element_to_zaid(str(par))))
         self._e_object.eUnset(ePackage.SOURCE_PARTICLE__PARTICLE)
 
@@ -493,7 +958,7 @@ class SourceParticle(SourceParticleBase):
     def __repr__(self):
             return str(self)
 
-class SourceInfo(SourceInfoBase, SourceSetting):
+class SourceInfo(SourceInfoBase, SourceSetting, Distribution):
     """
     A representation of the model object `SourceInfo`.
     
@@ -513,6 +978,19 @@ class SourceInfo(SourceInfoBase, SourceSetting):
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
+
+    def __repr__(self) -> str:
+        return 'SI' + str(self.name)
+
+    def __str__(self) -> str:
+        string = 'Source Info\n'
+        string += '{0: <16}{1}{2}\n'.format('\tID', '=\t', str(self.name))
+        string += '{0: <16}{1}{2}\n'.format('\Option', '=\t', 
+                                            mcnpy.SourceInfoOption(self.option).name)
+        string += '{0: <16}{1}{2}\n'.format('\tValues', '=\t', 
+                                            str(self.values))
+        return string
+
     
     class Cells(SourceInfoCellsBase, SourceSetting):
         """
@@ -567,7 +1045,7 @@ class SourceInfo(SourceInfoBase, SourceSetting):
             for k in kwargs:
                 setattr(self, k, kwargs[k])
 
-class SourceProbability(SourceProbabilityBase, SourceSetting):
+class SourceProbability(SourceProbabilityBase, SourceSetting, Distribution):
     """
     A representation of the model object `SourceProbability`.
     
@@ -587,6 +1065,18 @@ class SourceProbability(SourceProbabilityBase, SourceSetting):
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
+
+    def __repr__(self) -> str:
+        return 'SP' + str(self.name)
+
+    def __str__(self) -> str:
+        string = 'Source Probability\n'
+        string += '{0: <16}{1}{2}\n'.format('\tID', '=\t', str(self.name))
+        string += '{0: <16}{1}{2}\n'.format('\Option', '=\t', 
+                                            mcnpy.SourceInfoOption(self.option).name)
+        string += '{0: <16}{1}{2}\n'.format('\tValues', '=\t', 
+                                            str(self.values))
+        return string
     
     class Function(SourceProbabilityFunctionBase, SourceSetting):
         """
@@ -609,7 +1099,7 @@ class SourceProbability(SourceProbabilityBase, SourceSetting):
             for k in kwargs:
                 setattr(self, k, kwargs[k])
 
-class SourceBias(SourceBiasBase, SourceSetting):
+class SourceBias(SourceBiasBase, SourceSetting, Distribution):
     """
     A representation of the model object `SourceBias`.
     
@@ -629,6 +1119,18 @@ class SourceBias(SourceBiasBase, SourceSetting):
         """
         for k in kwargs:
             setattr(self, k.lower(), kwargs[k])
+
+    def __repr__(self) -> str:
+        return 'SB' + str(self.name)
+
+    def __str__(self) -> str:
+        string = 'Source Bias\n'
+        string += '{0: <16}{1}{2}\n'.format('\tID', '=\t', str(self.name))
+        string += '{0: <16}{1}{2}\n'.format('\Option', '=\t', 
+                                            mcnpy.SourceInfoOption(self.option).name)
+        string += '{0: <16}{1}{2}\n'.format('\tValues', '=\t', 
+                                            str(self.values))
+        return string
     
     class Function(SourceBiasFunctionBase, SourceSetting):
         """
@@ -807,6 +1309,45 @@ class SourceCell(SourceCellBase, SourceSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
+    @property
+    def cell(self):
+        """"""
+        return self._e_object.getCell()
+
+    @cell.setter
+    def cell(self, value):
+        if isinstance(value, mcnpy.Tally.Bin.UnaryCellBin) is False:
+            self._e_object.setCell(mcnpy.Tally.Bin.UnaryCellBin(value))
+        else:
+            self._e_object.setCell(value)
+        self._e_object.eUnset(ePackage.SOURCE_CELL__ZCELL)
+        self._e_object.eUnset(ePackage.SOURCE_CELL__DISTRIBUTION)
+
+    @property
+    def distribution(self):
+        return _dist_to_list(self._e_object.getDistribution())
+
+    @distribution.setter
+    def distribution(self, value):
+        if isinstance(value, list):
+            self._e_object.setDistribution(_list_to_dist(value))
+        else:
+            self._e_object.setDistribution(value)
+        self._e_object.eUnset(ePackage.SOURCE_CELL__ZCELL)
+        self._e_object.eUnset(ePackage.SOURCE_CELL__CELL)
+        self._e_object.eUnset(ePackage.SOURCE_CELL__COORDINATES)
+
+    @property
+    def z_cell(self):
+        return self._e_object.geZCell()
+
+    @z_cell.setter
+    def z_cell(self, value):
+        self._e_object.setZCell(int(value))
+        self._e_object.eUnset(ePackage.SOURCE_CELL__DISTRIBUTION)
+        self._e_object.eUnset(ePackage.SOURCE_CELL__CELL)
+        self._e_object.eUnset(ePackage.SOURCE_CELL__COORDINATES)
+
 class SourceDist(SourceDistBase, SourceSetting):
     """
     A representation of the model object `SourceDist`.
@@ -824,7 +1365,7 @@ class SourceDist(SourceDistBase, SourceSetting):
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
-class SourceID(SourceIDBase, SourceSetting):
+class SourceID(SourceIDBase, SourceSetting, Distribution):
     """
     A representation of the model object `SourceID`.
     
@@ -968,34 +1509,21 @@ class SurfaceSource():
             for k in kwargs:
                 setattr(self, k, kwargs[k])
 
-class Distribution(DistributionBase):
-    """
-    A representation of the model object `Distribution`.
-    
-    Parameters
-    ----------
-    """
-
-    def _init(self, **kwargs):
-        """
-        """
-        for k in kwargs:
-            setattr(self, k, kwargs[k])
-
 class Distributions(DistributionsBase):
     """
     A representation of the model object `Distributions`.
     
     Parameters
     ----------
+    distributions : iterable of mcnpy.Distribution
+        Distributions for `Distributions`.
     
     """
 
-    def _init(self, **kwargs):
+    def _init(self, distributions):
         """
         """
-        for k in kwargs:
-            setattr(self, k, kwargs[k])
+        self.distributions = distributions
 
 class DependentSource():
     """"""
@@ -1067,7 +1595,7 @@ class DependentSource():
             for k in kwargs:
                 setattr(self, k, kwargs[k])
 
-    class Distribution(DependentSourceDistributionBase, SourceSetting):
+    class Distribution(DependentSourceDistributionBase, SourceSetting, Distribution):
         """
         A representation of the model object `DependentSource.Distribution`.
         
