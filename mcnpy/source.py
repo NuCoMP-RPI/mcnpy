@@ -923,7 +923,7 @@ class SourceParticle(SourceParticleBase):
             self._e_object.eUnset(ePackage.SOURCE_PARTICLE__ION)
         elif isinstance(par, str):
             if par.upper() in PARTICLE or par.upper() in PARTICLE.values():
-                value = attr.getEEnumLiteralByLiteral(par).getInstance()
+                value = attr.getEEnumLiteralByLiteral(par.upper()).getInstance()
                 self._e_object.setParticle(value)
                 self._e_object.eUnset(ePackage.SOURCE_PARTICLE__ION)
             else:
