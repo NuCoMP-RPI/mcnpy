@@ -3,6 +3,7 @@ from abc import ABC
 from collections.abc import MutableSequence
 from .mixin import IDManagerMixin, NoIDMixin
 from .wrap import wrappers, overrides, subclass_overrides
+import mcnpy
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -44,9 +45,15 @@ class TallyABC(IDManagerMixin, ABC):
             pass
         else:
             try:
-                self._e_object.setBins(Tally.Bin.CellBins(bins.__copy__()))
+                if isinstance(bins, (list, mcnpy.Cell)):
+                    self._e_object.setBins(Tally.Bin.CellBins(bins))
+                else:
+                    self._e_object.setBins(Tally.Bin.CellBins(bins.__copy__()))
             except:
-                self._e_object.setBins(Tally.Bin.SurfaceBins(bins.__copy__()))
+                if isinstance(bins, (list, mcnpy.Surface)):
+                    self._e_object.setBins(Tally.Bin.SurfaceBins(bins))
+                else:
+                    self._e_object.setBins(Tally.Bin.SurfaceBins(bins.__copy__()))
                 
 class TMeshABC(TallyABC):
     """For tracking TMESH 1, 2, 4 IDs"""
