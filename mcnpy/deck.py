@@ -574,9 +574,9 @@ class Deck():
         return self
 
     def __sub__(self, card):
-        new = Deck(self)
-        new -= card
-        return new
+        #new = Deck(self)
+        self -= card
+        return self
 
     def __isub__(self, card):
         if isinstance(card, list):
