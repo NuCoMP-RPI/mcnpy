@@ -119,7 +119,7 @@ class TallyRef(TallySettingABC):
         if tally == 0:
             self._e_object.setTally(None)
         else:
-            self._e_object.setTally(tally)
+            self._e_object.setTally(tally._e_object)
 
 class Tally():
     """
