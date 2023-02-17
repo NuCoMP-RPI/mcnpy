@@ -402,8 +402,7 @@ class Macrobody(ABC):
 
 class Sphere(IDManagerMixin, SphereBase, Surface):
     """
-    Sphere defined by origin `(x0, y0, z0)` and radius `r`.
-    A representation of the model object `Sphere`.
+    Sphere defined by :math:`\\color{eqn}(x-x_{0})^{2} + (y-y_{0})^{2} + (z-z_{0})^{2} - r^{2}`.
     
     Parameters
     ----------
@@ -876,8 +875,7 @@ class Polyhedron(IDManagerMixin, PolyhedronBase, Surface, Macrobody):
 
 class Plane(IDManagerMixin, PlaneBase, Surface):
     """
-    A plane defined by Ax + By + Cz - D = 0.
-    A representation of the model object `Plane`.
+    A plane defined by :math:`\\color{eqn}Ax + By + Cz - D = 0`.
     
     Parameters
     ----------
@@ -937,8 +935,7 @@ class Plane(IDManagerMixin, PlaneBase, Surface):
 
 class XPlane(IDManagerMixin, XPlaneBase, Surface):
     """
-    A plane defined by x - x0 = 0.
-    A representation of the model object `XPlane`.
+    A plane defined by :math:`\\color{eqn}x - x_{0} = 0`.
     
     Parameters
     ----------
@@ -983,8 +980,7 @@ class XPlane(IDManagerMixin, XPlaneBase, Surface):
 
 class YPlane(IDManagerMixin, YPlaneBase, Surface):
     """
-    A plane defined by y - y0 = 0.
-    A representation of the model object `YPlane`.
+    A plane defined by :math:`\\color{eqn}y - y_{0} = 0`.
     
     Parameters
     ----------
@@ -1029,8 +1025,7 @@ class YPlane(IDManagerMixin, YPlaneBase, Surface):
 
 class ZPlane(IDManagerMixin, ZPlaneBase, Surface):
     """
-    A plane defined by z - z0 = 0.
-    A representation of the model object `ZPlane`.
+    A plane defined by :math:`\\color{eqn}z - z_{0} = 0`.
     
     Parameters
     ----------
@@ -1075,8 +1070,7 @@ class ZPlane(IDManagerMixin, ZPlaneBase, Surface):
 
 class XCylinder(IDManagerMixin, XCylinderBase, Surface):
     """
-    A cylinder parallel to the x-axis.
-    A representation of the model object `XCylinder`.
+    A cylinder parallel to the x-axis defined by :math:`\\color{eqn}(y - y_{0})^{2} + (z - z_{0})^{2} - r^{2} = 0`.
     
     Parameters
     ----------
@@ -1132,8 +1126,8 @@ class XCylinder(IDManagerMixin, XCylinderBase, Surface):
 
 class YCylinder(IDManagerMixin, YCylinderBase, Surface):
     """
-    A cylinder parallel to the y-axis.
-    A representation of the model object `YCylinder`.
+    A cylinder parallel to the y-axis defined by :math:`\\color{eqn}(x - x_{0})^{2} + (z - z_{0})^{2} - r^{2} = 0`.
+    
     
     Parameters
     ----------
@@ -1189,8 +1183,8 @@ class YCylinder(IDManagerMixin, YCylinderBase, Surface):
 
 class ZCylinder(IDManagerMixin, ZCylinderBase, Surface):
     """
-    A cylinder parallel to the z-axis.
-    A representation of the model object `ZCylinder`.
+    A cylinder parallel to the z-axis defined by :math:`\\color{eqn}(x - x_{0})^{2} + (y - y_{0})^{2} - r^{2} = 0`.
+    
     
     Parameters
     ----------
@@ -1246,8 +1240,7 @@ class ZCylinder(IDManagerMixin, ZCylinderBase, Surface):
 
 class XCone(IDManagerMixin, XConeBase, Surface):
     """
-    A cone parallel to the x-axis. `sheet` can be `+/-1`.
-    A representation of the model object `XCone`.
+    A cone parallel to the x-axis defined by :math:`\\color{eqn}\\sqrt{(y - y_{0})^{2} + (z - z_{0})^{2}} - r(x - x_{0}) = 0`. `sheet` can be `+/-1`.
     
     Parameters
     ----------
@@ -1315,8 +1308,7 @@ class XCone(IDManagerMixin, XConeBase, Surface):
 
 class YCone(IDManagerMixin, YConeBase, Surface):
     """
-    A cone parallel to the y-axis. `sheet` can be `+/-1`.
-    A representation of the model object `YCone`.
+    A cone parallel to the y-axis defined by :math:`\\color{eqn}\\sqrt{(x - x_{0})^{2} + (z - z_{0})^{2}} - r(y - y_{0}) = 0`. `sheet` can be `+/-1`.
     
     Parameters
     ----------
@@ -1384,8 +1376,7 @@ class YCone(IDManagerMixin, YConeBase, Surface):
 
 class ZCone(IDManagerMixin, ZConeBase, Surface):
     """
-    A cone parallel to the z-axis. `sheet` can be `+/-1`.
-    A representation of the model object `ZCone`.
+    A cone parallel to the z-axis defined by :math:`\\color{eqn}\\sqrt{(x - x_{0})^{2} + (y - y_{0})^{2}} - r(z - z_{0}) = 0`. `sheet` can be `+/-1`.
     
     Parameters
     ----------
@@ -1454,7 +1445,7 @@ class ZCone(IDManagerMixin, ZConeBase, Surface):
 class Quadric(IDManagerMixin, QuadricBase, Surface):
     """
     Quadric (GQ) with axes not parallel to x-, y-, or z-axis.
-    A representation of the model object `Quadric`.
+    Defined by :math:`\\color{eqn}Ax^{2} + By^{2} + Cz^{2} + Dxy + Eyz + Fzx + Gx + Hy + Jz + K = 0`.
     
     Parameters
     ----------
@@ -1528,10 +1519,24 @@ class Quadric(IDManagerMixin, QuadricBase, Surface):
 class XYZQuadric(IDManagerMixin, XYZQuadricBase, Surface):
     """
     Quadric (SQ) with axes parallel to x-, y-, or z-axis.
-    A representation of the model object `XYZQuadric`.
+    Defined by :math:`\\color{eqn}A(x-x_{0})^{2} + B(y-y_{0})^{2} + C(z-z_{0})^{2} + 2D(x-x{0}) + 2E(y-y_{0}) + 2F(z-z_{0}) + G = 0`.
     
     Parameters
     ----------
+    a : float
+        A for `XYZQuadric`.
+    b : float
+        B for `XYZQuadric`.
+    c : float
+        C for `XYZQuadric`.
+    d : float
+        D for `XYZQuadric`.
+    e : float
+        E for `XYZQuadric`.
+    f : float
+        F for `XYZQuadric`.
+    g : float
+        G for `XYZQuadric`.
     x : float
         X for `XYZQuadric`.
     y : float
@@ -1598,8 +1603,7 @@ class XYZQuadric(IDManagerMixin, XYZQuadricBase, Surface):
 
 class XTorus(IDManagerMixin, XTorusBase, Surface):
     """
-    Torus parallel to x-axis.
-    A representation of the model object `XTorus`.
+    Torus parallel to x-axis defined by :math:`\\color{eqn}(x-x_{0})^{2}/B^{2} + \\left(\\sqrt{(y-y_{0})^{2} + (z-z_{0})^{2}} - A\\right)^{2} / C^{2} - 1 = 0`.
     
     Parameters
     ----------
@@ -1649,8 +1653,7 @@ class XTorus(IDManagerMixin, XTorusBase, Surface):
 
 class YTorus(IDManagerMixin, YTorusBase, Surface):
     """
-    Torus parallel to y-axis.
-    A representation of the model object `YTorus`.
+    Torus parallel to y-axis defined by :math:`\\color{eqn}(y-y_{0})^{2}/B^{2} + \\left(\\sqrt{(x-x_{0})^{2} + (z-z_{0})^{2}} - A\\right)^{2} / C^{2} - 1 = 0`.
     
     Parameters
     ----------
@@ -1700,8 +1703,7 @@ class YTorus(IDManagerMixin, YTorusBase, Surface):
 
 class ZTorus(IDManagerMixin, ZTorusBase, Surface):
     """
-    Torus parallel to z-axis.
-    A representation of the model object `ZTorus`.
+    Torus parallel to z-axis defined by :math:`\\color{eqn}(z-z_{0})^{2}/B^{2} + \\left(\\sqrt{(x-x_{0})^{2} + (y-y_{0})^{2}} - A\\right)^{2} / C^{2} - 1 = 0`.
     
     Parameters
     ----------
