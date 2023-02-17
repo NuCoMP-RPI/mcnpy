@@ -1078,7 +1078,7 @@ class SourceProbability(SourceProbabilityBase, SourceSetting, Distribution):
                                             str(self.values))
         return string
     
-    class Function(SourceProbabilityFunctionBase, SourceSetting):
+    class Function(SourceProbabilityFunctionBase, SourceSetting, Distribution):
         """
         A representation of the model object `SourceProbability.Function`.
         
@@ -1098,6 +1098,71 @@ class SourceProbability(SourceProbabilityBase, SourceSetting, Distribution):
             """
             for k in kwargs:
                 setattr(self, k, kwargs[k])
+
+        def maxwell(self, a=1.2895):
+            """Maxwell fission energy spectrum of the form :math:`p(E) = CE^{1/2} e^{-E/a}`, :math:`a` is temperature in MeV.
+            """
+            self.function = 2
+            self.a = a
+            self._e_object.eUnset(ePackage.SOURCE_PROBABILITY_FUNCTION__B)
+            return self
+
+        def watt(self, a=0.965, b=2.29):
+            """Watt fission spectrum of the form :math:`p(E) = C e^{-E/a} sinh(bE)^{1/2}`.
+            """
+            self.function = 3
+            self.a = a
+            self.b = b
+            return self
+
+        def gaussian_fusion(self, a=-0.01, b=-1.0):
+            """Gaussian fusion spectrum of the form :math:`p(E) = C e^{-((E-b)/a)^{2}}`, :math:`a` is the width in MeV and :math:`b` is the average energy in MeV."""
+            self.function = 4
+            self.a = a
+            self.b = b
+            return self
+
+        def evaporation(self, a=1.2895):
+            """Evaporation energy spectrum of the form :math:`p(E) = CE e^{-E/a}`."""
+            self.function = 5
+            self.a = a
+            self._e_object.eUnset(ePackage.SOURCE_PROBABILITY_FUNCTION__B)
+            return self
+
+        def muir_fusion(self, a=-0.01, b=-1.0):
+            """Muir velocity Gaussian fusion spectrum of the form :math:`p(E) = C e^{-(E^{1/2}-b^{1/2})/a)^{2}}`, :math:`a` is the width in :math:`MeV^{1/2}` and :math:`b` is the energy in MeV corresponding to the average speed."""
+            self.function = 6
+            self.a = a
+            self.b = b
+            return self
+
+        def exp_decay(self, a=1.0):
+            """Exponential decay of the form :math:`\\alpha(t) = \\alpha_{0}(1/2)^{t/a}`, :math:`a` is the half-life in shakes."""
+            self.function = 7
+            self.a = a
+            self._e_object.eUnset(ePackage.SOURCE_PROBABILITY_FUNCTION__B)
+            return self
+
+        def power(self, a):
+            """Power law of the form :math:`p(x) = c |x|^{a}`."""
+            self.function = 21
+            self.a = a
+            self._e_object.eUnset(ePackage.SOURCE_PROBABILITY_FUNCTION__B)
+            return self
+
+        def exponential(self, a=0.0):
+            """Exponential of the form :math:`p(\\mu) = ce^{a|\\mu|}`, :math:`a` is the width in MeV and :math:`b` is the average energy in MeV."""
+            self.function = 31
+            self.a = a
+            self._e_object.eUnset(ePackage.SOURCE_PROBABILITY_FUNCTION__B)
+            return self
+
+        def gaussian(self, a, b=0.0):
+            """Gaussian distribution of time or position of the form :math:`p(t) = c exp[-(1.6651092(t-b)/a)^{2}]`, :math:`a` is the width at the half maximum and :math:`b` is the mean. Units of shakes for time and units of cm for position."""
+            self.function = 41
+            self.a = a
+            self.b = b
+            return self
 
 class SourceBias(SourceBiasBase, SourceSetting, Distribution):
     """
@@ -1132,7 +1197,7 @@ class SourceBias(SourceBiasBase, SourceSetting, Distribution):
                                             str(self.values))
         return string
     
-    class Function(SourceBiasFunctionBase, SourceSetting):
+    class Function(SourceBiasFunctionBase, SourceSetting, Distribution):
         """
         A representation of the model object `SourceBias.Function`.
         
@@ -1152,6 +1217,20 @@ class SourceBias(SourceBiasBase, SourceSetting, Distribution):
             """
             for k in kwargs:
                 setattr(self, k, kwargs[k])
+
+        def power(self, a):
+            """Power law of the form :math:`p(x) = c |x|^{a}`."""
+            self.function = 21
+            self.a = a
+            self._e_object.eUnset(ePackage.SOURCE_PROBABILITY_FUNCTION__B)
+            return self
+
+        def exponential(self, a=0.0):
+            """Exponential of the form :math:`p(\\mu) = ce^{a|\\mu|}`, :math:`a` is the width in MeV and :math:`b` is the average energy in MeV."""
+            self.function = 31
+            self.a = a
+            self._e_object.eUnset(ePackage.SOURCE_PROBABILITY_FUNCTION__B)
+            return self
 
 class SourceComment(SourceCommentBase, SourceSetting):
     """
