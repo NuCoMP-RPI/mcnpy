@@ -402,7 +402,7 @@ class Macrobody(ABC):
 
 class Sphere(IDManagerMixin, SphereBase, Surface):
     """
-    Sphere defined by :math:`\\color{eqn}(x-x_{0})^{2} + (y-y_{0})^{2} + (z-z_{0})^{2} - r^{2}`.
+    Sphere defined by :math:`\\color{eqn}(x-x_{0})^{2} + (y-y_{0})^{2} + (z-z_{0})^{2} - r^{2} = 0`.
     
     Parameters
     ----------
