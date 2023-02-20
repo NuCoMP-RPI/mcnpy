@@ -406,6 +406,10 @@ class Sphere(IDManagerMixin, SphereBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `Sphere`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `Sphere`.
     x0 : float
         X0 for `Sphere`.
     y0 : float
@@ -450,6 +454,10 @@ class RectangularPrism(IDManagerMixin, RectangularPrismBase, Surface, Macrobody)
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `RectangularPrism`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `RectangularPrism`.
     x0 : float
         X0 for `RectangularPrism`.
     x1 : float
@@ -502,6 +510,10 @@ class Box(IDManagerMixin, BoxBase, Surface, Macrobody):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `Box`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `Box`.
     corner : mcnpy.Point
         Corner for `Box`.
     vectors : iterable of mcnpy.Point
@@ -539,6 +551,10 @@ class CircularCylinder(IDManagerMixin, CircularCylinderBase, Surface, Macrobody)
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `CircularCylinder`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `CircularCylinder`.
     base : mcnpy.Point
         Base for `CircularCylinder`.
     axis : mcnpy.Point
@@ -581,6 +597,10 @@ class HexagonalPrism(IDManagerMixin, HexagonalPrismBase, Surface, Macrobody):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `HexagonalPrism`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `HexagonalPrism`.
     base : mcnpy.Point
         Base for `HexagonalPrism`.
     height : mcnpy.Point
@@ -631,6 +651,10 @@ class EllipticalCylinder(IDManagerMixin, EllipticalCylinderBase, Surface, Macrob
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `EllipticalCylinder`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `EllipticalCylinder`.
     base : mcnpy.Point
         Base for `EllipticalCylinder`.
     axis : mcnpy.Point
@@ -680,6 +704,10 @@ class TruncatedCone(IDManagerMixin, TruncatedConeBase, Surface, Macrobody):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `TruncatedCone`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `TruncatedCone`.
     base : mcnpy.Point
         Base for `TruncatedCone`.
     axis : mcnpy.Point
@@ -725,6 +753,10 @@ class Wedge(IDManagerMixin, WedgeBase, Surface, Macrobody):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `Wedge`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `Wedge`.
     vertex : mcnpy.Point
         Vertex for `Wedge`.
     vectors : iterable of mcnpy.Point
@@ -765,6 +797,10 @@ class Ellipsoid(IDManagerMixin, EllipsoidBase, Surface, Macrobody):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `Ellipsoid`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `Ellipsoid`.
     v1 : mcnpy.Point
         V1 for `Ellipsoid`.
     v2 : mcnpy.Point
@@ -805,6 +841,10 @@ class Polyhedron(IDManagerMixin, PolyhedronBase, Surface, Macrobody):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `Polyhedron`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `Polyhedron`.
     corners : iterable of mcnpy.Point
         Corners for `Polyhedron`.
     sides : iterable of int
@@ -879,6 +919,10 @@ class Plane(IDManagerMixin, PlaneBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `Plane`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `Plane`.
     a : float
         A for `Plane`.
     b : float
@@ -939,6 +983,10 @@ class XPlane(IDManagerMixin, XPlaneBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `XPlane`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `XPlane`.
     x0 : float
         X0 for `XPlane`.
     
@@ -984,6 +1032,10 @@ class YPlane(IDManagerMixin, YPlaneBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `YPlane`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `YPlane`.
     y0 : float
         Y0 for `YPlane`.
     
@@ -1029,6 +1081,10 @@ class ZPlane(IDManagerMixin, ZPlaneBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `ZPlane`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `ZPlane`.
     z0 : float
         Z0 for `ZPlane`.
     
@@ -1074,6 +1130,10 @@ class XCylinder(IDManagerMixin, XCylinderBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `XCylinder`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `XCylinder`.
     y0 : float
         Y0 for `XCylinder`.
     z0 : float
@@ -1131,6 +1191,10 @@ class YCylinder(IDManagerMixin, YCylinderBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `YCylinder`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `YCylinder`.
     x0 : float
         X0 for `YCylinder`.
     z0 : float
@@ -1188,6 +1252,10 @@ class ZCylinder(IDManagerMixin, ZCylinderBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `ZCylinder`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `ZCylinder`.
     x0 : float
         X0 for `ZCylinder`.
     y0 : float
@@ -1244,6 +1312,10 @@ class XCone(IDManagerMixin, XConeBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `XCone`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `XCone`.
     x0 : float
         X0 for `XCone`.
     y0 : float
@@ -1312,6 +1384,10 @@ class YCone(IDManagerMixin, YConeBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `YCone`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `YCone`.
     x0 : float
         X0 for `YCone`.
     y0 : float
@@ -1380,6 +1456,10 @@ class ZCone(IDManagerMixin, ZConeBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `ZCone`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `ZCone`.
     x0 : float
         X0 for `ZCone`.
     y0 : float
@@ -1449,6 +1529,10 @@ class Quadric(IDManagerMixin, QuadricBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `Quadric`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `Quadric`.
     a : float
         A for `Quadric`.
     b : float
@@ -1523,6 +1607,10 @@ class XYZQuadric(IDManagerMixin, XYZQuadricBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `XYZQuadric`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `XYZQuadric`.
     a : float
         A for `XYZQuadric`.
     b : float
@@ -1607,6 +1695,10 @@ class XTorus(IDManagerMixin, XTorusBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `XTorus`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `XTorus`.
     x0 : float
         X0 for `XTorus`.
     y0 : float
@@ -1657,6 +1749,10 @@ class YTorus(IDManagerMixin, YTorusBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `YTorus`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `YTorus`.
     x0 : float
         X0 for `YTorus`.
     y0 : float
@@ -1707,6 +1803,10 @@ class ZTorus(IDManagerMixin, ZTorusBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `ZTorus`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `ZTorus`.
     x0 : float
         X0 for `ZTorus`.
     y0 : float
@@ -1758,6 +1858,10 @@ class PPoints(IDManagerMixin, PPointsBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `PPoints`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `PPoints`.
     points : iterable of mcnpy.Point
         Points for `PPoints`.
     comment : str
@@ -1815,6 +1919,10 @@ class XPoints(IDManagerMixin, XPointsBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `XPoints`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `XPoints`.
     points : iterable of mcnpy.PPoint
         Points for `XPoints`.
     
@@ -1861,6 +1969,10 @@ class YPoints(IDManagerMixin, YPointsBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `YPoints`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `YPoints`.
     points : iterable of mcnpy.PPoint
         Points for `YPoints`.
     comment : str
@@ -1909,6 +2021,10 @@ class ZPoints(IDManagerMixin, ZPointsBase, Surface):
     
     Parameters
     ----------
+    name : int
+        Numeric ID for `ZPoints`.
+    boundary_type : mcnpy.BoundaryType
+        Boundary condition for `ZPoints`.
     points : iterable of mcnpy.PPoint
         Points for `ZPoints`.
     comment : str
