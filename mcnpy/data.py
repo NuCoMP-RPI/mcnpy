@@ -674,8 +674,6 @@ class Cutoff(ABC):
     """
     """
     class History(HistoryCutoffBase, TerminationSetting):
-        __doc__ = """NPS
-        """
         """
         NPS
         A representation of the model object `Cutoff.History`.
@@ -696,8 +694,6 @@ class Cutoff(ABC):
                 setattr(self, k.lower(), kwargs[k])
 
     class Precision(PrecisionCutoffBase, TerminationSetting):
-        __doc__ = """STOP
-        """
         """
         STOP
         A representation of the model object `Cutoff.Precision`.
@@ -722,8 +718,6 @@ class Cutoff(ABC):
                 setattr(self, k.lower(), kwargs[k])
 
     class CpuTime(CpuTimeCutoffBase, TerminationSetting):
-        __doc__ = """CTME
-        """
         """
         CTME
         A representation of the model object `Cutoff.CpuTime`.
