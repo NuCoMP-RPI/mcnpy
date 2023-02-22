@@ -8,6 +8,7 @@ from .mixin import IDManagerMixin
 from .variance_reduction import DeterministicTransport as Dt
 from .wrap import wrappers, overrides, subclass_overrides
 from .wrap import package as ePackage
+from mcnpy.enum_keywords import DensityUnit
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -301,7 +302,7 @@ class Cell(IDManagerMixin, CellBase):
                 string += '{: <16}=\t{}\n'.format('\tMaterial', self.material)
             string += '{: <16}=\t{}\n'.format('\tDensity', self.density)
             string += '{: <16}=\t{}\n'.format('\tDensity Unit', 
-                                              str(self.density_unit))
+                                              DensityUnit(self.density_unit).name)
             #string += '{: <16}=\t{}\n'.format('\tUniverse', self.universe)
 
             return string

@@ -6,6 +6,7 @@ from .wrap import wrappers, overrides
 from .region import *
 from .points import Point, PPoint
 from .mixin import IDManagerMixin
+from mcnpy.enum_keywords import BoundaryType
 
 globals().update({name+'Base': wrapper for name, wrapper in wrappers.items()})
 
@@ -302,7 +303,7 @@ class Surface(SurfaceBase):
         string += '{0: <16}{1}{2}\n'.format('\tType', '=\t', 
                                             type(self).__name__)
         string += '{0: <16}{1}{2}\n'.format('\tBoundary', '=\t', 
-                                            self.boundary_type)
+                                            BoundaryType(self.boundary_type).name)
 
         coefficients = '{0: <16}'.format('\tCoefficients') + '\n'
         coeff = self.get_coefficients()
@@ -355,7 +356,7 @@ class SurfaceFacet():
         string += '{0: <16}{1}{2}\n'.format('\tType', '=\t', 
                                             type(self.surface).__name__)
         string += '{0: <16}{1}{2}\n'.format('\tBoundary', '=\t', 
-                                            self.surface.boundary_type)
+                                            BoundaryType(self.surface.boundary_type).name)
 
         coefficients = '{0: <16}'.format('\tCoefficients') + '\n'
         coeff = self.surface.get_coefficients()
