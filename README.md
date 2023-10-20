@@ -12,8 +12,8 @@ Read the [MCNPy Docs](https://pages.github.rpi.edu/NuCoMP/mcnpy_docs/build/html/
 
 # Developer Information
 
-## Prerequisites
-Just some guidelines so that future grad students know what they might be getting into with this work.
+## Suggest Background
+Some guidelines so that future developers know what they might be getting into with this work:
 1. Proficient in Python
     - If you can handle making classes and aren't scared off by reading source code, then you're probably fine
 2. Familiarity with MCNP. Understand what features are available and know how to write input decks.
@@ -104,7 +104,7 @@ If the serializer can't find the required information, then it can't print it ou
 
     print(my_python_object._e_object.toString())
 
-throughout your code will narrow down when any parameters erroneously changed. The `._e_object` syntax accesses the underlying Java object. Since the serialized interacts with the Java, it's best to directly check the Java itself. 
+throughout your code will narrow down when any parameters erroneously changed. The `._e_object` syntax accesses the underlying Java object. Since the serializer interacts with the Java, it's best to directly check the Java itself. 
 
 ### Misplaced Data
 These errors are more confusing. Error messages along the lines of `Object does not exist for this Java gateway` indicate that a valid Java object exists, but it is owned by a different in-memory Java model. This is akin to one MCNP deck trying to reference cards from an entirely separate deck (without using special features like a READ card). These errors are most likely from incorrectly applied copying operations. To better understand copying nuances, consider the following CSG region definitions:
