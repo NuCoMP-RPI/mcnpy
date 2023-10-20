@@ -10,9 +10,23 @@ Read the [MCNPy Docs](https://pages.github.rpi.edu/NuCoMP/mcnpy_docs/build/html/
 # More Information
 Read the [MCNPy Docs](https://pages.github.rpi.edu/NuCoMP/mcnpy_docs/build/html/index.html)!
 
-# Developer Information
+# Development Team & Contact Information
+MCNPy and related work was developed by the [NuCoMP](nucomp.mane.rpi.edu) Research Group at Rensselaer Polytechnic Institute. This work started with the [MCNP Language Server](https://code.ornl.gov/neams-workbench/mcnp-language-server) and became intermingled with similar projects for the Serpent and KENO Monte Carlo codes. The following people have made significant contributions to this work during their time with NuCoMP:
 
-## Suggest Background
+- Peter Kowal
+- Kurt Dominesey
+- Joseph McPherson
+- Jonathan Eugenio
+- Camden Blake
+- Wei Ji
+
+## Contact
+- Peter Kowal (kowalp@rpi.edu)
+- Wei Ji (jiw2@rpi.edu)
+
+# Technical Details for Developers
+
+## Before You Get Started
 Some guidelines so that future developers know what they might be getting into with this work:
 1. Proficient in Python
     - If you can handle making classes and aren't scared off by reading source code, then you're probably fine
