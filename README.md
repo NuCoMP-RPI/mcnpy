@@ -1,5 +1,5 @@
 # MCNPy: The Python API for MCNP
-![logo](https://github.rpi.edu/NuCoMP/mcnpy_docs/blob/dc66f8e5f161eb49dd39fc937451ad56d7e5683d/docs/source/mcnpy_dark_text.png)
+![logo](https://github.rpi.edu/NuCoMP/mcnpy/mcnpy_dark_text.png)
 
 Latest version of MCNPy along with assorted test and example files. All source files are found in the `mcnpy` directory. For the installable wheel file, look in `dist`.
 
