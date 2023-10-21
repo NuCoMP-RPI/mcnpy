@@ -91,14 +91,14 @@ def decompose_mcnp(deck):
             mbodies[k] = (str(region_pos), (str(region_neg).replace('(', '').replace(')','')))
     deck.surfaces = new_surfaces
 
-    for k in deck.cells:
+    for cell in deck.cells.values():
         # Decompose cell complements.
         # Note that a surface complement must be in parentheses and will not match '~\d'.
-        region_str = str(deck.cells[k].region)
+        region_str = str(cell.region)
         #print(region_str)
         while len(re.findall('~\d', region_str)) > 0:
-            deck.cells[k].region = mp.Region.from_expression(str(deck.cells[k].region), deck.surfaces, deck.cells)
-            region_str = str(deck.cells[k].region)
+            cell.region = mp.Region.from_expression(str(cell.region), deck.surfaces, deck.cells)
+            region_str = str(cell.region)
         # Replace macrobodies with simple surfaces.
         for j in mbodies:
             # Negative halfspaces.
@@ -106,7 +106,16 @@ def decompose_mcnp(deck):
             # Positive halfspaces.
             region_str = re.sub('(?<!\d)'+str(j)+'(?!\d)', mbodies[j][0], region_str)
         #print(deck.cells[k], region_str)
-        deck.cells[k].region = mp.Region.from_expression(region_str, deck.surfaces, deck.cells)
+        cell.region = mp.Region.from_expression(region_str, deck.surfaces, deck.cells)
+
+        # Generate densities list
+        if cell.material is not None:
+            rho = (cell.density, cell.density_unit)
+            if cell.material.name in deck.material_densities:
+                if rho not in deck.material_densities[int(cell.material.name)]:
+                    deck.material_densities[int(cell.material.name)].append(rho)
+            else:
+                deck.material_densities[int(cell.material.name)] = [rho]
 
 def make_openmc_cell(mcnp_cell, openmc_trans, openmc_surfs, openmc_mats, 
                     openmc_universes):
@@ -164,6 +173,7 @@ def make_openmc_cell(mcnp_cell, openmc_trans, openmc_surfs, openmc_mats,
             fill = openmc_mats[0]
         else:
             mats = openmc_mats[mcnp_cell.material.name]
+
             if len(mats) == 1:
                 fill = mats[0]
             else:
@@ -323,6 +333,7 @@ def mcnp_to_openmc(mcnp_deck: mp.Deck):
     """
 
     # MCNP deck decomposition and processing.
+    mcnp_deck = mp.Deck.read(mcnp_deck._deck, renumber=True)
     print('Decomposing Geometry...')
     decompose_mcnp(mcnp_deck)
     print('Cleaning Up MCNP Surface Cards...')

@@ -221,6 +221,15 @@ def apply_mcnp_cell_trans(mcnp_deck):
 
     fill_trans = {}
     for cell in mcnp_deck.cells.values():
+        # Generate densities list
+        if cell.material is not None:
+            rho = (cell.density, cell.density_unit)
+            if cell.material.name in mcnp_deck.material_densities:
+                if rho not in mcnp_deck.material_densities[int(cell.material.name)]:
+                    mcnp_deck.material_densities[int(cell.material.name)].append(rho)
+            else:
+                mcnp_deck.material_densities[int(cell.material.name)] = [rho]
+
         trcl = cell.transformation
         names = {}
         # No TR card.
@@ -658,6 +667,11 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
     serp_deck = sp.Deck()
     bc_type = 1
 
+    # Apply cell transformations.
+    print('Decomposing Cell Transformations...')
+    mcnp_deck = mp.Deck.read(mcnp_deck._deck, renumber=True)
+    fill_trans = apply_mcnp_cell_trans(mcnp_deck)
+
     print('Translating Materials...')
     for mat in mcnp_deck.materials.values():
         try:
@@ -678,10 +692,6 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
                     i = i + 1
         except KeyError:
             pass
-    
-    # Apply cell transformations.
-    print('Decomposing Cell Transformations...')
-    fill_trans = apply_mcnp_cell_trans(mcnp_deck)
 
     print('Translating Surfaces...')
     for surf in mcnp_deck.surfaces.values():
@@ -756,6 +766,8 @@ def mcnp_to_serpent(mcnp_deck: mp.Deck):
     # Build lattices
     for k in lat_fill:
         if lat_fill[k] not in serp_deck.lattices.keys():
+            print(u_lat[lat_fill[k]], type(u_lat[lat_fill[k]]))
+            print(make_serpent_lattice(mcnp_deck.cells[int(k)], serp_deck.universes), type(make_serpent_lattice(mcnp_deck.cells[int(k)], serp_deck.universes)))
             serp_deck += sp.Lattice(u_lat[lat_fill[k]], 
                                     make_serpent_lattice(mcnp_deck.cells[int(k)], 
                                                          serp_deck.universes))  
