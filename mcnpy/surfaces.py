@@ -1,3 +1,27 @@
+"""
+Copyright (c) 2011-2023 Massachusetts Institute of Technology, UChicago Argonne
+LLC, and OpenMC contributors
+
+Copyright (c) 2023 NuCoMP
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
+
 from collections import OrderedDict
 from abc import ABC
 import numpy as np
@@ -837,7 +861,18 @@ class Ellipsoid(IDManagerMixin, EllipsoidBase, Surface, Macrobody):
 
 class Polyhedron(IDManagerMixin, PolyhedronBase, Surface, Macrobody):
     """
-    An Arbitrary Polyhedron. There must be eight triplets of entries input for the ARB to describe the (x,y,z) of the corners, although some may not be used (just use triplets of zeros). These are followed by six more entries, ni, which follow a prescribed convention: each entry is a four-digit integer that defines a side of the ARB in terms of the corners for the side. For example, the entry 1278 would define this plane surface to be bounded by the first, second, seventh, and eighth triplets (or equivalently, corners). Since three points are sufficient to determine the plane, only the first, second, and seventh corners would be used in this example to determine the plane. The distance from the plane to the fourth corner (corner 8 in the example) is determined by MCNP6. If the absolute value of this distance is greater than 1.0E-6, an error message is given and the distance is printed in the OUTP file along with the (x,y,z) that would lie on the plane. If the fourth digit is zero, the fourth point is ignored. For a four-sided ARB, four non-zero four-digit integers (last digit is zero for four-sided since there are only three corners for each side) are required to define the sides. For a five-sided ARB, five non-zero four-digit integers are required, and six non-zero four-digit integers are required for a six-sided ARB. Since there must be 30 entries altogether for an ARB (or MCNP6 gives an error message), the last two integers are zero for the four-sided ARB and the last integer is zero for a five-sided ARB.
+    An Arbitrary Polyhedron (the ARB marcrobody). The shape of an ARB is specified
+    by defining a list of the shape's corners,`corners`, and a list of connectivity,
+    `sides`, between those corners. `corners` are defined using mcnpy.Point objects
+    while `sides` requires a list of integers. Each entry in `sides` is a 4 digit 
+    integer specifying the indicies defining a side. For instance, `1247` would 
+    indicate that a side is defined by the first, second, fourth, and seventh corner
+    points. Note, these values are indexed from 1. For sides requiring only 3 corners,
+    the three values are acceptable or a zero may be used instead. Valid ARBs may 
+    have 4, 5, or 6 sides using up to 8 corners. For example, a rectangular prism
+    can be constructed with 8 corners and 6 sides. A tetrahedron would insted 
+    have 4 corners and 4 sides. For a more detailed description of ARB, users are
+    advised to refer to the MCNP6.2 manual.
     A representation of the model object `Polyhedron`.
     
     Parameters
