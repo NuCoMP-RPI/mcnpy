@@ -862,7 +862,7 @@ class Ellipsoid(IDManagerMixin, EllipsoidBase, Surface, Macrobody):
 class Polyhedron(IDManagerMixin, PolyhedronBase, Surface, Macrobody):
     """
     An Arbitrary Polyhedron (the ARB marcrobody). The shape of an ARB is specified
-    by defining a list of the shape's corners,`corners`, and a list of connectivity,
+    by defining a list of the shape's corners, `corners`, and a list of connectivity,
     `sides`, between those corners. `corners` are defined using mcnpy.Point objects
     while `sides` requires a list of integers. Each entry in `sides` is a 4 digit 
     integer specifying the indicies defining a side. For instance, `1247` would 
