@@ -4,7 +4,7 @@ NAME = 'mcnpy'
 
 setup(
     name=NAME,
-    version='0.0.2',
+    version='0.0.3',
     packages=[NAME],
     include_package_data=True,
     setup_requires=['setuptools_scm'],
