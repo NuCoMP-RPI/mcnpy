@@ -90,7 +90,7 @@ class Pincell():
         self.deck.write(self.filename, self.title)
 
 class RCF():
-    """A full core model of RPI's Reactor Critical Facility. A very critical reactor that will live on in the virtual world no matter what Shirley and the RPI administration does. This example will generate a new MCNP deck, build the RCF, and write the model to file.`water` sets the height of the water in the reactor in inches (default is `68.0in`). `bank` sets the control rod bank height in inches (default is rods fully bottomed at `0.0in`). `sporty` when set to `True` removes the center fuel pin which puts the RCF in sport mode. `filename` specifies the name of the new MCNP input (default is `./rcf_full_api.mcnp`). The model can be accessed with the `deck` attribute.
+    """A full core model of RPI's Reactor Critical Facility. A very critical reactor that will live on in the virtual world no matter what Shirley, Marty, Shekhar, Rebecca, and/or the RPI administration does. This example will generate a new MCNP deck, build the RCF, and write the model to file.`water` sets the height of the water in the reactor in inches (default is `68.0in`). `bank` sets the control rod bank height in inches (default is rods fully bottomed at `0.0in`). `sporty` when set to `True` removes the center fuel pin which puts the RCF in sport mode. `filename` specifies the name of the new MCNP input (default is `./rcf_full_api.mcnp`). The model can be accessed with the `deck` attribute.
 
     Parameters
     ----------
@@ -120,13 +120,13 @@ class RCF():
                  water=68.0, bank=0.0, sporty=False):
         """A full core model of RPI's Reactor Critical Facility. A very 
         critical reactor that will live on in the virtual world no matter what 
-        Shirley and the RPI administration does. This example will generate a 
-        new MCNP deck, build the RCF, and write the model to file.`water` sets 
-        the height of the water in the reactor in inches (default is `68.0in`).
-        `bank` sets the control rod bank height in inches (default is rods 
-        fully bottomed at `0.0in`). `sporty` when set to `True` removes the 
-        center fuel pin which puts the RCF in sport mode. `filename` specifies 
-        the name of the new MCNP input (default is 
+        Shirley, Marty, Shekhar, Rebecca, and/or the RPI administration does. 
+        This example will generate a new MCNP deck, build the RCF, and write the 
+        model to file.`water` sets the height of the water in the reactor in 
+        inches (default is `68.0in`). `bank` sets the control rod bank height in 
+        inches (default is rods fully bottomed at `0.0in`). `sporty` when set to 
+        `True` removes the center fuel pin which puts the RCF in sport mode. 
+        `filename` specifies the name of the new MCNP input (default is 
         `./rcf_full_api.mcnp`). The model can be accessed with the 
         `deck` attribute.
         """
