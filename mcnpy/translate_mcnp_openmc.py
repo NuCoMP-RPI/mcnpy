@@ -231,7 +231,10 @@ def make_openmc_cell(mcnp_cell, openmc_trans, openmc_surfs, openmc_mats,
                 for ring in layer:
                     openmc_ring = []
                     for r in ring:
-                        u_id = int(r.name)
+                        if isinstance(r, mp.Lattice.Element):
+                            u_id = int(r.element[0].name)
+                        else:
+                            u_id = int(r.name)
                         if u_id not in openmc_universes:
                             openmc_universes[u_id] = openmc.Universe(u_id)
                         openmc_ring.append(openmc_universes[u_id])
@@ -571,7 +574,7 @@ def mcnp_to_openmc(mcnp_deck: mp.Deck):
             for cell in universe.cells.values():
                 cell.region = cell.region.translate(lat_disp[q])
                 if isinstance(cell.fill, openmc.Material) is False:
-                    cell = cell.translation(lat_disp[q])
+                    cell.translation = lat_disp[q]
         q = q + 1
             
     # The root universe should always have ID 0. 
