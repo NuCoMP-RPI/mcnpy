@@ -616,9 +616,12 @@ class Deck():
             self.set_id(card, self.materials)
             self._deck.data.materials.addUnique(self.materials
                                                 [card.name]._e_object)
-            if card.s_alpha_beta is not None:
-                self.mat_settings.append(card.s_alpha_beta)
-                self._deck.data.settings.addUnique(card.s_alpha_beta._e_object)
+            try:
+                if card.s_alpha_beta is not None:
+                    self.mat_settings.append(card.s_alpha_beta)
+                    self._deck.data.settings.addUnique(card.s_alpha_beta._e_object)
+            except AttributeError:
+                card.s_alpha_beta = None
         
         elif isinstance(card, Transformation):
             self._add_data(card, self.transformations)

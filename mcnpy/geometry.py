@@ -92,6 +92,10 @@ class Cell(IDManagerMixin, CellBase):
         self.universe = universe
         self.material = material
         if self.material is not None:
+            try:
+                _ = material.density
+            except AttributeError:
+                material._density = None
             if material.density is None:
                 self.density = abs(density)
                 if density < 0:
@@ -153,6 +157,10 @@ class Cell(IDManagerMixin, CellBase):
     def material(self, material):
         if material is not None:
             self._e_object.setMaterial(material._e_object)
+            try:
+                _ = material.density
+            except AttributeError:
+                material._density = None
             if material.density is not None:
                 self.density = material.density
                 self.density_unit = material.density_unit
