@@ -212,7 +212,7 @@ def make_openmc_cell(mcnp_cell, openmc_trans, openmc_surfs, openmc_mats,
             for z in range(dim[0]):
                 for y in range(dim[1]):
                     for x in range(dim[2]):
-                        u_id = int(lattice.lattice[z,y,x].fill.name)
+                        u_id = int(lattice.lattice[z,dim[1] - 1 - y,x].fill.name)
                         if u_id not in openmc_universes:
                             openmc_universes[u_id] = openmc.Universe(u_id)
                         openmc_lattice[z,y,x] = openmc_universes[u_id]
@@ -670,7 +670,7 @@ def make_mcnp_lattice(openmc_lat, mcnp_universes):
             for y in range(shape[1]):
                 for x in range(shape[2]):
                     openmc_id = int(openmc_lat.universes[z][y][x].id)
-                    lattice[z][y][x] = openmc_id
+                    lattice[z][shape[1] - 1 - y][x] = openmc_id
                     if openmc_id not in lat_u:
                         lat_u.append(openmc_id)
 
