@@ -21,7 +21,7 @@ MCNPy and related work was developed by the [NuCoMP](nucomp.mane.rpi.edu) Resear
 - Wei Ji
 
 ## Contact
-- Peter Kowal (kowalp@rpi.edu)
+- Peter Kowal (mcnpy@rpi.slmail.me)
 - Wei Ji (jiw2@rpi.edu)
 
 # Technical Details for Developers
