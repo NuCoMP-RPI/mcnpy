@@ -116,7 +116,7 @@ def convert_surface(p_surf):
                 a[3,i] = -c[i][1]**2
             i1 = max(1, 3-i0) - 1
             for i in range(3):
-                print(i,i0)
+                #print(i,i0)
                 if i != i0:
                     for j in range(1,4):
                         a[j,i] = a[j,i] - a[0,i]*a[j,i0]/a[0,i0]

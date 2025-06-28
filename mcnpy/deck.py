@@ -6,6 +6,7 @@ from .materials import Nuclide
 from .surfaces import Surface, RectangularPrism, CircularCylinder
 from .surfaces import HexagonalPrism, Polyhedron, Wedge, EllipticalCylinder
 from .surfaces import Box, TruncatedCone, Ellipsoid
+from .surfaces import XPoints, YPoints, ZPoints, PPoints
 from .materials import Material, MaterialSetting
 from .geometry import Cell, Transformation, GeometrySetting, UniverseList
 from .output import OutputSetting
@@ -773,6 +774,9 @@ class Deck():
         tally = defaultdict(list)
         for s in self.surfaces:
             surf = self.surfaces[s]
+            if isinstance(surf, XPoints) or isinstance(surf, YPoints) or isinstance(surf, ZPoints) or isinstance(surf, PPoints):
+                surf = surf.convert()
+                self.surfaces[s] = surf
             coeffs = tuple(surf.get_coefficients().values())
             if surf.transformation is None:
                 key = (type(surf).__name__, None) + coeffs
