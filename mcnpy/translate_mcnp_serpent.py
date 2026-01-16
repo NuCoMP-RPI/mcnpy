@@ -308,9 +308,10 @@ def make_serpent_cell(serp_deck, mcnp_cell):
                 i = 1
                 while match is False:
                     id = str(mat.name) + '_rho_' + str(i)
-                    mat = serp_deck.materials[id]
-                    if mcnp_density == mat.density and mcnp_cell.density_unit == mat.unit:
+                    mat_test = serp_deck.materials[id]
+                    if mcnp_density == mat_test.density and mcnp_cell.density_unit == mat_test.unit:
                         match = True
+                        mat = mat_test
                     i = i + 1
             fill = mat
         serp_cell.material = fill

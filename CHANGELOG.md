@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.0.8] - 2026-01-16
+## Fixed
+- Fixed material naming in MCNP to Serpent translation in `translate_mcnp_serpent.py`
+    - Credit to [Yion18](https://github.com/Yion18)
+
 ## [0.0.7] - 2025-06-28
 ### Fixed
 - Surface conversion for point surfaces during model translation.
